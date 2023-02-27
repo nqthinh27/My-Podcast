@@ -5,9 +5,8 @@ import GlobalStyles from "../components/GlobalStyles";
 function Home(props) {
     return (
         <SafeAreaView style={GlobalStyles.customSafeArea}>
-            <Text>HomeScreen</Text>
+            <Text>Home Screen</Text>
         </SafeAreaView>
-            
     )
 }
 
