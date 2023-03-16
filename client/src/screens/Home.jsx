@@ -1,6 +1,8 @@
+import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useDispatch, useSelector } from "react-redux";
 import GlobalStyles from "../components/GlobalStyles";
 
 function Home(props) {
@@ -22,8 +24,12 @@ function Home(props) {
             })
     }, []);
 
+    const dispatch = useDispatch();
+    const user = useSelector((state) => state.auth.currentUser);
+
     return (
         <SafeAreaView style={GlobalStyles.customSafeArea}>
+            <StatusBar></StatusBar>
             <Text>{JSON.stringify(response)}</Text>
         </SafeAreaView>
     )
