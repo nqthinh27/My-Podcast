@@ -1,9 +1,8 @@
-import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useDispatch, useSelector } from "react-redux";
 import GlobalStyles from "../components/GlobalStyles";
+import HeaderUI from "../components/HeaderUI";
 
 function Home(props) {
     let [isLoading, setIsLoading] = useState(true);
@@ -11,7 +10,7 @@ function Home(props) {
     let [response, setResponse] = useState([]);
 
     useEffect(() => {
-        fetch("http://192.168.0.3:3001/user/")
+        fetch("http://192.168.1.49:3001/user/")
             .then(res => res.json())
             .then(
                 (result) => {
@@ -24,13 +23,10 @@ function Home(props) {
             })
     }, []);
 
-    const dispatch = useDispatch();
-    const user = useSelector((state) => state.auth.currentUser);
-
     return (
         <SafeAreaView style={GlobalStyles.customSafeArea}>
-            <StatusBar></StatusBar>
-            <Text>{JSON.stringify(response)}</Text>
+            <HeaderUI />
+            {/* <Text>{JSON.stringify(response)}</Text> */}
         </SafeAreaView>
     )
 }
