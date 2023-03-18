@@ -29,15 +29,15 @@ const authController = {
             });
             console.log(newUser);
 
-            const access_token = createAccessToken({ id: newUser._id });
-            const refresh_token = createRefreshToken({ id: newUser._id });
-            console.log({ access_token, refresh_token });
+            // const access_token = createAccessToken({ id: newUser._id });
+            // const refresh_token = createRefreshToken({ id: newUser._id });
+            // console.log({ access_token, refresh_token });
 
             await newUser.save();
 
             res.json({
                 msg: 'Register Successfully!',
-                access_token,
+                // access_token,
                 user: {
                     ...newUser._doc,
                     password: '',
@@ -64,12 +64,12 @@ const authController = {
             /** 
              * Đoạn này có cái accessToken, refresh token với cái cookie nè
              */
-            const access_token = createAccessToken({ id: user._id });
-            const refresh_token = createRefreshToken({ id: user._id });
+            // const access_token = createAccessToken({ id: user._id });
+            // const refresh_token = createRefreshToken({ id: user._id });
 
             res.json({
                 msg: 'Login Successfully!',
-                access_token,
+                // access_token,
                 user: {
                     ...user._doc,
                     password: '',
