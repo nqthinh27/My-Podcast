@@ -6,6 +6,7 @@ import Following from "../screens/Following";
 import Post from "../screens/Post";
 import Setting from "../screens/Setting";
 import UIScreen from "./UIScreen";
+import PlayerScreen from "../screens/PlayerScreen";
 
 const Stack = createNativeStackNavigator();
 export default function Navigator(props) {
@@ -17,6 +18,7 @@ export default function Navigator(props) {
             <Stack.Screen name={"UIScreen"} component={UIScreen}/>
             <Stack.Screen name={"Post"} component={Post}/>
             <Stack.Screen name={"Setting"} component={Setting}/>
+            <Stack.Screen name={"PlayerScreen"} component={PlayerScreen}/>
         </Stack.Navigator>
     </NavigationContainer>
 }

@@ -30,13 +30,13 @@ export default function HeaderUI(props) {
     }, []);
 
     const handleSearch = () => {
-        setSearchValue(!searchValue);
+        setSearchValue(true);
+        console.log(searchValue + "0");
     }
 
     const goBack = () => {
-        Keyboard.dismiss();
-        setSearchValue(!searchValue);
-        
+        setSearchValue(false);
+        console.log(searchValue + "1");
     }
 
     const filteredData = data.filter((item) =>
@@ -48,7 +48,7 @@ export default function HeaderUI(props) {
     // };
 
     return (
-        <SafeAreaView style={[styles.wrapper, GlobalStyles.customSafeArea]}>
+        <SafeAreaView style={[GlobalStyles.customSafeArea]}>
             <View style={styles.Header}>
                 <TouchableOpacity
                 // onPress={() => {
@@ -73,7 +73,7 @@ export default function HeaderUI(props) {
                     />
                     <TextInput
                         style={styles.input}
-                        autoFocus={false}
+                        // autoFocus={false}
                         // value={searchValue}
                         placeholder="Tìm kiếm podcast, tác giả, album,..."
                         // onChange={(event) => setSearchResult(event.target.value)}
@@ -130,9 +130,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         marginHorizontal: 16,
     },
-    blank: {
-        flex: 1,
-    },
+
     avatar: {
         width: 35,
         height: 35,
@@ -154,6 +152,10 @@ const styles = StyleSheet.create({
         paddingLeft: 10,
     },
 
+    back: {
+        
+    },
+
     input: {
         height: 32,
         marginRight: 12,
@@ -168,5 +170,7 @@ const styles = StyleSheet.create({
         width: 26,
     },
 
-    wrapper: {},
+    wrapper: {
+        
+    },
 });
