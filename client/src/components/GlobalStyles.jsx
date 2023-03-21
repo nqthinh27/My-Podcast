@@ -3,6 +3,6 @@ export default StyleSheet.create({
     customSafeArea: {
         flex: 1,
         backgroundColor: "#fff",
-        paddingTop: Platform.OS === 'android' ? 40 : 0
+        paddingTop: Platform.OS === 'android' ? 10 : 0
     },
 });
