@@ -30,16 +30,16 @@ function ProfileInfo(props) {
                     </Text>
                 </View>
 
-                <View style={styles.textView2}>
-                    <View style={styles.viewpost}>
+                <View style={styles.profileinfoDetails}>
+                    <View style={styles.profileinfoPostView}>
                         <Text style={styles.textmedium}>{posts}</Text>
                         <Text style={styles.textsmall}>Bài đăng</Text>
                     </View>
-                    <View style={styles.viewfollower}>
+                    <View style={styles.profileinfoFollowerView}>
                         <Text style={styles.textmedium}>{followers}</Text>
                         <Text style={styles.textsmall}>Người theo dõi</Text>
                     </View>
-                    <View style={styles.viewfollowing}>
+                    <View style={styles.profileinfoFollowingView}>
                         <Text style={styles.textmedium}>{following}</Text>
                         <Text style={styles.textsmall}>Đang theo dõi</Text>
                     </View>
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
         alignItems: "flex-start",
         marginTop: 10,
     },
-    textView2: {
+    profileinfoDetails: {
         flex: 1,
         flexDirection: "row",
         alignItems: "center",
@@ -74,21 +74,18 @@ const styles = StyleSheet.create({
     textmedium: {
         fontSize: 15,
     },
-    viewuser: {
-        flex: 4,
-        marginRight: 20,
-    },
-    viewpost: {
+    
+    profileinfoPostView: {
         justifyContent: "center",
         alignItems: "center",
     },
-    viewfollower: {
+    profileinfoFollowerView: {
         justifyContent: "center",
         alignItems: "center",
         marginHorizontal: "9%",
     },
 
-    viewfollowing: {
+    profileinfoFollowingView: {
         justifyContent: "center",
         alignItems: "center",
     },

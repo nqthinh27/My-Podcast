@@ -1,7 +1,7 @@
 import React from "react";
 import { Text, View, Image, StyleSheet } from "react-native";
 
-function HorizontalPodcast({ item }) {
+function PodcastListLibrary({ item }) {
     return (
         <View
             style={{
@@ -41,4 +41,4 @@ function HorizontalPodcast({ item }) {
     );
 }
 
-export default HorizontalPodcast;
+export default PodcastListLibrary;

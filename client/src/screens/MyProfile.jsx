@@ -8,7 +8,7 @@ import {
     TouchableOpacity,
     SafeAreaView,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import colors from "../constants/colors";
 import Icon from "react-native-vector-icons/Entypo";
 import GlobalStyles from "../components/GlobalStyles";
@@ -23,6 +23,13 @@ function MyProfile(props) {
     // //function of navigate
     // const { navigate, goback } = navigation;
 
+    const [posts, setPosts] = useState(1)
+    const [followers, setFollowers] = useState(1)
+    const [following, setFollowing] = useState(1)
+
+    function updatePosts() {
+        setPosts(posts + 1)
+    }
 
     return (
         <SafeAreaView style={[styles.myprofile, GlobalStyles.droidSafeArea]}>
