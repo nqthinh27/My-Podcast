@@ -15,7 +15,7 @@ import {
 // import Icon from "react-native-vector-icons/Fontisto";
 import { HeaderUI } from "../components";
 
-import VerticalPodcast from "../components/VerticalPodcast";
+import ReleasedPodcast from "../components/ReleasedPodcast"
 import SlideItem from "../components/SlideItem";
 import variable from "../constants/variable";
 import GlobalStyles from "../components/GlobalStyles";
@@ -81,7 +81,7 @@ export default function Home(props) {
                 />
 
                 <Text style={styles.title}>Bảng xếp hạng</Text>
-                {/* ==========================================BẢNG XẾP HẠNG========================================== */}
+                {/* ==========================================BẢNG XẾP HẠNG==========================================*/}
                 <ScrollView
                     style={trendingStyles.wrapper}
                     horizontal={true}
@@ -208,8 +208,7 @@ export default function Home(props) {
                         </View>
                     </View>
                 </ScrollView>
-
-                {/* ====================================================================================*/}
+                {/* ==================================================================================== */}
                 <Text style={[styles.title, styles.blank]}>Mới phát hành</Text>
                 <ScrollView
                     style={{ marginLeft: 16 }}
@@ -224,7 +223,7 @@ export default function Home(props) {
                                 }}
                                 key={index}
                             >
-                                <VerticalPodcast item={item} />
+                                <ReleasedPodcast item={item} />
                             </TouchableOpacity>
                         );
                     })}
@@ -243,7 +242,7 @@ export default function Home(props) {
                                 }}
                                 key={index}
                             >
-                                <VerticalPodcast item={item} />
+                                <ReleasedPodcast item={item} />
                             </TouchableOpacity>
                         );
                     })}
@@ -262,7 +261,7 @@ export default function Home(props) {
                                 }}
                                 key={index}
                             >
-                                <VerticalPodcast item={item} />
+                                <ReleasedPodcast item={item} />
                             </TouchableOpacity>
                         );
                     })}
@@ -281,7 +280,7 @@ export default function Home(props) {
                                 }}
                                 key={index}
                             >
-                                <VerticalPodcast item={item} />
+                                <ReleasedPodcast item={item} />
                             </TouchableOpacity>
                         );
                     })}

@@ -361,3 +361,30 @@ export const NewReLeaseData =
         id: 7,
     },
 ]
+
+// -------------- Data Following ---------------------
+
+export const FollowingData = [
+    {
+        avtUrl: 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/avatar.jpg?alt=media&token=fc074eb8-e67f-4235-8230-160cae1557b5',
+        audioUrl: 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/trending%2Fpodcast%2Fgiatrisunoluc.mp3?alt=media&token=d1a6f25b-e9cb-48e1-992b-980e67070505',
+        name: 'Nguyễn Quang Thịnh',
+        date: '27 tháng 12, 2022',
+        title: 'Sự nỗ lực đáng giá bao nhiêu',
+        author: 'Sunhuyn',
+        descripttion: 'Sự nỗ lực đáng giá bao nhiêu? Liệu rằng cứ nỗ lực rồi sẽ thành công phải không? Sun mong những điều này có thể giúp bạn cảm thấy an lòng và tin tưởng vào bản thân mình hơn.',
+        id: 1,
+        ranking: 1
+    },
+    {
+        avtUrl: 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/avatar.jpg?alt=media&token=fc074eb8-e67f-4235-8230-160cae1557b5',
+        audioUrl: 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/trending%2Fpodcast%2Fgiatrisunoluc.mp3?alt=media&token=d1a6f25b-e9cb-48e1-992b-980e67070505',
+        name: 'Nguyễn Quang Thịnh',
+        date: '27 tháng 12, 2022',
+        title: 'Sự nỗ lực đáng giá bao nhiêu',
+        author: 'Sunhuyn',
+        descripttion: 'Sự nỗ lực đáng giá bao nhiêu? Liệu rằng cứ nỗ lực rồi sẽ thành công phải không? Sun mong những điều này có thể giúp bạn cảm thấy an lòng và tin tưởng vào bản thân mình hơn.',
+        id: 2,
+        ranking: 1
+    },
+]

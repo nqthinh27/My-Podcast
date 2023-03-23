@@ -49,7 +49,7 @@ export default function HeaderUI(props) {
 
     return (
         <SafeAreaView style={[GlobalStyles.customSafeArea]}>
-            <View style={styles.Header}>
+            <View style={styles.header}>
                 <TouchableOpacity
                 // onPress={() => {
                 //   variable.isLogin == 0 ? navigate("SignIn") : navigate("MyProfile");
@@ -82,7 +82,7 @@ export default function HeaderUI(props) {
                     />
                 </View>
                 <Modal visible={searchValue}>
-                    <SafeAreaView style={[styles.wrapper, GlobalStyles.customSafeArea]}>
+                    <SafeAreaView style={[styles.wrapper]}>
                         <View style={styles.Header}>
                             <Icon style={styles.back}
                                 name={'chevron-left'}
@@ -124,7 +124,7 @@ export default function HeaderUI(props) {
 
 
 const styles = StyleSheet.create({
-    Header: {
+    header: {
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",

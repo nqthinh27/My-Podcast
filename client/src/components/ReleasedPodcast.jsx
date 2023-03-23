@@ -2,7 +2,7 @@ import React from 'react'
 import { View, StyleSheet, Text, Image, Dimensions } from 'react-native'
 // import Icon from 'react-native-vector-icons/Feather'
 
-export default function VerticalPodcast({ item }) {
+export default function ReleasedPodcast({ item }) {
     return (
         <View style={styles.wrapper}>
                 <View style={styles.boxShadow}><Image source={{ uri: item.avtUrl }} style={styles.avatar} /></View>

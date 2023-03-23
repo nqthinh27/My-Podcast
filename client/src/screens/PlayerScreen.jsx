@@ -34,32 +34,31 @@ export default function PlayerScreen(props) {
             }}
             resizeMode="cover"
             style={{
-                flex: 50,
+                flex: 3,
             }}
             blurRadius={50}
         >
-            <View style={styles.frame1}>
+            <View style={styles.playerScreenNavigation}>
                 <TouchableOpacity>
                     <Icon
                         name={"chevron-down"}
-                        style={{}}
+                        style={styles.shadowIcon}
                         size={35}
-                        color={colors.detail}
+                        color={colors.white}
                         onPress={() => { navigate('UIScreen') }}
                     />
                 </TouchableOpacity>
-
                 <TouchableOpacity>
                     <Icon
                         name="dots-horizontal"
-                        style={{ opacity: 1, top: 10 }}
+                        style={styles.shadowIcon}
                         size={30}
-                        color={colors.detail}
+                        color={colors.white}
                     />
                 </TouchableOpacity>
             </View>
 
-            <View style={styles.frame2}>
+            <View style={styles.playerScreenContent}>
                 <View>
                     <Image
                         source={{
@@ -70,8 +69,8 @@ export default function PlayerScreen(props) {
                 </View>
 
                 <View>
-                    <Text style={styles.title1} >Tuổi trẻ, Tình yêu và công việc</Text>
-                    <Text style={styles.title2} onPress={() => { navigate('OtherProfile') }}>Tun Phạm</Text>
+                    <Text style={styles.titleContent} >Tuổi trẻ, Tình yêu và công việc</Text>
+                    <Text style={styles.authorContent} onPress={() => { navigate('OtherProfile') }}>Tun Phạm</Text>
                 </View>
                 <View>
                     <Slider
@@ -154,7 +153,7 @@ export default function PlayerScreen(props) {
                     </TouchableOpacity>
                 </View>
             </View>
-            <View style={styles.frame3}>
+            <View style={styles.playerScreenInteract}>
                 <View style={styles.bottomContainer}>
                     {/* <TouchableOpacity>
             <Icon
@@ -195,24 +194,25 @@ export default function PlayerScreen(props) {
 }
 
 const styles = StyleSheet.create({
-    frame1: {
+    playerScreenNavigation: {
         marginHorizontal: 20,
         top: 40,
         justifyContent: "space-between",
         flexDirection: "row",
     },
 
-    frame2: {
+    playerScreenContent: {
         //flex: 1,
-        top: 30,
+        marginTop: 60,
         backgroundColor: "rgba(255,255,255,0.7)",
         borderRadius: 20,
         paddingBottom: 30,
         marginHorizontal: 20,
-        margin: 20,
+        width: '90%',
+        alignSelf: "center",
     },
 
-    frame3: {
+    playerScreenInteract: {
         //flex: 1,
         top: 25,
         backgroundColor: "rgba(255,255,255,0.7)",
@@ -221,8 +221,12 @@ const styles = StyleSheet.create({
         height: 60,
 
     },
-
-    title1: {
+    shadowIcon: {
+        textShadowColor: 'rgba(0, 0, 0, 0.5)',
+        textShadowOffset: { width: 0, height: 1 },
+        textShadowRadius: 2,
+    },
+    titleContent: {
         fontSize: 20,
         fontWeight: "bold",
         top: 30,
@@ -230,7 +234,7 @@ const styles = StyleSheet.create({
         color: "#000000",
     },
 
-    title2: {
+    authorContent: {
         fontSize: 15,
         marginTop: 30,
         marginLeft: 16,
@@ -242,16 +246,16 @@ const styles = StyleSheet.create({
         width: 308,
         height: 308,
         alignSelf: "center",
-        top: 15,
+        marginTop: 30,
         borderRadius: 20,
         backgroundColor: "#000000",
 
     },
 
     progressBar: {
-        width: 310,
+        width: 330,
         height: 40,
-        marginTop: 20,
+        marginTop: 5,
         flexDirection: "row",
         alignSelf: 'center',
         opacity: 0.6

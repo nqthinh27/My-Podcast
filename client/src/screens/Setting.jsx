@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     Text,
     View,
@@ -10,7 +10,8 @@ import {
     ScrollView,
     icon,
     FontAwesomeIcon,
-    StyleSheet
+    StyleSheet,
+    Switch
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome5";
 // import symbolicateStackTrace from "react-native/Libraries/Core/Devtools/symbolicateStackTrace";
@@ -22,15 +23,15 @@ export default function Setting(props) {
     const { navigation, route } = props;
     //function of navigate 
     const { navigate, goback } = navigation;
+
+    const [isEnabled, setIsEnabled] = useState(false);
+    const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+
     return (
         <SafeAreaView style={[{ backgroundColor: "#fff" }, GlobalStyles.customSafeArea]}>
             <ScrollView>
                 <View>
-                    <Text style={{
-                        left: 18,
-                        fontSize: 25,
-                        fontWeight: "bold",
-                    }}>Cài đặt và quyền riêng tư</Text>
+                    <Text style={styles.setting}>Cài đặt và quyền riêng tư</Text>
                 </View>
 
                 <View><View style={styles.h1}>
@@ -114,7 +115,7 @@ export default function Setting(props) {
                         />
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.setIco}>
+                    <View style={styles.setIco}>
                         <Icon
                             name='moon'
                             style={{ paddingStart: 10 }}
@@ -122,12 +123,17 @@ export default function Setting(props) {
                         />
                         <Text style={styles.fontText}>Chế độ tối</Text>
                         <View style={{ flex: 1 }} />
-                        <Icon
-                            name='chevron-right'
-                            style={{ paddingEnd: 10, opacity: 0.5 }}
-                            size={20} color={'black'}
+                        <Switch
+                            trackColor={{ false: "#767577", true: "#2196F3" }}
+                            style={{
+                                height: 25,
+                                width: 25,
+                            }}
+                            onValueChange={toggleSwitch}
+                            value={isEnabled}
                         />
-                    </TouchableOpacity></View>
+                    </View>
+                </View>
 
                 <View><View style={styles.h1}>
                     <Text style={styles.fontBlur}>Hỗ trợ & Giới thiệu</Text>
@@ -218,6 +224,12 @@ export default function Setting(props) {
 }
 
 const styles = StyleSheet.create({
+    setting: {
+        left: 16,
+        fontSize: 25,
+        fontWeight: "bold",
+        marginTop: 10
+    },
     h1: {
         top: 10,
         height: 30,
@@ -227,7 +239,7 @@ const styles = StyleSheet.create({
     setIco: {
         flexDirection: 'row',
         paddingVertical: 10,
-        alignContent: 'center',
+        alignItems:'center',
         marginVertical: 3,
         marginHorizontal: 16,
         borderRadius: 7,
