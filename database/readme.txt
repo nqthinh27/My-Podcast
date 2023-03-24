@@ -9,4 +9,4 @@ mongodump -d "database_name" -o "folder"
 
 *****import data*****
 mongorestore -d "(new)database_name" "folder"
-*ex: mongorestore -d my_podcast D:\Project\My-Podcast\database\Cluster0
+*ex: mongorestore -d my_podcast D:\Project\My-Podcast\database\my_podcast
