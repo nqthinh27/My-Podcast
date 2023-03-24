@@ -3,13 +3,8 @@ import {
     Text,
     View,
     SafeAreaView,
-    Image,
     TouchableOpacity,
-    TextInput,
-    FlatList,
     ScrollView,
-    icon,
-    FontAwesomeIcon,
     StyleSheet,
     Switch
 } from "react-native";
@@ -26,6 +21,7 @@ export default function Setting(props) {
 
     const [isEnabled, setIsEnabled] = useState(false);
     const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+    
 
     return (
         <SafeAreaView style={[{ backgroundColor: "#fff" }, GlobalStyles.customSafeArea]}>
@@ -125,6 +121,7 @@ export default function Setting(props) {
                         <View style={{ flex: 1 }} />
                         <Switch
                             trackColor={{ false: "#767577", true: "#2196F3" }}
+                            thumbColor={'#fff'}
                             style={{
                                 height: 25,
                                 width: 25,

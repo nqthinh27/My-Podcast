@@ -11,7 +11,10 @@ import {
     ScrollView,
     Alert,
     TextInput,
+    Dimensions,
 } from "react-native";
+import Icon from "react-native-vector-icons/FontAwesome5";
+
 // import Icon from "react-native-vector-icons/Fontisto";
 import { HeaderUI } from "../components";
 
@@ -52,6 +55,34 @@ export default function Home(props) {
         variable.isPlaying = 1;
     }
 
+    const numColumns = 4;
+    const { height } = Dimensions.get('screen');
+    const itemHeight = height / numColumns;
+
+    const renderItem = ({ item }) => (
+        <View style={[styles.item, { width: itemWidth }]}>
+            <Text style={styles.itemText}>{item.title}</Text>
+        </View>
+    );
+
+    const renderTopTrending = TopTrendingData.map((item) => (
+        <TouchableOpacity
+            key={item.id}
+            onPress={() => {
+                playerNavigate();
+            }}
+        >
+            <TopTrendingItem
+                avtUrl={item.avtUrl}
+                title={item.title}
+                author={item.author}
+                ranking={item.ranking}
+            />
+        </TouchableOpacity>
+
+    ));
+
+
     return (
         <SafeAreaView style={GlobalStyles.customSafeArea}>
             {/* <NavigationEvents onDidFocus={()=> this.setState({})} /> */}
@@ -80,136 +111,54 @@ export default function Home(props) {
                     pagingEnabled
                 />
 
-                <Text style={styles.title}>Bảng xếp hạng</Text>
+                <TouchableOpacity style={styles.titleOverall}>
+                    <Text style={styles.title}>Bảng xếp hạng</Text>
+                    <Icon
+                        name='chevron-right'
+                        style={{ opacity: 1, marginLeft: 8 }}
+                        size={16} color={'black'}
+                    />
+                </TouchableOpacity>
                 {/* ==========================================BẢNG XẾP HẠNG==========================================*/}
-                <ScrollView
-                    style={trendingStyles.wrapper}
-                    horizontal={true}
-                    showsHorizontalScrollIndicator={false}
-                >
-                    <View style={trendingStyles.contentWrapper}>
-                        <View style={trendingStyles.contentSection}>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    playerNavigate();
-                                }}
-                            >
-                                <TopTrendingItem
-                                    avtUrl={TopTrendingData[0].avtUrl}
-                                    title={TopTrendingData[0].title}
-                                    author={TopTrendingData[0].author}
-                                    ranking={TopTrendingData[0].ranking}
-                                />
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    playerNavigate();
-                                }}
-                            >
-                                <TopTrendingItem
-                                    avtUrl={TopTrendingData[1].avtUrl}
-                                    title={TopTrendingData[1].title}
-                                    author={TopTrendingData[1].author}
-                                    ranking={TopTrendingData[1].ranking}
-                                />
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    playerNavigate();
-                                }}
-                            >
-                                <TopTrendingItem
-                                    avtUrl={TopTrendingData[2].avtUrl}
-                                    title={TopTrendingData[2].title}
-                                    author={TopTrendingData[2].author}
-                                    ranking={TopTrendingData[2].ranking}
-                                />
-                            </TouchableOpacity>
+                <View  style={trendingStyles.wrapper}>
+                    <ScrollView
+                       
+                        // horizontal={true}
+                        // showsHorizontalScrollIndicator={false}
+                    >
+                        <View style={trendingStyles.contentWrapper}>
+                            <View style={trendingStyles.contentSection}>
+                                {TopTrendingData.slice(0,5).map((item) => {
+                                    return (
+                                        <TouchableOpacity
+                                            onPress={() => {
+                                                playerNavigate();
+                                            }}
+                                            // key={item.id.}
+                                        >
+                                            <TopTrendingItem
+                                                avtUrl={item.avtUrl}
+                                                title={item.title}
+                                                author={item.author}
+                                                ranking={item.ranking}
+                                            />
+                                        </TouchableOpacity>
+                                    );
+                                })}
+                            </View>
                         </View>
-                    </View>
-                    <View style={trendingStyles.contentWrapper}>
-                        <View style={trendingStyles.contentSection}>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    playerNavigate();
-                                }}
-                            >
-                                <TopTrendingItem
-                                    avtUrl={TopTrendingData[3].avtUrl}
-                                    title={TopTrendingData[3].title}
-                                    author={TopTrendingData[3].author}
-                                    ranking={TopTrendingData[3].ranking}
-                                />
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    playerNavigate();
-                                }}
-                            >
-                                <TopTrendingItem
-                                    avtUrl={TopTrendingData[4].avtUrl}
-                                    title={TopTrendingData[4].title}
-                                    author={TopTrendingData[4].author}
-                                    ranking={TopTrendingData[4].ranking}
-                                />
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    playerNavigate();
-                                }}
-                            >
-                                <TopTrendingItem
-                                    avtUrl={TopTrendingData[5].avtUrl}
-                                    title={TopTrendingData[5].title}
-                                    author={TopTrendingData[5].author}
-                                    ranking={TopTrendingData[5].ranking}
-                                />
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                    <View style={trendingStyles.contentWrapper}>
-                        <View style={trendingStyles.contentSection}>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    playerNavigate();
-                                }}
-                            >
-                                <TopTrendingItem
-                                    avtUrl={TopTrendingData[6].avtUrl}
-                                    title={TopTrendingData[6].title}
-                                    author={TopTrendingData[6].author}
-                                    ranking={TopTrendingData[6].ranking}
-                                />
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    playerNavigate();
-                                }}
-                            >
-                                <TopTrendingItem
-                                    avtUrl={TopTrendingData[7].avtUrl}
-                                    title={TopTrendingData[7].title}
-                                    author={TopTrendingData[7].author}
-                                    ranking={TopTrendingData[7].ranking}
-                                />
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    playerNavigate();
-                                }}
-                            >
-                                <TopTrendingItem
-                                    avtUrl={TopTrendingData[8].avtUrl}
-                                    title={TopTrendingData[8].title}
-                                    author={TopTrendingData[8].author}
-                                    ranking={TopTrendingData[8].ranking}
-                                />
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </ScrollView>
+                    </ScrollView>
+                </View>
+                
                 {/* ==================================================================================== */}
-                <Text style={[styles.title, styles.blank]}>Mới phát hành</Text>
+                <TouchableOpacity style={styles.titleOverall}>
+                    <Text style={[styles.title, styles.blank]}>Mới phát hành</Text>
+                    <Icon
+                        name='chevron-right'
+                        style={{ opacity: 1, marginLeft: 8, marginTop: 16 }}
+                        size={16} color={'black'}
+                    />
+                </TouchableOpacity>
                 <ScrollView
                     style={{ marginLeft: 16 }}
                     horizontal={true}
@@ -228,7 +177,15 @@ export default function Home(props) {
                         );
                     })}
                 </ScrollView>
-                <Text style={[styles.title]}>Thư giãn cuối ngày</Text>
+                {/* ==========================================BẢNG XẾP HẠNG==========================================*/}
+                <TouchableOpacity style={styles.titleOverall}>
+                    <Text style={styles.title}>Thư giãn cuối ngày</Text>
+                    <Icon
+                        name='chevron-right'
+                        style={{ opacity: 1, marginLeft: 8 }}
+                        size={16} color={'black'}
+                    />
+                </TouchableOpacity>
                 <ScrollView
                     style={{ marginLeft: 16 }}
                     horizontal={true}
@@ -247,7 +204,15 @@ export default function Home(props) {
                         );
                     })}
                 </ScrollView>
-                <Text style={[styles.title]}>Alum thịnh hành</Text>
+                {/* ==========================================BẢNG XẾP HẠNG==========================================*/}
+                <TouchableOpacity style={styles.titleOverall}>
+                    <Text style={styles.title}>Album thịnh hành</Text>
+                    <Icon
+                        name='chevron-right'
+                        style={{ opacity: 1, marginLeft: 8 }}
+                        size={16} color={'black'}
+                    />
+                </TouchableOpacity>
                 <ScrollView
                     style={{ marginLeft: 16, marginBottom: 16 }}
                     horizontal={true}
@@ -266,7 +231,15 @@ export default function Home(props) {
                         );
                     })}
                 </ScrollView>
-                <Text style={[styles.title]}>Cuộc sống hằng ngày</Text>
+                {/* ==========================================BẢNG XẾP HẠNG==========================================*/}
+                <TouchableOpacity style={styles.titleOverall}>
+                    <Text style={styles.title}>Cuộc sống hằng ngày</Text>
+                    <Icon
+                        name='chevron-right'
+                        style={{ opacity: 1, marginLeft: 8 }}
+                        size={16} color={'black'}
+                    />
+                </TouchableOpacity>
                 <ScrollView
                     style={{ marginLeft: 16, marginBottom: 16 }}
                     horizontal={true}
@@ -296,6 +269,10 @@ const styles = StyleSheet.create({
     },
     SlideBar: {
         backgroundColor: "#000",
+    },
+    titleOverall: {
+        flexDirection: 'row',
+        alignItems: 'center'
     },
     title: {
         fontSize: 21,
@@ -351,17 +328,20 @@ const trendingStyles = StyleSheet.create({
     wrapper: {
         // margin: 11,
         marginLeft: 16,
-        flexDirection: "row",
+        flex: 1,
+        // height: 225,
         // alignItems: 'center'
     },
     contentWrapper: {
-        width: 315,
+        width: 'auto',
         marginRight: 16,
         borderRadius: 10,
         backgroundColor: "#EDEDED",
+        // flexDirection: 'row',
+        // flexWrap: 'wrap',
     },
     contentSection: {
         marginVertical: 6,
-        marginHorizontal: 12,
+        marginHorizontal: 12
     },
 });

@@ -83,7 +83,7 @@ export default function HeaderUI(props) {
                 </View>
                 <Modal visible={searchValue}>
                     <SafeAreaView style={[styles.wrapper]}>
-                        <View style={styles.Header}>
+                        <View style={styles.header}>
                             <Icon style={styles.back}
                                 name={'chevron-left'}
                                 size={26}

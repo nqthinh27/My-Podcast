@@ -1,5 +1,4 @@
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View, SafeAreaView } from "react-native";
 import { HeaderUI, FollowingItem } from "../components";
 import GlobalStyles from "../components/GlobalStyles";
 import { FollowingData } from "../../dummyData";
@@ -12,26 +11,23 @@ export default function Following(props) {
                 <View style={followStyles.contentWrapper}>
                     <View style={followStyles.contentSection}>
                         <View
-                            // onPress={() => {
-                            //     playerNavigate();
-                            // }}
+                        // onPress={() => {
+                        //     playerNavigate();
+                        // }}
                         >
-                            <FollowingItem
-                                avtUrl={FollowingData[0].avtUrl}
-                                name={FollowingData[0].name}
-                                date={FollowingData[0].date}
-                                title={FollowingData[0].title}
-                                descripttion={FollowingData[0].descripttion}
-                                ranking={FollowingData[0].ranking}
-                            />
-                            <FollowingItem
-                                avtUrl={FollowingData[0].avtUrl}
-                                name={FollowingData[0].name}
-                                date={FollowingData[0].date}
-                                title={FollowingData[0].title}
-                                descripttion={FollowingData[0].descripttion}
-                                ranking={FollowingData[0].ranking}
-                            /> 
+                            {FollowingData.map((item, index) => {
+                                return (
+                                    <View key={index}>
+                                        <FollowingItem
+                                            avtUrl={item.avtUrl}
+                                            name={item.name}
+                                            date={item.date}
+                                            title={item.title}
+                                            descripttion={item.descripttion}
+                                        />
+                                    </View>
+                                )
+                            })}
                         </View>
                     </View>
                 </View>
