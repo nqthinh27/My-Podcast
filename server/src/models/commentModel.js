@@ -11,10 +11,12 @@ const commentSchema = new mongoose.Schema({
     owner: {
         type: mongoose.Types.ObjectId,
         ref: 'user',
+        required: true
     },
-    postId: {
+    post: {
         type: mongoose.Types.ObjectId,
         ref: 'post',
+        required: true
     }
 }, {
     timestamps: true,

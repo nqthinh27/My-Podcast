@@ -33,9 +33,9 @@ const postController = {
             if (!user)
                 return res.status(400).json({ msg: "Can not find this user." });
 
-
+            const arr = [];
             const newPost = new Posts({
-                title, content, image, audio, owner_id
+                title, content, image, audio, owner: owner_id
             })
             if (req.body.owner_id) {
                 const post = Users.findById(req.body.owner_id);
@@ -55,7 +55,7 @@ const postController = {
         }
     },
 
-    getPosts: async (req, res) => {
+    getAllPosts: async (req, res) => {
         try {
             const features = new APIfeatures(Posts.find({
                 user: [...req.user.following, req.user._id]

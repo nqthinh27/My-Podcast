@@ -20,6 +20,7 @@ app.use(morgan('common'));
 app.use('/auth', require('./routes/authRouter'));
 app.use('/user', require('./routes/userRouter'));
 app.use('/post', require('./routes/postRouter'));
+app.use('/comment', require('./routes/commentRouter'));
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

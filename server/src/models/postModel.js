@@ -26,7 +26,7 @@ const postSchema = new mongoose.Schema({
             ref: 'comment'
         }
     ],
-    owner_id: {
+    owner: {
         type: mongoose.Types.ObjectId,
         ref: 'user',
         require: true,

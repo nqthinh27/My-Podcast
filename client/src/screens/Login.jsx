@@ -1,4 +1,4 @@
-import { React, useState } from "react";
+import { React, useEffect, useState } from "react";
 import {
     StyleSheet,
     Text,
@@ -8,18 +8,35 @@ import {
     SafeAreaView,
 } from "react-native";
 import Icon from "react-native-vector-icons/Entypo";
-import colors from "../constants/colors";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser } from '../redux/actions/authApi';
+
+const colors = {
+    primary: '#FFA800',
+    inactive: '#888888',
+}
 
 function Login(props) {
-    //navigation
-    // const { navigation, route } = props;
+    const dispatch = useDispatch();
+    const login = useSelector((state) => state.auth.login)
+    const { navigation, route } = props;
     // //function of navigate
-    // const { navigate, goback } = navigation;
+    const { navigate, goback } = navigation;
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [err, setErr] = useState(false);
     const [loginwGoogle, setloginwGoogle] = useState(false);
     const [loginwFb, setloginwFb] = useState(false);
+
+    const handleLogin = () => {
+        setErr(!err);
+        newUser = {
+            email: email,
+            password: password
+        }
+        loginUser(newUser, dispatch, navigate);
+    }
 
     return (
         <SafeAreaView style={styles.login}>
@@ -61,7 +78,7 @@ function Login(props) {
                 <TouchableOpacity
                     style={styles.loginButtonViewlogin}
                     onPress={() => {
-                        variable.islogin = 1;
+                        handleLogin();
                     }}
                 >
                     <Icon name="login" size={25} color="#fff" />
@@ -179,7 +196,6 @@ const styles = StyleSheet.create({
     loginButtonNoEmail: {
         fontSize: 15,
         color: "#FF6363",
-        textDecorationline: "underline",
         textDecorationStyle: "solid",
         textDecorationColor: "#FF6363",
     },
