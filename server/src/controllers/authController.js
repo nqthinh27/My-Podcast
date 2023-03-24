@@ -68,12 +68,12 @@ const authController = {
             // const refresh_token = createRefreshToken({ id: user._id });
 
             res.json({
-                msg: 'Login Successfully!',
+                // msg: 'Login Successfully!',
                 // access_token,
-                user: {
-                    ...user._doc,
-                    password: '',
-                },
+                // user: {
+                ...user._doc,
+                password: '',
+                // },
             });
         } catch (err) {
             return res.status(500).json({ msg: err.message });
