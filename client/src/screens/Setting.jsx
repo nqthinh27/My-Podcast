@@ -12,6 +12,8 @@ import Icon from "react-native-vector-icons/FontAwesome5";
 // import symbolicateStackTrace from "react-native/Libraries/Core/Devtools/symbolicateStackTrace";
 import variable from "../constants/variable";
 import GlobalStyles from "../components/GlobalStyles";
+import { Provider as PaperProvider, DarkTheme, DefaultTheme } from 'react-native-paper';
+import { useColorScheme } from 'react-native';
 
 export default function Setting(props) {
     //navigation
@@ -19,17 +21,20 @@ export default function Setting(props) {
     //function of navigate 
     const { navigate, goback } = navigation;
 
-    const [isEnabled, setIsEnabled] = useState(false);
-    const toggleSwitch = () => setIsEnabled(previousState => !previousState);
-    
+    const [isDarkTheme, setIsDarkTheme] = useState(false);
+
+    const toggleTheme = () => {
+        setIsDarkTheme(previousState => !previousState);
+    };
 
     return (
-        <SafeAreaView style={[{ backgroundColor: "#fff" }, GlobalStyles.customSafeArea]}>
+
+        <SafeAreaView style={GlobalStyles.customSafeArea}>
+            {/* <SafeAreaView style={GlobalStyles.customSafeArea}> */}
             <ScrollView>
                 <View>
                     <Text style={styles.setting}>Cài đặt và quyền riêng tư</Text>
                 </View>
-
                 <View><View style={styles.h1}>
                     <Text style={styles.fontBlur}>Tài khoản</Text>
                 </View>
@@ -47,7 +52,6 @@ export default function Setting(props) {
                             size={20} color={'black'}
                         />
                     </TouchableOpacity>
-
                     <TouchableOpacity style={styles.setIco}>
                         <Icon
                             name='lock'
@@ -62,7 +66,6 @@ export default function Setting(props) {
                             size={20} color={'black'}
                         />
                     </TouchableOpacity>
-
                     <TouchableOpacity style={styles.setIco}>
                         <Icon
                             name='shield-alt'
@@ -77,7 +80,6 @@ export default function Setting(props) {
                             size={20} color={'black'}
                         />
                     </TouchableOpacity></View>
-
                 <View><View style={styles.h1}>
                     <Text style={styles.fontBlur}>Hiện thị </Text>
                 </View>
@@ -95,7 +97,6 @@ export default function Setting(props) {
                             size={20} color={'black'}
                         />
                     </TouchableOpacity>
-
                     <TouchableOpacity style={styles.setIco}>
                         <Icon
                             name='bell'
@@ -110,7 +111,6 @@ export default function Setting(props) {
                             size={20} color={'black'}
                         />
                     </TouchableOpacity>
-
                     <View style={styles.setIco}>
                         <Icon
                             name='moon'
@@ -121,17 +121,16 @@ export default function Setting(props) {
                         <View style={{ flex: 1 }} />
                         <Switch
                             trackColor={{ false: "#767577", true: "#2196F3" }}
-                            thumbColor={'#fff'}
+                            thumbColor={"#fff"}
                             style={{
                                 height: 25,
                                 width: 25,
                             }}
-                            onValueChange={toggleSwitch}
-                            value={isEnabled}
+                            onValueChange={toggleTheme}
+                            value={isDarkTheme}
                         />
                     </View>
                 </View>
-
                 <View><View style={styles.h1}>
                     <Text style={styles.fontBlur}>Hỗ trợ & Giới thiệu</Text>
                 </View>
@@ -149,7 +148,6 @@ export default function Setting(props) {
                             size={20} color={'black'}
                         />
                     </TouchableOpacity>
-
                     <TouchableOpacity style={styles.setIco}>
                         <Icon
                             name='toolbox'
@@ -164,7 +162,6 @@ export default function Setting(props) {
                             size={20} color={'black'}
                         />
                     </TouchableOpacity>
-
                     <TouchableOpacity style={styles.setIco}>
                         <Icon
                             name='info-circle'
@@ -179,7 +176,6 @@ export default function Setting(props) {
                             size={20} color={'black'}
                         />
                     </TouchableOpacity></View>
-
                 <View><View style={styles.h1}>
                     <Text style={styles.fontBlur}>Tài khoản</Text>
                 </View>
@@ -197,7 +193,6 @@ export default function Setting(props) {
                             size={20} color={'black'}
                         />
                     </TouchableOpacity>
-
                     <TouchableOpacity style={styles.setIco} onPress={() => {
                         variable.isLogin = 0
                         navigate('Home')
@@ -217,6 +212,7 @@ export default function Setting(props) {
                     </TouchableOpacity></View>
             </ScrollView>
         </SafeAreaView>
+
     )
 }
 
@@ -225,7 +221,8 @@ const styles = StyleSheet.create({
         left: 16,
         fontSize: 25,
         fontWeight: "bold",
-        marginTop: 10
+        marginTop: 10,
+        
     },
     h1: {
         top: 10,
@@ -236,11 +233,12 @@ const styles = StyleSheet.create({
     setIco: {
         flexDirection: 'row',
         paddingVertical: 10,
-        alignItems:'center',
+        alignItems: 'center',
         marginVertical: 3,
         marginHorizontal: 16,
         borderRadius: 7,
-        backgroundColor: 'rgba(0, 0, 0, 0.05)'
+        backgroundColor: 'rgba(0, 0, 0, 0.05)',
+        
     },
 
     fontBlur: {

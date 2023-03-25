@@ -122,7 +122,6 @@ export default function Home(props) {
                 {/* ==========================================BẢNG XẾP HẠNG==========================================*/}
                 <View  style={trendingStyles.wrapper}>
                     <ScrollView
-                       
                         // horizontal={true}
                         // showsHorizontalScrollIndicator={false}
                     >
@@ -134,7 +133,7 @@ export default function Home(props) {
                                             onPress={() => {
                                                 playerNavigate();
                                             }}
-                                            // key={item.id.}
+                                            key={item.id}
                                         >
                                             <TopTrendingItem
                                                 avtUrl={item.avtUrl}
@@ -150,7 +149,7 @@ export default function Home(props) {
                     </ScrollView>
                 </View>
                 
-                {/* ==================================================================================== */}
+                {/* ==========================================Mới phát hành========================================== */}
                 <TouchableOpacity style={styles.titleOverall}>
                     <Text style={[styles.title, styles.blank]}>Mới phát hành</Text>
                     <Icon
@@ -177,7 +176,7 @@ export default function Home(props) {
                         );
                     })}
                 </ScrollView>
-                {/* ==========================================BẢNG XẾP HẠNG==========================================*/}
+                {/* ==========================================Thư giãn cuối ngày==========================================*/}
                 <TouchableOpacity style={styles.titleOverall}>
                     <Text style={styles.title}>Thư giãn cuối ngày</Text>
                     <Icon
@@ -204,7 +203,7 @@ export default function Home(props) {
                         );
                     })}
                 </ScrollView>
-                {/* ==========================================BẢNG XẾP HẠNG==========================================*/}
+                {/* ========================================Album thịnh hành============================================*/}
                 <TouchableOpacity style={styles.titleOverall}>
                     <Text style={styles.title}>Album thịnh hành</Text>
                     <Icon
@@ -231,7 +230,7 @@ export default function Home(props) {
                         );
                     })}
                 </ScrollView>
-                {/* ==========================================BẢNG XẾP HẠNG==========================================*/}
+                {/* ==========================================Cuộc sống hằng ngày==========================================*/}
                 <TouchableOpacity style={styles.titleOverall}>
                     <Text style={styles.title}>Cuộc sống hằng ngày</Text>
                     <Icon
