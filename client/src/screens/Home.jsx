@@ -5,28 +5,9 @@ import GlobalStyles from "../components/GlobalStyles";
 import HeaderUI from "../components/HeaderUI";
 
 function Home(props) {
-    let [isLoading, setIsLoading] = useState(true);
-    let [error, setError] = useState();
-    let [response, setResponse] = useState([]);
-
-    useEffect(() => {
-        fetch("http://192.168.1.49:3001/user/")
-            .then(res => res.json())
-            .then(
-                (result) => {
-                    setIsLoading(false);
-                    setResponse(result);
-                }
-            )
-            .catch(err => {
-                console.log(err);
-            })
-    }, []);
-
     return (
         <SafeAreaView style={GlobalStyles.customSafeArea}>
             <HeaderUI />
-            {/* <Text>{JSON.stringify(response)}</Text> */}
         </SafeAreaView>
     )
 }
