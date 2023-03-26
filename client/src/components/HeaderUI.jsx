@@ -12,8 +12,10 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import GlobalStyles from "./GlobalStyles";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { useSelector } from "react-redux";
-
+import { useSelector, useDispatch } from "react-redux";
+import { isTokenExpired } from "../ultis/auth";
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { stayLogged } from "../redux/actions/authApi";
 
 export default function HeaderUI(props) {
     //navigation
@@ -21,11 +23,27 @@ export default function HeaderUI(props) {
     //function of navigate 
     const { navigate, goback } = navigation;
 
+    const dispatch = useDispatch();
+
+    const fetchUser = async () => {
+        const refresh_token = await AsyncStorage.getItem('refresh_token');
+        if (refresh_token) {
+            // if refresh token is unexpired
+            if (!isTokenExpired(refresh_token)) {
+                stayLogged(refresh_token, dispatch, navigate);
+            }
+        }
+    }
+
+    useEffect(() => {
+        fetchUser();
+    }, [])
+
     const user = useSelector((state) => state.auth.login.currentUser);
 
     let avatar = 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/avatar%2Fdafault_avatar.png?alt=media&token=162dc660-5039-4636-a300-942fcd4330b3';
     if (user) {
-        avatar = user.user.avatar;
+        avatar = user.avatar;
     }
 
     const [searchValue, setSearchValue] = useState(false); //Ấn vào search hiện ra màn hình search
@@ -64,7 +82,7 @@ export default function HeaderUI(props) {
     // const handleHideResult = () => {
     //   setShowResult(false);
     // };
-    
+
 
     return (
         <SafeAreaView style={[styles.wrapper, GlobalStyles.customSafeArea]}>

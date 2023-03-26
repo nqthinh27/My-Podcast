@@ -7,6 +7,7 @@ const authSlice = createSlice({
             currentUser: null,
             isFetching: false,
             error: false,
+            access_token: null,
         },
         logout: {
             isFetching: false,
@@ -29,6 +30,9 @@ const authSlice = createSlice({
             state.login.error = true;
             console.log('Login Failed!');
         },
+        setUserAccessToken: (state, action) => {
+            state.login.access_token = action.payload;
+        },
 
         // LOGOUT
         logoutStart: (state) => {
@@ -37,6 +41,7 @@ const authSlice = createSlice({
         logoutSuccess: (state) => {
             state.logout.isFetching = false;
             state.login.currentUser = null;
+            state.login.access_token = null;
             state.logout.error = false;
             console.log('Logout Success!');
         },
@@ -66,7 +71,8 @@ export const {
     logout,
     logoutStart,
     logoutSuccess,
-    logoutFailed
+    logoutFailed,
+    setUserAccessToken
 } = authSlice.actions;
 
 export default authSlice.reducer;
