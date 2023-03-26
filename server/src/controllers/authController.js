@@ -60,56 +60,30 @@ const authController = {
             if (!isMatch) {
                 return res.status(400).json({ msg: 'Password is incorrect.' });
             }
-
-            /** 
-             * Đoạn này có cái accessToken, refresh token với cái cookie nè
-             */
             const access_token = createAccessToken({ id: user._id });
             const refresh_token = createRefreshToken({ id: user._id });
-            // try {
-            //     await AsyncStorage.setItem('access_token', access_token);
-            //     console.log('Lưu trữ thành công!')
-            // } catch (e) {
-            //     console.log('Lỗi:', e)
-            // }
-            // await AsyncStorage.setItem('access_token', access_token);
-            // console.log('access_token: ', access_token);
-            // AsyncStorage.setItem('refresh_token', refresh_token);
             res.json({
-                // msg: 'Login Successfully!',
                 access_token: access_token,
                 refresh_token: refresh_token,
-                // user: {
                 ...user._doc,
                 password: '',
-                // },
             });
         } catch (err) {
             return res.status(500).json({ msg: err.message });
         }
     },
 
-    // LOGOUT
-    logout: async (req, res) => {
-        try {
-            // res.clearCookie('refreshtoken', { path: '/api/refresh_token' })
-            // return res.json({ msg: "Logged out!" })
-        } catch (err) {
-            return res.status(500).json({ msg: err.message })
-        }
-    },
-
     // GENERATE ACCESS TOKEN
     generateAccessToken: async (req, res) => {
         try {
-            const rf_token = req.headers.rf_token
+            const rf_token = req.headers.token
             if (!rf_token) return res.status(400).json({ msg: "Please login now." })
 
             jwt.verify(rf_token, process.env.REFRESH_TOKEN_SECRET, async (err, result) => {
                 if (err) return res.status(400).json({ msg: "Please login now." })
 
                 const user = await Users.findById(result.id).select("-password")
-                    // .populate('followers following', 'avatar username fullname followers following')
+                // .populate('followers following', 'avatar username fullname followers following')
 
                 if (!user) return res.status(400).json({ msg: "This does not exist." })
 
@@ -130,11 +104,11 @@ const authController = {
 
 const createAccessToken = (payload) => {
     console.log(process.env.ACCESS_TOKEN_SECRET);
-    return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '3m' });
+    return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' });
 }
 
 const createRefreshToken = (payload) => {
-    return jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '1d' });
+    return jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '30d' });
 }
 
 module.exports = authController;

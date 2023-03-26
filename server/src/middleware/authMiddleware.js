@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 
 const authMiddleware = async (req, res, next) => {
     try {
-        const token = req.headers.acs_token;
+        const token = req.headers.token;
         // const token = req.header("Authorization");
         if(!token) return res.status(400).json({msg: "Invalid Authentication."});
 

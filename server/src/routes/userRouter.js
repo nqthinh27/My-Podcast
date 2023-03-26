@@ -12,6 +12,6 @@ router.get('/:id', userController.getUserById);
 router.put('/:id', authMiddleware, userController.updateUserById);
 
 // // GET USER POST
-router.get('/:id/posts', authMiddleware, userController.getUserPost);
+router.get('/:id/posts', userController.getUserPost);
 
 module.exports = router;
