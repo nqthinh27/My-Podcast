@@ -7,6 +7,7 @@ import Post from "../screens/Post";
 import Setting from "../screens/Setting";
 import UIScreen from "./UIScreen";
 import PlayerScreen from "../screens/PlayerScreen";
+import Login from "../screens/Login";
 
 const Stack = createNativeStackNavigator();
 export default function Navigator(props) {
@@ -19,6 +20,7 @@ export default function Navigator(props) {
             <Stack.Screen name={"Post"} component={Post}/>
             <Stack.Screen name={"Setting"} component={Setting}/>
             <Stack.Screen name={"PlayerScreen"} component={PlayerScreen}/>
+            <Stack.Screen name={"Login"} component={Login}/>
         </Stack.Navigator>
     </NavigationContainer>
 }

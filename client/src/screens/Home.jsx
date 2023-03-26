@@ -14,10 +14,9 @@ import {
     Dimensions,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome5";
+import { useSelector } from "react-redux";
 
-// import Icon from "react-native-vector-icons/Fontisto";
 import { HeaderUI } from "../components";
-
 import ReleasedPodcast from "../components/ReleasedPodcast"
 import SlideItem from "../components/SlideItem";
 import variable from "../constants/variable";
@@ -25,6 +24,10 @@ import GlobalStyles from "../components/GlobalStyles";
 import TopTrendingItem from "../components/TopTrendingItem";
 
 import { TopTrendingData, PlaylistData, RecommendData, RelexData, NewReLeaseData, dummyData } from "../../dummyData";
+import lightHome from "../constants/darkLight/themeHome"
+import darkHome from "../constants/darkLight/themeHome"
+import lightTrendingHome from "../constants/darkLight/themeHome"
+import darkTrendingHome from "../constants/darkLight/themeHome"
 // import PlayerScreen from "./PlayerScreen";
 
 export default function Home(props) {
@@ -34,57 +37,34 @@ export default function Home(props) {
     const { navigate, goback } = navigation;
     // variable.isLogin = 2
 
-    const [clickSong, setClickSong] = useState(false);
-    const [showSong, setShowSong] = useState([]);
-    const [sowSongs, setSpwSongs] = useState([]);
-    // const textInputRef = useRef(null);
+    // const [clickSong, setClickSong] = useState(false);
+    // const [showSong, setShowSong] = useState([]);
+    // const [sowSongs, setSpwSongs] = useState([]);
+    // // const textInputRef = useRef(null);
 
-    // useEffect(() => {
+    // // useEffect(() => {
 
-    // },[])
-    function handleClickSong() {
-        setClickSong(true);
-    }
+    // // },[])
+    // function handleClickSong() {
+    //     setClickSong(true);
+    // }
 
-    function handleSong() {
+    // function handleSong() {
 
-    }
+    // }
+
+    const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
 
     function playerNavigate() {
         navigate('PlayerScreen');
         variable.isPlaying = 1;
     }
 
-    const numColumns = 4;
-    const { height } = Dimensions.get('screen');
-    const itemHeight = height / numColumns;
-
-    const renderItem = ({ item }) => (
-        <View style={[styles.item, { width: itemWidth }]}>
-            <Text style={styles.itemText}>{item.title}</Text>
-        </View>
-    );
-
-    const renderTopTrending = TopTrendingData.map((item) => (
-        <TouchableOpacity
-            key={item.id}
-            onPress={() => {
-                playerNavigate();
-            }}
-        >
-            <TopTrendingItem
-                avtUrl={item.avtUrl}
-                title={item.title}
-                author={item.author}
-                ranking={item.ranking}
-            />
-        </TouchableOpacity>
-
-    ));
-
-
     return (
-        <SafeAreaView style={GlobalStyles.customSafeArea}>
+        <SafeAreaView style={[
+            { backgroundColor: isDarkTheme ? darkHome.darkHome.wrapper.backgroundColor : lightHome.lightHome.wrapper.backgroundColor },
+            GlobalStyles.customSafeArea]}
+        >
             {/* <NavigationEvents onDidFocus={()=> this.setState({})} /> */}
             <ScrollView>
                 {/* ==========================================HEADER========================================== */}
@@ -93,7 +73,7 @@ export default function Home(props) {
                 {/* ==========================================Slide bar========================================== */}
                 <FlatList
                     horizontal={true}
-                    style={styles.wrapper}
+                    style={isDarkTheme ? darkHome.darkHome.wrapper : lightHome.lightHome.wrapper}
                     data={dummyData}
                     renderItem={({ item }) => {
                         return (
@@ -111,23 +91,24 @@ export default function Home(props) {
                     pagingEnabled
                 />
 
-                <TouchableOpacity style={styles.titleOverall}>
-                    <Text style={styles.title}>Bảng xếp hạng</Text>
+                <TouchableOpacity style={lightHome.lightHome.coverAll}>
+                    <Text style={isDarkTheme ? darkHome.darkHome.title : lightHome.lightHome.title}>Bảng xếp hạng</Text>
+                    {/* <Text style={isDarkTheme ? darkHome.darkHome.title : lightHome.lightHome.title}>Bảng xếp hạng</Text> */}
                     <Icon
                         name='chevron-right'
                         style={{ opacity: 1, marginLeft: 8 }}
-                        size={16} color={'black'}
+                        size={16} color={isDarkTheme ? darkHome.darkHome.wrapper.color : lightHome.lightHome.wrapper.color}
                     />
                 </TouchableOpacity>
                 {/* ==========================================BẢNG XẾP HẠNG==========================================*/}
-                <View  style={trendingStyles.wrapper}>
+                <View style={lightTrendingHome.lightTrendingHome.wrapper}>
                     <ScrollView
-                        // horizontal={true}
-                        // showsHorizontalScrollIndicator={false}
+                    // horizontal={true}
+                    // showsHorizontalScrollIndicator={false}
                     >
-                        <View style={trendingStyles.contentWrapper}>
-                            <View style={trendingStyles.contentSection}>
-                                {TopTrendingData.slice(0,5).map((item) => {
+                        <View style={isDarkTheme ? darkTrendingHome.darkTrendingHome.contentWrapper : lightTrendingHome.lightTrendingHome.contentWrapper}>
+                            <View style={lightTrendingHome.lightTrendingHome.contentSection}>
+                                {TopTrendingData.slice(0, 5).map((item) => {
                                     return (
                                         <TouchableOpacity
                                             onPress={() => {
@@ -148,14 +129,14 @@ export default function Home(props) {
                         </View>
                     </ScrollView>
                 </View>
-                
+
                 {/* ==========================================Mới phát hành========================================== */}
-                <TouchableOpacity style={styles.titleOverall}>
-                    <Text style={[styles.title, styles.blank]}>Mới phát hành</Text>
+                <TouchableOpacity style={lightHome.lightHome.coverAll}>
+                    <Text style={[isDarkTheme ? darkHome.darkHome.title : lightHome.lightHome.title, lightHome.lightHome.blank]}>Mới phát hành</Text>
                     <Icon
                         name='chevron-right'
                         style={{ opacity: 1, marginLeft: 8, marginTop: 16 }}
-                        size={16} color={'black'}
+                        size={16} color={isDarkTheme ? darkHome.darkHome.wrapper.color : lightHome.lightHome.wrapper.color}
                     />
                 </TouchableOpacity>
                 <ScrollView
@@ -177,12 +158,12 @@ export default function Home(props) {
                     })}
                 </ScrollView>
                 {/* ==========================================Thư giãn cuối ngày==========================================*/}
-                <TouchableOpacity style={styles.titleOverall}>
-                    <Text style={styles.title}>Thư giãn cuối ngày</Text>
+                <TouchableOpacity style={lightHome.lightHome.coverAll}>
+                    <Text style={isDarkTheme ? darkHome.darkHome.title : lightHome.lightHome.title}>Thư giãn cuối ngày</Text>
                     <Icon
                         name='chevron-right'
                         style={{ opacity: 1, marginLeft: 8 }}
-                        size={16} color={'black'}
+                        size={16} color={isDarkTheme ? darkHome.darkHome.wrapper.color : lightHome.lightHome.wrapper.color}
                     />
                 </TouchableOpacity>
                 <ScrollView
@@ -204,12 +185,12 @@ export default function Home(props) {
                     })}
                 </ScrollView>
                 {/* ========================================Album thịnh hành============================================*/}
-                <TouchableOpacity style={styles.titleOverall}>
-                    <Text style={styles.title}>Album thịnh hành</Text>
+                <TouchableOpacity style={lightHome.lightHome.coverAll}>
+                    <Text style={isDarkTheme ? darkHome.darkHome.title : lightHome.lightHome.title}>Album thịnh hành</Text>
                     <Icon
                         name='chevron-right'
                         style={{ opacity: 1, marginLeft: 8 }}
-                        size={16} color={'black'}
+                        size={16} color={isDarkTheme ? darkHome.darkHome.wrapper.color : lightHome.lightHome.wrapper.color}
                     />
                 </TouchableOpacity>
                 <ScrollView
@@ -231,12 +212,12 @@ export default function Home(props) {
                     })}
                 </ScrollView>
                 {/* ==========================================Cuộc sống hằng ngày==========================================*/}
-                <TouchableOpacity style={styles.titleOverall}>
-                    <Text style={styles.title}>Cuộc sống hằng ngày</Text>
+                <TouchableOpacity style={lightHome.lightHome.coverAll}>
+                    <Text style={isDarkTheme ? darkHome.darkHome.title : lightHome.lightHome.title}>Cuộc sống hằng ngày</Text>
                     <Icon
                         name='chevron-right'
                         style={{ opacity: 1, marginLeft: 8 }}
-                        size={16} color={'black'}
+                        size={16} color={isDarkTheme ? darkHome.darkHome.wrapper.color : lightHome.lightHome.wrapper.color}
                     />
                 </TouchableOpacity>
                 <ScrollView
@@ -261,67 +242,6 @@ export default function Home(props) {
         </SafeAreaView>
     );
 }
-
-const styles = StyleSheet.create({
-    wrapper: {
-        backgroundColor: "#fff",
-    },
-    SlideBar: {
-        backgroundColor: "#000",
-    },
-    titleOverall: {
-        flexDirection: 'row',
-        alignItems: 'center'
-    },
-    title: {
-        fontSize: 21,
-        fontWeight: "bold",
-        marginLeft: 16,
-        marginBottom: 6,
-    },
-    blank: {
-        marginTop: 16,
-    },
-    Header: {
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-        marginHorizontal: 16,
-    },
-    avatar: {
-        width: 35,
-        height: 35,
-        borderRadius: 35,
-    },
-    input: {
-        height: 32,
-        marginRight: 12,
-        backgroundColor: "#F0F0F0",
-        // borderRadius: 32,
-        padding: 0,
-        flex: 1,
-        color: "#A0A0A0",
-    },
-    searchSection: {
-        flex: 1,
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#F0F0F0",
-        color: "#A0A0A0",
-        borderRadius: 32,
-        marginHorizontal: 8,
-    },
-    searchIcon: {
-        paddingVertical: 8,
-        paddingRight: 4,
-        paddingLeft: 10,
-    },
-    bell: {
-        height: 26,
-        width: 26,
-    },
-});
 
 const trendingStyles = StyleSheet.create({
     wrapper: {

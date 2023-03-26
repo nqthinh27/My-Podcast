@@ -3,7 +3,6 @@ const port = 3001;
 const express = require('express');
 // const cors = require('cors');
 const app = express();
-const mongoose = require('mongoose');
 const morgan = require('morgan');
 const dotenv = require('dotenv');
 var bodyParser = require('body-parser');
@@ -20,6 +19,8 @@ app.use(morgan('common'));
 //ROUTES
 app.use('/auth', require('./routes/authRouter'));
 app.use('/user', require('./routes/userRouter'));
+app.use('/post', require('./routes/postRouter'));
+app.use('/comment', require('./routes/commentRouter'));
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
