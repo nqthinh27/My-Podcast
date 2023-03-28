@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
     fullName: {
@@ -53,24 +53,32 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: '',
     },
-    website: {
-        type: String,
-        default: '',
-    },
     followers: [
         {
             type: mongoose.Types.ObjectId,
-            ref: 'user'
+            ref: 'user',
         }
     ],
     following: [
         {
             type: mongoose.Types.ObjectId,
-            ref: 'user'
+            ref: 'user',
         }
     ],
+    favourite: [
+        {
+            type: mongoose.Types.ObjectId,
+            ref: 'post',
+        }
+    ],
+    posts: [
+        {
+            type: mongoose.Types.ObjectId,
+            ref: 'post',
+        }
+    ]
 }, {
     timestamps: true,
 });
 
-module.exports = mongoose.model("user", userSchema);
+module.exports = mongoose.model('user', userSchema);

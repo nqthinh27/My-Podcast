@@ -11,13 +11,40 @@ import Icon from "react-native-vector-icons/Feather";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import GlobalStyles from "./GlobalStyles";
 import React, { useEffect, useRef, useState } from "react";
-
+import { useNavigation } from "@react-navigation/native";
+import { useSelector, useDispatch } from "react-redux";
+import { isTokenExpired } from "../ultis/auth";
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { stayLogged } from "../redux/actions/authApi";
 
 export default function HeaderUI(props) {
     //navigation
-    const { navigation = {} } = props;
-    //function of navigate
+    const navigation = useNavigation();
+    //function of navigate 
     const { navigate, goback } = navigation;
+
+    const dispatch = useDispatch();
+
+    const fetchUser = async () => {
+        const refresh_token = await AsyncStorage.getItem('refresh_token');
+        if (refresh_token) {
+            // if refresh token is unexpired
+            if (!isTokenExpired(refresh_token)) {
+                stayLogged(refresh_token, dispatch, navigate);
+            }
+        }
+    }
+
+    useEffect(() => {
+        fetchUser();
+    }, [])
+
+    const user = useSelector((state) => state.auth.login.currentUser);
+
+    let avatar = 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/avatar%2Fdafault_avatar.png?alt=media&token=162dc660-5039-4636-a300-942fcd4330b3';
+    if (user) {
+        avatar = user.avatar;
+    }
 
     const [searchValue, setSearchValue] = useState(false); //Ấn vào search hiện ra màn hình search
     const [searchResult, setSearchResult] = useState("");
@@ -26,17 +53,26 @@ export default function HeaderUI(props) {
     const textInputRef = useRef(null);
 
     useEffect(() => {
-      textInputRef.current?.focus();
+        textInputRef.current?.focus();
     }, []);
 
     const handleSearch = () => {
         setSearchValue(!searchValue);
     }
 
+    const handleLogin = () => {
+        if (user) {
+            // navigate("MyProfile");   
+            alert('Bạn đã đăng nhập!');
+        } else {
+            navigate("Login");
+        }
+    }
+
     const goBack = () => {
         Keyboard.dismiss();
         setSearchValue(!searchValue);
-        
+
     }
 
     const filteredData = data.filter((item) =>
@@ -47,18 +83,18 @@ export default function HeaderUI(props) {
     //   setShowResult(false);
     // };
 
+
     return (
         <SafeAreaView style={[styles.wrapper, GlobalStyles.customSafeArea]}>
             <View style={styles.Header}>
                 <TouchableOpacity
-                // onPress={() => {
-                //   variable.isLogin == 0 ? navigate("SignIn") : navigate("MyProfile");
-                //   // Alert.alert('aaa','aaa')
-                // }}
+                    onPress={() => {
+                        handleLogin();
+                    }}
                 >
                     <Image
                         source={{
-                            uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/avatar.jpg?alt=media&token=fc074eb8-e67f-4235-8230-160cae1557b5",
+                            uri: avatar,
                         }}
                         style={styles.avatar}
                     />
@@ -78,7 +114,7 @@ export default function HeaderUI(props) {
                         placeholder="Tìm kiếm podcast, tác giả, album,..."
                         // onChange={(event) => setSearchResult(event.target.value)}
                         onFocus={handleSearch}
-                        
+
                     />
                 </View>
                 <Modal visible={searchValue}>
