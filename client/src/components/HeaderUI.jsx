@@ -6,9 +6,9 @@ import {
     SafeAreaView,
     Keyboard,
     Modal,
+    TouchableOpacity,
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import GlobalStyles from "./GlobalStyles";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
@@ -16,6 +16,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { isTokenExpired } from "../ultis/auth";
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { stayLogged } from "../redux/actions/authApi";
+import { warningLogin } from "../ultis/warning";
 
 export default function HeaderUI(props) {
     //navigation
@@ -63,9 +64,10 @@ export default function HeaderUI(props) {
     const handleLogin = () => {
         if (user) {
             // navigate("MyProfile");   
+            // Làm trang profile xong thì bỏ cái alert đi nhé
             alert('Bạn đã đăng nhập!');
         } else {
-            navigate("Login");
+            warningLogin(navigate,'Login');
         }
     }
 

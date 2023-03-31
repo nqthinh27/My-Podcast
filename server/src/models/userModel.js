@@ -65,18 +65,30 @@ const userSchema = new mongoose.Schema({
             ref: 'user',
         }
     ],
-    favourite: [
-        {
-            type: mongoose.Types.ObjectId,
-            ref: 'post',
-        }
-    ],
     posts: [
         {
             type: mongoose.Types.ObjectId,
             ref: 'post',
         }
-    ]
+    ],
+    liked: [
+        {
+            type: mongoose.Types.ObjectId,
+            ref: 'post',
+        }
+    ],
+    saved: [
+        {
+            type: mongoose.Types.ObjectId,
+            ref: 'post',
+        }
+    ],
+    history: [
+        {
+            type: mongoose.Types.ObjectId,
+            ref: 'post',
+        }
+    ],
 }, {
     timestamps: true,
 });
