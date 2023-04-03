@@ -14,7 +14,7 @@ import Icon from "react-native-vector-icons/Entypo";
 import GlobalStyles from "../components/GlobalStyles";
 import ProfileInfo from "../components/ProfileInfo";
 import { MyPopularData } from "../../dummyData";
-import VerticalPodcastB from "../components/VerticalPodcastB";
+import ProfilePodcast from "../components/ProfilePodcast";
 import { MyNewReLeaseData } from "../../dummyData";
 
 function MyProfile(props) {
@@ -88,7 +88,7 @@ function MyProfile(props) {
                         {MyPopularData.map((item, index) => {
                             return (
                                 <TouchableOpacity key={index}>
-                                    <VerticalPodcastB item={item} />
+                                    <ProfilePodcast item={item} />
                                 </TouchableOpacity>
                             );
                         })}
@@ -117,7 +117,7 @@ function MyProfile(props) {
                         {MyNewReLeaseData.map((item, index) => {
                             return (
                                 <TouchableOpacity key={index}>
-                                    <VerticalPodcastB item={item} />
+                                    <ProfilePodcast item={item} />
                                 </TouchableOpacity>
                             );
                         })}
