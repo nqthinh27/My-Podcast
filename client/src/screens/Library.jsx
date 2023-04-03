@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/Fontisto";
 import colors from "../constants/colors";
-import HorizontalPodcast from "../components/HorizontalPodcast";
+import PodcastListLibrary from "../components/PodcastListLibrary";
 import { SafeAreaView } from "react-navigation";
 import GlobalStyles from "../components/GlobalStyles";
 import { RecommendData } from "../../dummyData";
@@ -68,7 +68,7 @@ function Library(props) {
                                 size={20}
                                 color={colors.primary}
                             />
-                            <Text style={styles.iconButton}>Đã lưu</Text>
+                            <Text style={styles.libraryIconButton}>Đã lưu</Text>
                         </TouchableOpacity>
                         <View style={{ flex: 1 }}></View>
                         <TouchableOpacity
@@ -83,7 +83,7 @@ function Library(props) {
                                 size={18}
                                 color="#FF0000"
                             />
-                            <Text style={styles.iconButton}>Yêu thích</Text>
+                            <Text style={styles.libraryIconButton}>Yêu thích</Text>
                         </TouchableOpacity>
                     </View>
                     <View
@@ -107,7 +107,7 @@ function Library(props) {
                                 size={20}
                                 color="#00EBEB"
                             />
-                            <Text style={styles.iconButton}>Nghe gần đây</Text>
+                            <Text style={styles.libraryIconButton}>Nghe gần đây</Text>
                         </TouchableOpacity>
                         <View style={{ flex: 1 }}></View>
                         <TouchableOpacity
@@ -122,7 +122,7 @@ function Library(props) {
                                 size={18}
                                 color="#2EDC21"
                             />
-                            <Text style={styles.iconButton}>Playlist</Text>
+                            <Text style={styles.libraryIconButton}>Playlist</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -147,7 +147,7 @@ function Library(props) {
                                     }}
                                     key={index}
                                 >
-                                    <HorizontalPodcast item={item} />
+                                    <PodcastListLibrary item={item} />
                                 </TouchableOpacity>
                             );
                         })}
@@ -174,51 +174,13 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
 
-    iconButton: {
+    libraryIconButton: {
         color: "black",
         fontSize: 16,
         paddingStart: 10,
         fontWeight: "500",
     },
-    Header: {
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-        marginHorizontal: 16,
-    },
-    avatar: {
-        width: 35,
-        height: 35,
-        borderRadius: 35,
-    },
-    input: {
-        height: 32,
-        marginRight: 12,
-        backgroundColor: "#F0F0F0",
-        // borderRadius: 32,
-        padding: 0,
-        flex: 1,
-        color: "#A0A0A0",
-    },
-    searchSection: {
-        flex: 1,
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#F0F0F0",
-        color: "#A0A0A0",
-        borderRadius: 32,
-        marginHorizontal: 8,
-    },
-    searchIcon: {
-        paddingVertical: 8,
-        paddingRight: 4,
-        paddingLeft: 10,
-    },
-    bell: {
-        height: 26,
-        width: 26,
-    },
+   
 });
 
 export default Library;
