@@ -52,7 +52,7 @@ const authController = {
     login: async (req, res) => {
         try {
             const { email, password } = req.body;
-            const user = await Users.findOne({ email }).populate('followers following', '-password');
+            const user = await Users.findOne({ email });
             if (!user) {
                 return res.status(400).json({ msg: 'This email does not exists.' });
             }

@@ -13,8 +13,20 @@ router.get('/:id', userController.getUserById);
 // UPDATE USER BY ID
 router.put('/:id', authMiddleware, userController.updateUserById);
 
+/**
+ * USER ACTION
+ */
 // GET USER POST
 router.get('/:id/posts', userController.getUserPost);
+
+// GET FOLLOWERS
+router.get('/:id/followers', userController.getAllFollowers);
+
+// GET FOLLOWING
+router.get('/:id/following', userController.getAllFollowing);
+
+// FOLLOW OTHER USER
+router.post('/:id/follow',authMiddleware, userController.followOther);
 
 /**
  * Library

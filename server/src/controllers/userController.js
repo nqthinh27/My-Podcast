@@ -34,6 +34,9 @@ const userController = {
         }
     },
 
+    /**
+     * USER ACTION
+     */
     // GET USER POST
     getUserPost: async (req, res) => {
         try {
@@ -41,6 +44,51 @@ const userController = {
             res.status(200).json(user.posts);
         } catch (err) {
             return res.status(500).json({ msg: err.message })
+        }
+    },
+
+    // Get all followers
+    getAllFollowers: async (req, res) => {
+        try {
+            const user = await Users.findById(req.params.id).populate({
+                path: 'followers',
+                select: 'fullName userName avatar gender'
+              });
+            res.status(200).json(user.followers);
+        } catch (err) {
+            return res.status(500).json({ msg: err.message });
+        }
+    },
+
+    // Get all following
+    getAllFollowing: async (req, res) => {
+        try {
+            const user = await Users.findById(req.params.id).populate({
+                path: 'following',
+                select: 'fullName userName avatar gender'
+              });
+            res.status(200).json(user.following);
+        } catch (err) {
+            return res.status(500).json({ msg: err.message });
+        }
+    },
+    
+    // FOLLOW OTHER USER
+    followOther: async (req, res) => {
+        try {
+            const user = await Users.findOneAndUpdate({ _id: req.user._id }, {
+                $push: { following: req.params.id }
+            }, { new: true })
+            if (!user) return res.status(400).json({ msg: 'This user does not exist or not logged in' });
+            
+            const other = await Users.findOneAndUpdate({ _id: req.params.id }, {
+                $push: { followers: req.user._id }
+            }, { new: true })
+            if (!other) return res.status(400).json({ msg: 'This user does not exist or not logged in' });
+
+            res.status(200).json({ msg: 'Followed!' });
+        } catch (err) {
+            return res.status(500).json({ msg: err.message });
         }
     },
 

@@ -5,30 +5,22 @@ const Posts = require('../models/postModel');
 const commentController = {
     createComment: async (req, res) => {
         try {
-            const { content, owner_id, post_id } = req.body;
-
+            const { postId, content } = req.body
             if (!content || content.length === 0)
                 return res.status(400).json({ msg: "Please enter content of comment!" });
-
-            const post = await Posts.findById(post_id);
-            if (!post)
-                return res.status(400).json({ msg: "This post does not exist." });
-
-            const user = await Users.findById(owner_id);
-            if (!user)
-                return res.status(400).json({ msg: "This user does not exist." });
+            const post = await Posts.findById(req.params.id)
+            if (!post) return res.status(400).json({ msg: "This post does not exist." });
+            const user = await Users.findById(req.user._id)
+            if (!user) return res.status(400).json({ msg: "Please loggin" });
 
             const newComment = new Comments({
-                content, owner:owner_id , post: post_id
-            });
-
-            const newPost = Posts.findById(req.body.post_id);
-            await newPost.updateOne({ $push: { comments: newComment._id } });
-
-            await newComment.save();
-
-            res.json({ newComment });
-
+                content, owner: req.user._id, post: req.params.id
+            })
+            await Posts.findOneAndUpdate({ _id: req.params.id }, {
+                $push: { comments: newComment._id}
+            }, { new: true });
+            await newComment.save()
+            res.json({ newComment })
         } catch (err) {
             return res.status(500).json({ msg: err.message });
         }
