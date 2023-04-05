@@ -16,10 +16,16 @@ import HeaderUI from "../components/HeaderUI";
 import variable from "../constants/variable";
 
 function Library(props) {
-    //navigation
-    const { navigation, route } = props;
-    //function of navigate
-    const { navigate, goback } = navigation;
+    // const { navigation, route } = props;
+    // const { navigate, goback } = navigation;
+    const user = useSelector((state) => state.auth.login.currentUser);
+    const isFocused = useIsFocused();
+    useEffect(() => {
+        if (isFocused && !user) {
+            // navigate("MyProfile");
+            warningLogin(navigate, "Login", "Home");
+        }
+    }, [isFocused]);
 
     const [clickSong, setClickSong] = useState(false);
 
@@ -83,7 +89,9 @@ function Library(props) {
                                 size={18}
                                 color="#FF0000"
                             />
-                            <Text style={styles.libraryIconButton}>Yêu thích</Text>
+                            <Text style={styles.libraryIconButton}>
+                                Yêu thích
+                            </Text>
                         </TouchableOpacity>
                     </View>
                     <View
@@ -107,7 +115,9 @@ function Library(props) {
                                 size={20}
                                 color="#00EBEB"
                             />
-                            <Text style={styles.libraryIconButton}>Nghe gần đây</Text>
+                            <Text style={styles.libraryIconButton}>
+                                Nghe gần đây
+                            </Text>
                         </TouchableOpacity>
                         <View style={{ flex: 1 }}></View>
                         <TouchableOpacity
@@ -122,7 +132,9 @@ function Library(props) {
                                 size={18}
                                 color="#2EDC21"
                             />
-                            <Text style={styles.libraryIconButton}>Playlist</Text>
+                            <Text style={styles.libraryIconButton}>
+                                Playlist
+                            </Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -180,7 +192,6 @@ const styles = StyleSheet.create({
         paddingStart: 10,
         fontWeight: "500",
     },
-   
 });
 
 export default Library;
