@@ -16,8 +16,8 @@ import HeaderUI from "../components/HeaderUI";
 import variable from "../constants/variable";
 
 function Library(props) {
-    // const { navigation, route } = props;
-    // const { navigate, goback } = navigation;
+    const { navigation, route } = props;
+    const { navigate, goback } = navigation;
     const user = useSelector((state) => state.auth.login.currentUser);
     const isFocused = useIsFocused();
     useEffect(() => {
