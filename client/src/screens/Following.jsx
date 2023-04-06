@@ -4,8 +4,8 @@ import { useSelector } from "react-redux";
 import { HeaderUI, FollowingItem } from "../components";
 import GlobalStyles from "../components/GlobalStyles";
 import { FollowingData } from "../../dummyData";
-import lightfollowStyles from "../constants/darkLight/themeFollowing"
-import darkfollowStyles from "../constants/darkLight/themeFollowing"
+import { lightfollowStyles, darkfollowStyles} from "../constants/darkLight/themeFollowing"
+
 import colors from "../constants/colors";
 
 export default function Following(props) {
@@ -15,7 +15,7 @@ export default function Following(props) {
         <SafeAreaView style={[{backgroundColor: isDarkTheme ? colors.dark : colors.white} ,GlobalStyles.customSafeArea]}>
             <ScrollView>
                 <HeaderUI />
-                <View style={isDarkTheme ? darkfollowStyles.darkfollowStyles.contentWrapper : lightfollowStyles.lightfollowStyles.contentWrapper}>
+                <View style={isDarkTheme ? darkfollowStyles.contentWrapper : lightfollowStyles.contentWrapper}>
                     <View style={followStyles.contentSection}>
                         <View
                         // onPress={() => {

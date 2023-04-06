@@ -1,19 +1,19 @@
-const path = require('path');
+// const path = require('path');
 const port = 3001;
 const express = require('express');
 // const cors = require('cors');
-const app = express();
 const morgan = require('morgan');
 const dotenv = require('dotenv');
 var bodyParser = require('body-parser');
 const db = require('./config/db');
+
+const app = express();
 
 //Connect to db
 db.connect();
 dotenv.config();
 
 app.use(bodyParser.json({ limit: '50mb' }));
-// app.use(cors);
 app.use(morgan('common'));
 
 //ROUTES

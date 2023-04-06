@@ -1,16 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
     SafeAreaView,
     Text,
     View,
-    Image,
     TouchableOpacity,
-    ImageBackground,
     FlatList,
     StyleSheet,
     ScrollView,
-    Alert,
-    TextInput,
     Dimensions,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome5";
@@ -24,10 +20,8 @@ import GlobalStyles from "../components/GlobalStyles";
 import TopTrendingItem from "../components/TopTrendingItem";
 
 import { TopTrendingData, PlaylistData, RecommendData, RelexData, NewReLeaseData, dummyData } from "../../dummyData";
-import lightHome from "../constants/darkLight/themeHome"
-import darkHome from "../constants/darkLight/themeHome"
-import lightTrendingHome from "../constants/darkLight/themeHome"
-import darkTrendingHome from "../constants/darkLight/themeHome"
+import { lightHome, darkHome, lightTrendingHome, darkTrendingHome } from "../constants/darkLight/themeHome"
+
 // import PlayerScreen from "./PlayerScreen";
 
 export default function Home(props) {
@@ -37,23 +31,31 @@ export default function Home(props) {
     const { navigate, goback } = navigation;
     // variable.isLogin = 2
 
-    // const [clickSong, setClickSong] = useState(false);
-    // const [showSong, setShowSong] = useState([]);
-    // const [sowSongs, setSpwSongs] = useState([]);
-    // // const textInputRef = useRef(null);
-
-    // // useEffect(() => {
-
-    // // },[])
-    // function handleClickSong() {
-    //     setClickSong(true);
-    // }
-
-    // function handleSong() {
-
-    // }
-
     const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const flatListRef = useRef(null);
+    const scrollViewRef = useRef(null);
+    const screenWidth = Math.min(325);
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            const nextIndex = (currentIndex + 1) % dummyData.length;
+            flatListRef.current.scrollToIndex({ index: nextIndex });
+            setCurrentIndex(nextIndex);
+        }, 3000);
+
+        return () => clearInterval(intervalId);
+    }, [currentIndex]);
+
+    const handleScroll = (event) => {
+        const contentOffsetX = event.nativeEvent.contentOffset.x;
+        if (contentOffsetX % screenWidth === 0) {
+            const pageIndex = contentOffsetX / screenWidth;
+            // Chuyển sang trang kế tiếp
+            scrollViewRef.current.scrollTo({ x: (pageIndex + 1) * screenWidth, animated: true });
+        }
+        console.log('ductu');
+    }
 
     function playerNavigate() {
         navigate('PlayerScreen');
@@ -62,7 +64,7 @@ export default function Home(props) {
 
     return (
         <SafeAreaView style={[
-            { backgroundColor: isDarkTheme ? darkHome.darkHome.wrapper.backgroundColor : lightHome.lightHome.wrapper.backgroundColor },
+            { backgroundColor: isDarkTheme ? darkHome.wrapper.backgroundColor : lightHome.wrapper.backgroundColor },
             GlobalStyles.customSafeArea]}
         >
             {/* <NavigationEvents onDidFocus={()=> this.setState({})} /> */}
@@ -72,8 +74,9 @@ export default function Home(props) {
 
                 {/* ==========================================Slide bar========================================== */}
                 <FlatList
-                    horizontal={true}
-                    style={isDarkTheme ? darkHome.darkHome.wrapper : lightHome.lightHome.wrapper}
+                    ref={flatListRef}
+                    horizontal
+                    style={isDarkTheme ? darkHome.wrapper : lightHome.wrapper}
                     data={dummyData}
                     renderItem={({ item }) => {
                         return (
@@ -91,24 +94,70 @@ export default function Home(props) {
                     pagingEnabled
                 />
 
-                <TouchableOpacity style={lightHome.lightHome.coverAll}>
-                    <Text style={isDarkTheme ? darkHome.darkHome.title : lightHome.lightHome.title}>Bảng xếp hạng</Text>
-                    {/* <Text style={isDarkTheme ? darkHome.darkHome.title : lightHome.lightHome.title}>Bảng xếp hạng</Text> */}
+                <TouchableOpacity style={lightHome.coverAll}>
+                    <Text style={isDarkTheme ? darkHome.title : lightHome.title}>Bảng xếp hạng</Text>
+                    {/* <Text style={isDarkTheme ? darkHome.title : lightHome.title}>Bảng xếp hạng</Text> */}
                     <Icon
                         name='chevron-right'
                         style={{ opacity: 1, marginLeft: 8 }}
-                        size={16} color={isDarkTheme ? darkHome.darkHome.wrapper.color : lightHome.lightHome.wrapper.color}
+                        size={16} color={isDarkTheme ? darkHome.wrapper.color : lightHome.wrapper.color}
                     />
                 </TouchableOpacity>
                 {/* ==========================================BẢNG XẾP HẠNG==========================================*/}
-                <View style={lightTrendingHome.lightTrendingHome.wrapper}>
+                <View>
                     <ScrollView
-                    // horizontal={true}
-                    // showsHorizontalScrollIndicator={false}
+                        style={lightTrendingHome.wrapper}
+                        horizontal={true}
+                        pagingEnabled={true} 
+                        showsHorizontalScrollIndicator={false}
+                        // ref={scrollViewRef}
+                        // onScroll={handleScroll}
                     >
-                        <View style={isDarkTheme ? darkTrendingHome.darkTrendingHome.contentWrapper : lightTrendingHome.lightTrendingHome.contentWrapper}>
-                            <View style={lightTrendingHome.lightTrendingHome.contentSection}>
-                                {TopTrendingData.slice(0, 5).map((item) => {
+                        <View style={isDarkTheme ? darkTrendingHome.contentWrapper : lightTrendingHome.contentWrapper}>
+                            <View style={lightTrendingHome.contentSection}>
+                                {TopTrendingData.slice(0, 3).map((item) => {
+                                    return (
+                                        <TouchableOpacity
+                                            onPress={() => {
+                                                playerNavigate();
+                                            }}
+                                            key={item.id}
+                                        >
+                                            <TopTrendingItem
+                                                avtUrl={item.avtUrl}
+                                                title={item.title}
+                                                author={item.author}
+                                                ranking={item.ranking}
+                                            />
+                                        </TouchableOpacity>
+                                    );
+                                })}
+                            </View>
+                        </View>
+                        <View style={[isDarkTheme ? darkTrendingHome.contentWrapper : lightTrendingHome.contentWrapper, {width: screenWidth}]}>
+                            <View style={lightTrendingHome.contentSection}>
+                                {TopTrendingData.slice(3, 6).map((item) => {
+                                    return (
+                                        <TouchableOpacity
+                                            onPress={() => {
+                                                playerNavigate();
+                                            }}
+                                            key={item.id}
+                                        >
+                                            <TopTrendingItem
+                                                avtUrl={item.avtUrl}
+                                                title={item.title}
+                                                author={item.author}
+                                                ranking={item.ranking}
+                                            />
+                                        </TouchableOpacity>
+                                    );
+                                })}
+                            </View>
+                        </View>
+                        <View style={[isDarkTheme ? darkTrendingHome.contentWrapper : lightTrendingHome.contentWrapper, {width: screenWidth}]}>
+                            <View style={lightTrendingHome.contentSection}>
+                                {TopTrendingData.slice(6, 10).map((item) => {
                                     return (
                                         <TouchableOpacity
                                             onPress={() => {
@@ -131,12 +180,12 @@ export default function Home(props) {
                 </View>
 
                 {/* ==========================================Mới phát hành========================================== */}
-                <TouchableOpacity style={lightHome.lightHome.coverAll}>
-                    <Text style={[isDarkTheme ? darkHome.darkHome.title : lightHome.lightHome.title, lightHome.lightHome.blank]}>Mới phát hành</Text>
+                <TouchableOpacity style={lightHome.coverAll}>
+                    <Text style={[isDarkTheme ? darkHome.title : lightHome.title, lightHome.blank]}>Mới phát hành</Text>
                     <Icon
                         name='chevron-right'
                         style={{ opacity: 1, marginLeft: 8, marginTop: 16 }}
-                        size={16} color={isDarkTheme ? darkHome.darkHome.wrapper.color : lightHome.lightHome.wrapper.color}
+                        size={16} color={isDarkTheme ? darkHome.wrapper.color : lightHome.wrapper.color}
                     />
                 </TouchableOpacity>
                 <ScrollView
@@ -158,12 +207,12 @@ export default function Home(props) {
                     })}
                 </ScrollView>
                 {/* ==========================================Thư giãn cuối ngày==========================================*/}
-                <TouchableOpacity style={lightHome.lightHome.coverAll}>
-                    <Text style={isDarkTheme ? darkHome.darkHome.title : lightHome.lightHome.title}>Thư giãn cuối ngày</Text>
+                <TouchableOpacity style={lightHome.coverAll}>
+                    <Text style={isDarkTheme ? darkHome.title : lightHome.title}>Thư giãn cuối ngày</Text>
                     <Icon
                         name='chevron-right'
                         style={{ opacity: 1, marginLeft: 8 }}
-                        size={16} color={isDarkTheme ? darkHome.darkHome.wrapper.color : lightHome.lightHome.wrapper.color}
+                        size={16} color={isDarkTheme ? darkHome.wrapper.color : lightHome.wrapper.color}
                     />
                 </TouchableOpacity>
                 <ScrollView
@@ -185,12 +234,12 @@ export default function Home(props) {
                     })}
                 </ScrollView>
                 {/* ========================================Album thịnh hành============================================*/}
-                <TouchableOpacity style={lightHome.lightHome.coverAll}>
-                    <Text style={isDarkTheme ? darkHome.darkHome.title : lightHome.lightHome.title}>Album thịnh hành</Text>
+                <TouchableOpacity style={lightHome.coverAll}>
+                    <Text style={isDarkTheme ? darkHome.title : lightHome.title}>Album thịnh hành</Text>
                     <Icon
                         name='chevron-right'
                         style={{ opacity: 1, marginLeft: 8 }}
-                        size={16} color={isDarkTheme ? darkHome.darkHome.wrapper.color : lightHome.lightHome.wrapper.color}
+                        size={16} color={isDarkTheme ? darkHome.wrapper.color : lightHome.wrapper.color}
                     />
                 </TouchableOpacity>
                 <ScrollView
@@ -212,12 +261,12 @@ export default function Home(props) {
                     })}
                 </ScrollView>
                 {/* ==========================================Cuộc sống hằng ngày==========================================*/}
-                <TouchableOpacity style={lightHome.lightHome.coverAll}>
-                    <Text style={isDarkTheme ? darkHome.darkHome.title : lightHome.lightHome.title}>Cuộc sống hằng ngày</Text>
+                <TouchableOpacity style={lightHome.coverAll}>
+                    <Text style={isDarkTheme ? darkHome.title : lightHome.title}>Cuộc sống hằng ngày</Text>
                     <Icon
                         name='chevron-right'
                         style={{ opacity: 1, marginLeft: 8 }}
-                        size={16} color={isDarkTheme ? darkHome.darkHome.wrapper.color : lightHome.lightHome.wrapper.color}
+                        size={16} color={isDarkTheme ? darkHome.wrapper.color : lightHome.wrapper.color}
                     />
                 </TouchableOpacity>
                 <ScrollView

@@ -12,7 +12,7 @@ import Login from "../screens/Login";
 const Stack = createNativeStackNavigator();
 export default function Navigator(props) {
     return <NavigationContainer>
-        <Stack.Navigator initialRouteName="UIScreen" screenOptions={{headerShown:false}}>
+        <Stack.Navigator initialRouteName="UIScreen" screenOptions={{headerShown:false}} >
             <Stack.Screen name={"Home"} component={Home} />
             <Stack.Screen name={"Following"} component={Following}/>
             <Stack.Screen name={"Library"} component={Library}/>

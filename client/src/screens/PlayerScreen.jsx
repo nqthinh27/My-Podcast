@@ -231,14 +231,14 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         top: 30,
         marginLeft: 16,
-        color: "#000000",
+        color: colors.black,
     },
 
     authorContent: {
         fontSize: 15,
         marginTop: 30,
         marginLeft: 16,
-        color: "#000000"
+        color: colors.black
     },
 
     imageWrapper: {
@@ -248,8 +248,7 @@ const styles = StyleSheet.create({
         alignSelf: "center",
         marginTop: 30,
         borderRadius: 20,
-        backgroundColor: "#000000",
-
+        backgroundColor: colors.black,
     },
 
     progressBar: {

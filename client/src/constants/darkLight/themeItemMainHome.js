@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native'
 import colors from '../colors';
 
-const lightTopTrendingItem = StyleSheet.create({
+export const lightTopTrendingItem = StyleSheet.create({
     wrapper: {
         // backgroundColor: '#EDEDED',
         width: 325,
@@ -30,7 +30,7 @@ const lightTopTrendingItem = StyleSheet.create({
     dot: {
         width: 7,
         height: 7,
-        backgroundColor: "#000",
+        backgroundColor: colors.black,
         borderRadius: 7,
         marginTop: 7
     },
@@ -46,7 +46,7 @@ const lightTopTrendingItem = StyleSheet.create({
     },
 });
 
-const darkTopTrendingItem = StyleSheet.create({
+export const darkTopTrendingItem = StyleSheet.create({
     wrapper: {
         // backgroundColor: '#EDEDED',
         width: 325,
@@ -89,7 +89,7 @@ const darkTopTrendingItem = StyleSheet.create({
     },
 });
 
-const lightReleasedPodcast = StyleSheet.create({
+export const lightReleasedPodcast = StyleSheet.create({
     wrapper: {
         marginRight:10
     },
@@ -116,7 +116,7 @@ const lightReleasedPodcast = StyleSheet.create({
     }
 })
 
-const darkReleasedPodcast = StyleSheet.create({
+export const darkReleasedPodcast = StyleSheet.create({
     title: {
         fontSize: 16,
         fontWeight: "600",
@@ -132,5 +132,3 @@ const darkReleasedPodcast = StyleSheet.create({
         shadowRadius: 2,
     }
 })
-
-export default {lightReleasedPodcast, darkReleasedPodcast, lightTopTrendingItem, darkTopTrendingItem}

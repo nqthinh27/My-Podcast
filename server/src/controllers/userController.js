@@ -14,7 +14,6 @@ const userController = {
     getUserById: async(req,res) => {
         try {
             const user = await Users.findById(req.params.id);
-            // .populate('posts')
             res.status(200).json(user);
         } catch (err) {
             return res.status(500).json({ msg: err.message })
@@ -31,6 +30,16 @@ const userController = {
             return res.status(500).json({ msg: err.message })
         }
     },
+
+    // GET USER POST
+    getUserPost: async (req, res) => {
+        try {
+            const user = await Users.findById(req.params.id).populate('posts');
+            res.status(200).json(user.posts);
+        } catch (err) {
+            return res.status(500).json({ msg: err.message })
+        }
+    }
 }
 
 module.exports = userController;

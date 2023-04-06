@@ -1,21 +1,21 @@
 import { StyleSheet } from "react-native";
 import colors from "../colors";
 
-const lightfollowStyles = StyleSheet.create({
+export const lightfollowStyles = StyleSheet.create({
     contentWrapper: {
         marginTop: 10,
         backgroundColor: "#EDEDED",
     },
 });
 
-const darkfollowStyles = StyleSheet.create({
+export const darkfollowStyles = StyleSheet.create({
     contentWrapper: {
         marginTop: 10,
         backgroundColor: 'rgba(255, 255, 255, 0.1)',
     },
 });
 
-const lightFollowingItem = StyleSheet.create({
+export const lightFollowingItem = StyleSheet.create({
     followingItemWrapper: {
         // backgroundColor: '#EDEDED',
         height: 630,
@@ -77,7 +77,7 @@ const lightFollowingItem = StyleSheet.create({
         alignSelf: "center",
         // top: 15,
         borderRadius: 20,
-        backgroundColor: "#000000",
+        backgroundColor: colors.black,
         //ma: 15,
     },
     interactIcon: {
@@ -127,7 +127,7 @@ const lightFollowingItem = StyleSheet.create({
     },
 });
 
-const darkFollowingItem = StyleSheet.create({
+export const darkFollowingItem = StyleSheet.create({
     name: {
         fontSize: 13,
         fontWeight: "700",
@@ -188,5 +188,3 @@ const darkFollowingItem = StyleSheet.create({
         width: 230,
     },
 });
-
-export default {lightfollowStyles, darkfollowStyles, lightFollowingItem, darkFollowingItem}

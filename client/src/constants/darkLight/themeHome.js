@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native'
 import colors from '../colors';
 
-const lightHome = StyleSheet.create({
+export const lightHome = StyleSheet.create({
     wrapper: {
         backgroundColor: colors.white,
         color: colors.dark
@@ -22,7 +22,7 @@ const lightHome = StyleSheet.create({
     },
 });
 
-const darkHome = StyleSheet.create({
+export const darkHome = StyleSheet.create({
     wrapper: {
         backgroundColor: colors.dark,
         color: "#fff"
@@ -36,11 +36,11 @@ const darkHome = StyleSheet.create({
     },
 });
 
-const lightTrendingHome = StyleSheet.create({
+export const lightTrendingHome = StyleSheet.create({
     wrapper: {
         // margin: 11,
         marginLeft: 16,
-        flex: 1,
+        flexDirection: "row",
         // height: 225,
         // alignItems: 'center'
     },
@@ -58,7 +58,7 @@ const lightTrendingHome = StyleSheet.create({
     },
 });
 
-const darkTrendingHome = StyleSheet.create({
+export const darkTrendingHome = StyleSheet.create({
     contentWrapper: {
         width: 'auto',
         marginRight: 16,
@@ -69,6 +69,3 @@ const darkTrendingHome = StyleSheet.create({
     },
 });
 
-
-
-export default {darkHome, lightHome, lightTrendingHome, darkTrendingHome}

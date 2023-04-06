@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
 import colors from "../colors";
 
-const lightHeader = StyleSheet.create({
+export const lightHeader = StyleSheet.create({
     header: {
         flexDirection: "row",
         justifyContent: "center",
@@ -44,7 +44,7 @@ const lightHeader = StyleSheet.create({
     },
 });
 
-const darkHeader = StyleSheet.create({
+export const darkHeader = StyleSheet.create({
     header: {
         flexDirection: "row",
         justifyContent: "center",
@@ -78,7 +78,7 @@ const darkHeader = StyleSheet.create({
         marginRight: 12,
         padding: 0,
         flex: 1,
-        color: "#000",
+        color: colors.black,
     },
 
     bell: {
@@ -86,5 +86,3 @@ const darkHeader = StyleSheet.create({
         width: 26,
     },
 });
-
-export default {lightHeader, darkHeader}

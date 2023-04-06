@@ -5,13 +5,4 @@ export default StyleSheet.create({
         flex: 1,
         paddingTop: Platform.OS === 'android' ? 25 : 0
     },
-
-    // interfaceLightDark: {
-    //     container: {
-    //         backgroundColor: colorScheme === 'dark' ? 'black' : 'white',
-    //     },
-    //     text: {
-    //         color: colorScheme === 'dark' ? 'white' : 'black',
-    //     },
-    // }
 }); 

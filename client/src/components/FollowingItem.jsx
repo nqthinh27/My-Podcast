@@ -4,8 +4,7 @@ import { View, StyleSheet, Text, Image, Dimensions, TouchableOpacity, SafeAreaVi
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useSelector } from 'react-redux';
 import colors from '../constants/colors'
-import lightFollowingItem from '../constants/darkLight/themeFollowing'
-import darkFollowingItem from '../constants/darkLight/themeFollowing'
+import {lightFollowingItem, darkFollowingItem} from '../constants/darkLight/themeFollowing'
 
 export default function FollowingItem(props) {
 
@@ -39,13 +38,13 @@ export default function FollowingItem(props) {
 
     return (
         <SafeAreaView>
-            <View style={lightFollowingItem.lightFollowingItem.followingItemWrapper}>
-                <View style={lightFollowingItem.lightFollowingItem.followingItemIntroduction}>
+            <View style={lightFollowingItem.followingItemWrapper}>
+                <View style={lightFollowingItem.followingItemIntroduction}>
                     <View style={{ flexDirection: 'row' }}>
-                        <Image source={{ uri: props.avtUrl }} style={lightFollowingItem.lightFollowingItem.avatar} />
-                        <View style={lightFollowingItem.lightFollowingItem.profile}>
-                            <Text style={isDarkTheme ? darkFollowingItem.darkFollowingItem.name : lightFollowingItem.lightFollowingItem.name} numberOfLines={1}>{props.name}</Text>
-                            <Text style={isDarkTheme ? darkFollowingItem.darkFollowingItem.date : lightFollowingItem.lightFollowingItem.date} numberOfLines={1}>{props.date}</Text>
+                        <Image source={{ uri: props.avtUrl }} style={lightFollowingItem.avatar} />
+                        <View style={lightFollowingItem.profile}>
+                            <Text style={isDarkTheme ? darkFollowingItem.name : lightFollowingItem.name} numberOfLines={1}>{props.name}</Text>
+                            <Text style={isDarkTheme ? darkFollowingItem.date : lightFollowingItem.date} numberOfLines={1}>{props.date}</Text>
                         </View>
                     </View>
                     {/* <View style={{ flex: 2 }} /> */}
@@ -58,24 +57,24 @@ export default function FollowingItem(props) {
                         />
                     </TouchableOpacity>
                 </View>
-                {/* <Icon style={lightFollowingItem.lightFollowingItem.more_btn} name="more-horizontal" size={26} color="#000" /> */}
-                <View style={lightFollowingItem.lightFollowingItem.followingItemContent}>
+                {/* <Icon style={lightFollowingItem.more_btn} name="more-horizontal" size={26} color="#000" /> */}
+                <View style={lightFollowingItem.followingItemContent}>
                     <View style={{}}>
-                        <Text style={isDarkTheme ? darkFollowingItem.darkFollowingItem.title : lightFollowingItem.lightFollowingItem.title} numberOfLines={1}>{props.title}</Text>
-                        <Text style={isDarkTheme ? darkFollowingItem.darkFollowingItem.descripttion : lightFollowingItem.lightFollowingItem.descripttion}>{props.descripttion}</Text>
+                        <Text style={isDarkTheme ? darkFollowingItem.title : lightFollowingItem.title} numberOfLines={1}>{props.title}</Text>
+                        <Text style={isDarkTheme ? darkFollowingItem.descripttion : lightFollowingItem.descripttion}>{props.descripttion}</Text>
                     </View>
                 </View>
-                <View style={lightFollowingItem.lightFollowingItem.followingItemImage}>
+                <View style={lightFollowingItem.followingItemImage}>
                     <Image
                         source={{
                             uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Tu%2FRectangle%2038.png?alt=media&token=780197d0-e51a-496c-8ff1-006b24341c50",
                         }}
-                        style={lightFollowingItem.lightFollowingItem.imageWrapper}
+                        style={lightFollowingItem.imageWrapper}
                     />
                 </View>
-                <View style={lightFollowingItem.lightFollowingItem.followingItemInteract}>
-                    <View style={lightFollowingItem.lightFollowingItem.interact}>
-                        <View style={lightFollowingItem.lightFollowingItem.interactIcon}>
+                <View style={lightFollowingItem.followingItemInteract}>
+                    <View style={lightFollowingItem.interact}>
+                        <View style={lightFollowingItem.interactIcon}>
                             <TouchableOpacity onPress={handleHeart}>
                                 {(heart) && <Icon
                                     name="cards-heart-outline"
@@ -105,7 +104,7 @@ export default function FollowingItem(props) {
                                 <Text style={{ color: isDarkTheme ? colors.white : colors.black }}> Bình luận</Text>
                             </View>
                         </View>
-                        <View style={lightFollowingItem.lightFollowingItem.interactIcon}>
+                        <View style={lightFollowingItem.interactIcon}>
                             <TouchableOpacity>
                                 <Icon
                                     name="headphones"
@@ -117,9 +116,9 @@ export default function FollowingItem(props) {
                             <Text style={{ color: isDarkTheme ? colors.white : colors.black }}> Lượt nghe</Text>
                         </View>
                     </View>
-                    <View style={isDarkTheme ? darkFollowingItem.darkFollowingItem.interactComment : lightFollowingItem.lightFollowingItem.interactComment}>
+                    <View style={isDarkTheme ? darkFollowingItem.interactComment : lightFollowingItem.interactComment}>
                         <TextInput
-                            style={isDarkTheme ? darkFollowingItem.darkFollowingItem.comment : lightFollowingItem.lightFollowingItem.comment}
+                            style={isDarkTheme ? darkFollowingItem.comment : lightFollowingItem.comment}
                             // autoFocus={false}
                             // value={searchValue}
                             placeholder="Thêm bình luận..."
@@ -128,12 +127,12 @@ export default function FollowingItem(props) {
                         />
                         <Icon
                             name="send"
-                            style={lightFollowingItem.lightFollowingItem.sendComment}
+                            style={lightFollowingItem.sendComment}
                             size={20}
                             color={colors.primary}
                         />
                     </View>
-                    <View style={lightFollowingItem.lightFollowingItem.interactPlayTime}>
+                    <View style={lightFollowingItem.interactPlayTime}>
                         <TouchableOpacity onPress={handlePlay}>
                             {(play) && <Icon
                                 name="play"
@@ -149,11 +148,11 @@ export default function FollowingItem(props) {
                             />}
                         </TouchableOpacity>
                         {/* ------------ Thời gian bài hát --------------- */}
-                        <View style={lightFollowingItem.lightFollowingItem.progressLevelDur}>
-                            <Text style={lightFollowingItem.lightFollowingItem.progressLabelText}>00:00 / 02:22 </Text>
+                        <View style={lightFollowingItem.progressLevelDur}>
+                            <Text style={lightFollowingItem.progressLabelText}>00:00 / 02:22 </Text>
                         </View>
                         <Slider
-                            style={lightFollowingItem.lightFollowingItem.progressBar}
+                            style={lightFollowingItem.progressBar}
 
                             minimumValue={0}
                             maximumValue={100}

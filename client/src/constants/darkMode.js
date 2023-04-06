@@ -2,15 +2,90 @@ import React from 'react'
 import { StyleSheet } from 'react-native'
 import colors from './colors'
 
-const darkSetting = StyleSheet.create({
-    setting: {
-        color: "#fff",
-        left: 16,
-        fontSize: 25,
-        fontWeight: "bold",
-        top: 10
+export const lightSetting = StyleSheet.create({
+    account: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginLeft: 16,
+        marginRight: 16,
+        marginTop: 16,
     },
-    dark:{
+    accountSuccess: {
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        marginLeft: 16,
+        marginRight: 16,
+        marginTop: 16,
+    },
+    loginButton: {
+        // color: colors.black,
+        marginLeft: 10,
+        // borderRadius: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.05)',
+    },
+    loginText: {
+        fontSize: 16,
+        margin: 5
+    },
+    light: {
+        backgroundColor: "#fff",
+        color: "#212529"
+    },
+    avatar: {
+        width: 50,
+        height: 50,
+        borderRadius: 35,
+    },
+    avatarSuccess: {
+        width: 60,
+        height: 60,
+        borderRadius: 35,
+    },
+    title: {
+        top: 10,
+        height: 30,
+        marginTop: 10
+    },
+
+    setIco: {
+        flexDirection: 'row',
+        paddingVertical: 10,
+        alignContent: 'center',
+        marginVertical: 3,
+        marginHorizontal: 16,
+        borderRadius: 7,
+        backgroundColor: 'rgba(0, 0, 0, 0.05)'
+    },
+
+    fontBlur: {
+        color: colors.black,
+        paddingStart: 16,
+        fontSize: 17,
+        fontWeight: "bold",
+    },
+
+    fontText: {
+        color: 'black',
+        fontSize: 16,
+        paddingStart: 15,
+    }
+})
+
+export const darkSetting = StyleSheet.create({
+    loginButton: {
+        color: colors.black,
+        marginLeft: 10,
+        // borderRadius: 0,
+        backgroundColor: 'rgba(255, 255, 255, 0.4)',
+    },
+    loginText: {
+        fontSize: 16,
+        margin: 5,
+        color: colors.white
+    },
+    dark: {
         backgroundColor: colors.dark,
         color: "#fff"
     },
@@ -18,7 +93,7 @@ const darkSetting = StyleSheet.create({
         top: 10,
         height: 30,
         marginTop: 10,
-        
+
     },
 
     setIco: {
@@ -44,5 +119,3 @@ const darkSetting = StyleSheet.create({
         paddingStart: 15,
     }
 })
-
-export default darkSetting

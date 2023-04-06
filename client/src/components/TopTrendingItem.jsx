@@ -2,24 +2,23 @@ import React from 'react'
 import { View, StyleSheet, Text, Image, Dimensions } from 'react-native'
 import Icon from 'react-native-vector-icons/Feather'
 import { useSelector } from 'react-redux'
-import lightTopTrendingItem from '../constants/darkLight/themeItemMainHome'
-import darkTopTrendingItem from '../constants/darkLight/themeItemMainHome'
+import {lightTopTrendingItem, darkTopTrendingItem} from '../constants/darkLight/themeItemMainHome'
 
 
 export default function TopTrendingItem(props) {
     const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
 
     return (
-        <View style={lightTopTrendingItem.lightTopTrendingItem.wrapper}>
-            <Image source={{ uri: props.avtUrl }} style={lightTopTrendingItem.lightTopTrendingItem.avatar} />
-            <View style={lightTopTrendingItem.lightTopTrendingItem.textSection}>
-                <View style={lightTopTrendingItem.lightTopTrendingItem.ranking}>
-                    <Text style={isDarkTheme ? darkTopTrendingItem.darkTopTrendingItem.number : lightTopTrendingItem.lightTopTrendingItem.number}>{props.ranking}</Text>
-                    <View style={isDarkTheme ? darkTopTrendingItem.darkTopTrendingItem.dot : lightTopTrendingItem.lightTopTrendingItem.dot}></View>
+        <View style={lightTopTrendingItem.wrapper}>
+            <Image source={{ uri: props.avtUrl }} style={lightTopTrendingItem.avatar} />
+            <View style={lightTopTrendingItem.textSection}>
+                <View style={lightTopTrendingItem.ranking}>
+                    <Text style={isDarkTheme ? darkTopTrendingItem.number : lightTopTrendingItem.number}>{props.ranking}</Text>
+                    <View style={isDarkTheme ? darkTopTrendingItem.dot : lightTopTrendingItem.dot}></View>
                 </View>
-                <View style={lightTopTrendingItem.lightTopTrendingItem.content}>
-                    <Text style={isDarkTheme ? darkTopTrendingItem.darkTopTrendingItem.title : lightTopTrendingItem.lightTopTrendingItem.title} numberOfLines={1}>{props.title}</Text>
-                    <Text style={isDarkTheme ? darkTopTrendingItem.darkTopTrendingItem.author : lightTopTrendingItem.lightTopTrendingItem.author} numberOfLines={1}>{props.author}</Text>
+                <View style={lightTopTrendingItem.content}>
+                    <Text style={isDarkTheme ? darkTopTrendingItem.title : lightTopTrendingItem.title} numberOfLines={1}>{props.title}</Text>
+                    <Text style={isDarkTheme ? darkTopTrendingItem.author : lightTopTrendingItem.author} numberOfLines={1}>{props.author}</Text>
                 </View>
             </View>
             {/* <Icon style={styles.more_btn} name="more-horizontal" size={26} color="#000" /> */}
