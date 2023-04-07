@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     Text,
     View,
@@ -17,7 +17,8 @@ import { useSelector } from "react-redux";
 import { useIsFocused } from "@react-navigation/native";
 import { RecommendData } from "../../dummyData";
 import HeaderUI from "../components/HeaderUI";
-import variable from "../constants/variable";
+import { useSelector, useDispatch } from "react-redux";
+import { useIsFocused } from "@react-navigation/native";
 
 function Library(props) {
     const { navigation, route } = props;
