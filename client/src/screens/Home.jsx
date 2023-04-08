@@ -59,7 +59,6 @@ export default function Home(props) {
 
     function playerNavigate() {
         navigate('PlayerScreen');
-        variable.isPlaying = 1;
     }
 
     return (
