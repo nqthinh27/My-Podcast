@@ -26,7 +26,6 @@ export default function Navigator(props) {
             <Stack.Screen name={"Login"} component={Login}/>
             <Stack.Screen name={"Register"} component={Register}/>
             <Stack.Screen name={"RegisterOTP"} component={RegisterOTP}/>
-            <Stack.Screen name={"RegisterOTP"} component={RegisterOTP}/>
             <Stack.Screen name={"MyProfile"} component={MyProfile}/>
         </Stack.Navigator>
     </NavigationContainer>

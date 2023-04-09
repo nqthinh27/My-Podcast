@@ -5,14 +5,11 @@ import { HeaderUI, FollowingItem } from "../components";
 import GlobalStyles from "../components/GlobalStyles";
 import { FollowingData } from "../../dummyData";
 import { lightfollowStyles, darkfollowStyles} from "../constants/darkLight/themeFollowing"
+
 import colors from "../constants/colors";
-import { useEffect } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import GlobalStyles from "../components/GlobalStyles";
-import { warningLogin } from "../ultis/warning";
-import { useSelector } from "react-redux";
 import { useIsFocused } from "@react-navigation/native";
+import { useEffect } from "react";
+import { warningLogin } from "../ultis/warning";
 
 export default function Following(props) {
     const { navigation, route } = props;
@@ -25,6 +22,8 @@ export default function Following(props) {
             warningLogin(navigate, 'Login', 'Home');
         } 
     }, [isFocused]);
+    const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
+
     return (
         <SafeAreaView style={[{backgroundColor: isDarkTheme ? colors.dark : colors.white} ,GlobalStyles.customSafeArea]}>
             <ScrollView>
@@ -55,7 +54,8 @@ export default function Following(props) {
             </ScrollView>
         </SafeAreaView>
     )
-    
+}
+
 const followStyles = StyleSheet.create({
     contentWrapper: {
         // width: 315,
@@ -70,4 +70,3 @@ const followStyles = StyleSheet.create({
         // marginHorizontal: 12,
     },
 });
-}
