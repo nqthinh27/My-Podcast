@@ -6,18 +6,20 @@ import Following from "../screens/Following";
 import Post from "../screens/Post";
 import Setting from "../screens/Setting";
 import UIScreen from "./UIScreen";
+import PlayerScreen from "../screens/PlayerScreen";
 import Login from "../screens/Login";
 
 const Stack = createNativeStackNavigator();
 export default function Navigator(props) {
     return <NavigationContainer>
-        <Stack.Navigator initialRouteName="UIScreen" screenOptions={{headerShown:false}}>
+        <Stack.Navigator initialRouteName="UIScreen" screenOptions={{headerShown:false}} >
             <Stack.Screen name={"Home"} component={Home} />
             <Stack.Screen name={"Following"} component={Following}/>
             <Stack.Screen name={"Library"} component={Library}/>
             <Stack.Screen name={"UIScreen"} component={UIScreen}/>
             <Stack.Screen name={"Post"} component={Post}/>
             <Stack.Screen name={"Setting"} component={Setting}/>
+            <Stack.Screen name={"PlayerScreen"} component={PlayerScreen}/>
             <Stack.Screen name={"Login"} component={Login}/>
         </Stack.Navigator>
     </NavigationContainer>

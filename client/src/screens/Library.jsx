@@ -24,7 +24,7 @@ function Library(props) {
     useEffect(() => {
         if (isFocused && !user) {
             // navigate("MyProfile");
-            warningLogin(navigate, "Login", "Home");
+            // warningLogin(navigate, "Login", "Home");
         }
     }, [isFocused]);
 
