@@ -28,16 +28,4 @@ router.get('/:id/following', userController.getAllFollowing);
 // FOLLOW OTHER USER
 router.post('/:id/follow',authMiddleware, userController.followOther);
 
-/**
- * Library
- */
-// LIKED
-router.get('/:id/liked', authMiddleware, userController.getAllLiked);
-
-// SAVED
-router.get('/:id/saved', authMiddleware, userController.getAllSaved);
-
-// HISTORY
-router.get('/:id/history', authMiddleware, userController.getAllHistory);
-
 module.exports = router;

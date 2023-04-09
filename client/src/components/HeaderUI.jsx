@@ -67,14 +67,13 @@ export default function HeaderUI(props) {
             // Làm trang profile xong thì bỏ cái alert đi nhé
             alert('Bạn đã đăng nhập!');
         } else {
-            warningLogin(navigate,'Login');
+            navigate("Login");   
         }
     }
 
     const goBack = () => {
         Keyboard.dismiss();
         setSearchValue(!searchValue);
-
     }
 
     const filteredData = data.filter((item) =>

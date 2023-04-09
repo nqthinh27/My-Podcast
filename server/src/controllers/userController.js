@@ -113,15 +113,6 @@ const userController = {
             return res.status(500).json({ msg: err.message })
         }
     },
-    // HISTORY
-    getAllHistory: async (req, res) => {
-        try {
-            const user = await Users.findById(req.params.id).populate('posts');
-            res.status(200).json(user.history);
-        } catch (err) {
-            return res.status(500).json({ msg: err.message })
-        }
-    }
 }
 
 module.exports = userController;
