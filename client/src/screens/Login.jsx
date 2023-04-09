@@ -10,6 +10,7 @@ import {
 import AntDesignIcon from "react-native-vector-icons/AntDesign";
 import EntypoIcon from "react-native-vector-icons/Entypo";
 import { useDispatch, useSelector } from "react-redux";
+import GlobalStyles from "../components/GlobalStyles";
 import { loginUser } from '../redux/actions/authApi';
 
 const colors = {
@@ -19,7 +20,7 @@ const colors = {
 
 function Login(props) {
     const dispatch = useDispatch();
-    const login = useSelector((state) => state.auth.login)
+    const loginSuccess = useSelector((state) => state.loginSuccess.isLoginSuccess)
     const { navigation, route } = props;
     // //function of navigate
     const { navigate, goBack } = navigation;
@@ -40,7 +41,7 @@ function Login(props) {
     }
 
     return (
-        <SafeAreaView style={styles.login}>
+        <SafeAreaView style={[GlobalStyles.customSafeArea, {backgroundColor: "#fff"}]}>
             <View style={styles.loginHeader}>
                 <EntypoIcon
                     name={"chevron-left"}

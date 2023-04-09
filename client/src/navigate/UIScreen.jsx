@@ -5,6 +5,8 @@ import Library from "../screens/Library";
 import Following from "../screens/Following";
 import Post from "../screens/Post";
 import Setting from "../screens/Setting";
+import { useSelector } from "react-redux";
+import colors from "../constants/colors";
 
 const Tab = createBottomTabNavigator();
 const screenOptions = ({ route }) => ({
@@ -46,10 +48,12 @@ const screenOptions = ({ route }) => ({
                     uri: focused ? 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_setting_active.png?alt=media&token=611639a8-001c-4230-ad75-7bd5f06d895c' : 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_setting_inactive.png?alt=media&token=822a3b0e-1060-4f19-a6d4-62a8aea50579',
                 }} />
         }
-
     }
 });
+
 export default function UIScreen(props) {
+    const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
+
     return (
         <Tab.Navigator initialRouteName="Home" screenOptions={screenOptions}>
             <Tab.Screen
@@ -57,30 +61,40 @@ export default function UIScreen(props) {
                 component={Home}
                 options={{
                     title: 'Trang chủ',
+                    tabBarActiveBackgroundColor: isDarkTheme ? colors.black : colors.white,
+                    tabBarInactiveBackgroundColor: isDarkTheme ? colors.black : colors.white,
                 }}
             />
             <Tab.Screen
                 name="Following"
                 component={Following}
                 options={{
-                    tabBarLabel: 'Theo dõi'
+                    tabBarLabel: 'Theo dõi',
+                    tabBarActiveBackgroundColor: isDarkTheme ? colors.black : colors.white,
+                    tabBarInactiveBackgroundColor: isDarkTheme ? colors.black : colors.white,
                 }} />
             <Tab.Screen
                 name="Post"
                 component={Post}
                 options={{
-                    tabBarLabel: ''
+                    tabBarLabel: '',
+                    tabBarActiveBackgroundColor: isDarkTheme ? colors.black : colors.white,
+                    tabBarInactiveBackgroundColor: isDarkTheme ? colors.black : colors.white,
                 }} />
             <Tab.Screen
                 name="Library"
                 component={Library}
                 options={{
-                    tabBarLabel: 'Thư viện'
+                    tabBarLabel: 'Thư viện',
+                    tabBarActiveBackgroundColor: isDarkTheme ? colors.black : colors.white,
+                    tabBarInactiveBackgroundColor: isDarkTheme ? colors.black : colors.white,
                 }} />
             <Tab.Screen
                 name="Setting"
                 component={Setting} options={{
-                    tabBarLabel: 'Cài đặt'
+                    tabBarLabel: 'Cài đặt',
+                    tabBarActiveBackgroundColor: isDarkTheme ? colors.black : colors.white,
+                    tabBarInactiveBackgroundColor: isDarkTheme ? colors.black : colors.white,
                 }} />
         </Tab.Navigator>
     )
