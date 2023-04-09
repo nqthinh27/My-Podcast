@@ -1,8 +1,7 @@
 import React from 'react'
 import { View, StyleSheet, Text, Image, Dimensions } from 'react-native'
 
-const { width, height } = Dimensions.get('window')
-
+import {device} from '../constants/device'
 
 export default function SlideItem({ item }) {
     return (
@@ -19,8 +18,8 @@ export default function SlideItem({ item }) {
 const styles = StyleSheet.create({
     cardView: {
         flex: 1,
-        width: width - 32,
-        height: height / 5,
+        width: device.width - 32,
+        height: device.height / 5,
         // backgroundColor: 'white',
         margin: 16,
         borderRadius: 10,
@@ -38,8 +37,8 @@ const styles = StyleSheet.create({
         left: 5,
     },
     image: {
-        width: width - 32,
-        height: height / 5,
+        width: device.width - 32,
+        height: device.height / 5,
         borderRadius: 10
     },
     itemTitle: {

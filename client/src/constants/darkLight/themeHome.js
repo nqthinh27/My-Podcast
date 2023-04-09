@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native'
 import colors from '../colors';
+import {device} from '../device'
 
 export const lightHome = StyleSheet.create({
     wrapper: {
@@ -45,7 +46,7 @@ export const lightTrendingHome = StyleSheet.create({
         // alignItems: 'center'
     },
     contentWrapper: {
-        width: 'auto',
+        width: device.width-32,
         marginRight: 16,
         borderRadius: 10,
         backgroundColor: "#EDEDED",
@@ -60,7 +61,7 @@ export const lightTrendingHome = StyleSheet.create({
 
 export const darkTrendingHome = StyleSheet.create({
     contentWrapper: {
-        width: 'auto',
+        width: device.width-32,
         marginRight: 16,
         borderRadius: 10,
         backgroundColor: 'rgba(255, 255, 255, 0.1)',
