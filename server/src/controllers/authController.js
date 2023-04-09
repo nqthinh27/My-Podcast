@@ -1,4 +1,7 @@
 const Users = require('../models/userModel');
+const Likes = require('../models/likeModel');
+const Histories = require('../models/historyModel');
+const Saves = require('../models/saveModel');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
@@ -6,7 +9,7 @@ const authController = {
     // REGISTER
     register: async (req, res) => {
         try {
-            const { fullName, userName, email, password, gender } = req.body;
+            const { fullName, userName, email, password } = req.body;
             let newUserName = userName.toLowerCase().replace(/ /g, '');
 
             const user_name = await Users.findOne({ userName: newUserName });
@@ -20,21 +23,23 @@ const authController = {
 
             const passwordHash = await bcrypt.hash(password, 12);
 
+            const newUserLiked = new Likes({});
+            await newUserLiked.save();
+            const newUserHistory = new Histories({});
+            await newUserHistory.save();
+            const newUserSaved = new Saves({});
+            await newUserSaved.save(); 
             const newUser = new Users({
                 fullName,
                 userName: newUserName,
                 email,
                 password: passwordHash,
-                gender,
+                liked: newUserLiked._id,
+                saved: newUserSaved._id,
+                history: newUserHistory._id,
             });
-            console.log(newUser);
-
-            // const access_token = createAccessToken({ id: newUser._id });
-            // const refresh_token = createRefreshToken({ id: newUser._id });
-            // console.log({ access_token, refresh_token });
-
             await newUser.save();
-
+            console.log({newUser});
             res.json({
                 msg: 'Register Successfully!',
                 // access_token,
@@ -52,7 +57,7 @@ const authController = {
     login: async (req, res) => {
         try {
             const { email, password } = req.body;
-            const user = await Users.findOne({ email }).populate('followers following', '-password');
+            const user = await Users.findOne({ email });
             if (!user) {
                 return res.status(400).json({ msg: 'This email does not exists.' });
             }
@@ -103,7 +108,6 @@ const authController = {
 }
 
 const createAccessToken = (payload) => {
-    console.log(process.env.ACCESS_TOKEN_SECRET);
     return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' });
 }
 

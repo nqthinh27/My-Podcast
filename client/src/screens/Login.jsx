@@ -7,7 +7,8 @@ import {
     View,
     SafeAreaView,
 } from "react-native";
-import Icon from "react-native-vector-icons/Entypo";
+import AntDesignIcon from "react-native-vector-icons/AntDesign";
+import EntypoIcon from "react-native-vector-icons/Entypo";
 import { useDispatch, useSelector } from "react-redux";
 import GlobalStyles from "../components/GlobalStyles";
 import { loginUser } from '../redux/actions/authApi';
@@ -22,7 +23,7 @@ function Login(props) {
     const loginSuccess = useSelector((state) => state.loginSuccess.isLoginSuccess)
     const { navigation, route } = props;
     // //function of navigate
-    const { navigate, goback } = navigation;
+    const { navigate, goBack } = navigation;
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -42,12 +43,12 @@ function Login(props) {
     return (
         <SafeAreaView style={[GlobalStyles.customSafeArea, {backgroundColor: "#fff"}]}>
             <View style={styles.loginHeader}>
-                <Icon
+                <EntypoIcon
                     name={"chevron-left"}
                     size={30}
                     // color={colors.primary}
                     onPress={() => {
-                        navigate("UIScreen");
+                        goBack();
                     }}
                 />
                 <Text style={styles.loginTextHeader}>Đăng nhập</Text>
@@ -82,12 +83,12 @@ function Login(props) {
                         handleLogin();
                     }}
                 >
-                    <Icon name="login" size={25} color="#fff" />
+                    <EntypoIcon name="login" size={25} color="#fff" />
                     <Text style={styles.loginButtonlogin}> Đăng nhập</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.loginButtonViewGoogle}>
-                    <Icon
+                    <EntypoIcon
                         name="google--with-circle"
                         size={35}
                         color="#ED5A4F"
@@ -98,7 +99,7 @@ function Login(props) {
                     </Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.loginButtonViewFb}>
-                    <Icon name="facebook" size={33} color="#0571E6" />
+                    <EntypoIcon name="facebook" size={33} color="#0571E6" />
                     <Text style={styles.loginButtonFb}>
                         {" "}
                         Đăng nhập với Facebook
@@ -107,17 +108,18 @@ function Login(props) {
 
                 <View style={styles.loginViewNoEmail}>
                     <Text style={styles.loginTextNoEmail}>
-                        Chưa có tài khoản?{" "}
-                    </Text>
-                    <Text
-                        style={styles.loginButtonNoEmail}
-                        onPress={() => {
-                            navigate("Register");
-                        }}
-                    >
-                        Đăng kí
+                        Chưa có tài khoản?
                     </Text>
                 </View>
+                <TouchableOpacity
+                    style={[styles.loginButtonViewGoogle,  {marginTop: 10}]}
+                    onPress={() => {
+                        navigate("Register");
+                    }}
+                >
+                    <AntDesignIcon name="adduser" size={30} color={colors.primary} />
+                    <Text style={styles.loginButtonGoogle}> Đăng ký tài khoản</Text>
+                </TouchableOpacity>
             </View>
         </SafeAreaView>
     );
@@ -158,7 +160,7 @@ const styles = StyleSheet.create({
     },
 
     loginTextInputEmail: {
-        fontSize: 15,
+        fontSize: 17,
     },
 
     loginInputPassword: {
@@ -173,34 +175,26 @@ const styles = StyleSheet.create({
 
     loginTextForgot: {
         color: "#FF6363",
-        fontSize: 15,
+        fontSize: 16,
     },
 
     loginViewNoEmail: {
         flexDirection: "row",
-        marginHorizontal: 20,
+        // marginHorizontal: 20,
         alignItems: "center",
         justifyContent: "center",
-        marginTop: 63,
+        marginTop: 55,
     },
     loginTextInputPassword: {
         flex: 1,
-        fontSize: 15,
+        fontSize: 17,
     },
     loginTextNoEmail: {
-        color: "#B0ADAD",
-        fontSize: 15,
+        color: "red",
+        fontSize: 16,
         borderBottomWidth: 1,
         borderBottomColor: "#FF6363",
     },
-
-    loginButtonNoEmail: {
-        fontSize: 15,
-        color: "#FF6363",
-        textDecorationStyle: "solid",
-        textDecorationColor: "#FF6363",
-    },
-
     loginButtonViewlogin: {
         width: "100%",
         height: 55,

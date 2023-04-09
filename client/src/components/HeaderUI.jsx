@@ -17,6 +17,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { isTokenExpired } from "../ultis/auth";
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { stayLogged } from "../redux/actions/authApi";
+import { warningLogin } from "../ultis/warning";
 
 export default function HeaderUI(props) {
     //navigation
@@ -65,9 +66,10 @@ export default function HeaderUI(props) {
     const handleLogin = () => {
         if (user) {
             // navigate("MyProfile");   
+            // Làm trang profile xong thì bỏ cái alert đi nhé
             alert('Bạn đã đăng nhập!');
         } else {
-            navigate("Login");
+            navigate("Login");   
         }
     }
 
