@@ -1,6 +1,5 @@
 const router = require('express').Router();
 const postController = require('../controllers/postController');
-const commentController = require('../controllers/commentController');
 const authMiddleware = require('../middleware/authMiddleware');
 
 router.post('/', authMiddleware, postController.createPost);
@@ -11,10 +10,13 @@ router.put('/:id', authMiddleware, postController.updatePostById);
 
 router.delete('/:id', authMiddleware, postController.deletePostById);
 
-// INTERACT
-router.put('/:id/views', postController.increaseViews);
+router.patch('/:id/like', authMiddleware, postController.likePost);
 
-router.post('/:id/comment', authMiddleware, commentController.createComment);
+router.patch('/:id/unlike', authMiddleware, postController.unLikePost);
 
+// router.route('/posts')
+//     .post(auth, postController.createPost)
+//     .get(auth, postController.getPosts)
+// router.get('/', postController.getAllPosts);
 
 module.exports = router;

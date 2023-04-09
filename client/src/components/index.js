@@ -1,10 +1,7 @@
-import HeaderUI from "./HeaderUI"
 import GlobalStyles from "./GlobalStyles"
-import TopTrendingItem from "./TopTrendingItem"
-import FollowingItem from "./FollowingItem"
+import HeaderUI from "./HeaderUI"
 
 export {
-    HeaderUI,
-    TopTrendingItem,
-    FollowingItem,
+    GlobalStyles,
+    HeaderUI
 }

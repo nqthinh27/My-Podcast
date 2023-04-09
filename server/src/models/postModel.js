@@ -1,4 +1,4 @@
- const mongoose = require('mongoose')
+const mongoose = require('mongoose')
 
 const postSchema = new mongoose.Schema({
     title: {
@@ -14,25 +14,25 @@ const postSchema = new mongoose.Schema({
         type: String,
         require: true,
     },
-    likes:{
-        type: Number,
-        default: 0,
-    },
-    comments: {
-        type: Number,
-        default: 0,
-    },
-    views: {
-        type: Number,
-        default: 0,
-    },
+    likes: [
+        {
+            type: mongoose.Types.ObjectId,
+            ref: 'user',
+        }
+    ],
+    comments: [
+        {
+            type: mongoose.Types.ObjectId,
+            ref: 'comment'
+        }
+    ],
     owner: {
         type: mongoose.Types.ObjectId,
         ref: 'user',
         require: true,
     },
 }, {
-    timestamps: { currentTime: () => new Date(Date.now() + (7 * 60 * 60 * 1000)) }
+    timestamps: true
 })
 
 module.exports = mongoose.model('post', postSchema);

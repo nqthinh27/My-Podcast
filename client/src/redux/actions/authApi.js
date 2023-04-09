@@ -4,7 +4,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState } from "react";
 import { BASE_URL } from '../../ultis/config';
 import { setAccessToken, setRefreshToken } from '../../ultis/auth';
-import { loginAccount } from '../slices/loginSlice';
 import jwtDecode from 'jwt-decode';
 
 export const loginUser = async (user, dispatch, navigate) => {
@@ -12,7 +11,6 @@ export const loginUser = async (user, dispatch, navigate) => {
     try {
         const res = await axios.post(`${BASE_URL}/auth/login`, user);
         dispatch(loginSuccess(res.data));
-        dispatch(loginAccount());
         await setAccessToken(res.data.access_token);
         await setRefreshToken(res.data.refresh_token);
         navigate('UIScreen');
@@ -50,7 +48,6 @@ export const logoutUser = async (dispatch, navigate) => {
     dispatch(logoutStart());
     try {
         dispatch(logoutSuccess());
-        dispatch(loginAccount());
         await setAccessToken('');
         await setRefreshToken('');
         navigate('Home');

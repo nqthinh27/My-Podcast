@@ -21,9 +21,6 @@ app.use('/auth', require('./routes/authRouter'));
 app.use('/user', require('./routes/userRouter'));
 app.use('/post', require('./routes/postRouter'));
 app.use('/comment', require('./routes/commentRouter'));
-app.use('/history', require('./routes/historyRouter'));
-app.use('/save', require('./routes/saveRouter'));
-app.use('/like', require('./routes/likeRouter'));
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
