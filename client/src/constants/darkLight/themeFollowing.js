@@ -123,7 +123,8 @@ export const lightFollowingItem = StyleSheet.create({
         // alignSelf: 'center',
     },
     progressBar: {
-        width: 230,
+        // width: '100%',
+        flex:1,
     },
 });
 

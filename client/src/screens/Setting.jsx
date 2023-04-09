@@ -19,6 +19,7 @@ import { darkSetting, lightSetting } from "../constants/darkMode";
 import { toggleDarkMode } from "../redux/slices/themeSlice";
 import colors from "../constants/colors";
 import { Button } from "react-native-paper";
+import { avatarDefault } from "../constants/app";
 
 export default function Setting(props) {
     //navigation
@@ -26,12 +27,10 @@ export default function Setting(props) {
     //function of navigate 
     const { navigate, goback } = navigation;
 
-    const loginSuccess = useSelector((state) => state.loginSuccess.isLoginSuccess)
-    const login = useSelector((state) => state.auth.login);
     const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
     const user = useSelector((state) => state.auth.login.currentUser);
     const dispatch = useDispatch();
-    let avatar = 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/avatar%2Fdafault_avatar.png?alt=media&token=162dc660-5039-4636-a300-942fcd4330b3';
+    let avatar = avatarDefault;
     if (user) {
         avatar = user.avatar;
     }
@@ -46,7 +45,7 @@ export default function Setting(props) {
     }
 
     const handleLogout = () => {
-        if (login.currentUser) {
+        if (user) {
             logoutUser(dispatch, navigation.navigate);
         }
         else alert('Bạn chưa đăng nhập!');
@@ -54,32 +53,38 @@ export default function Setting(props) {
     return (
         <SafeAreaView style={[{ backgroundColor: isDarkTheme ? darkSetting.dark.backgroundColor : lightSetting.light.backgroundColor }, GlobalStyles.customSafeArea]}>
             <ScrollView>
-                {(!loginSuccess) &&
-                    <View style={lightSetting.account}>
-                        <TouchableOpacity>
-                            <Image
-                                source={{
-                                    uri: avatar,
-                                }}
-                                style={lightSetting.avatar}
-                            />
-                        </TouchableOpacity>
-                        <View style={{ flexDirection: 'row' }}>
-                            <TouchableOpacity style={isDarkTheme ? darkSetting.loginButton : lightSetting.loginButton}
-                                onPress={() => {
-                                    handleLogin();
-                                }}
-                            >
-                                <Text style={isDarkTheme ? darkSetting.loginText : lightSetting.loginText}>Đăng nhập</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={isDarkTheme ? darkSetting.loginButton : lightSetting.loginButton}>
-                                <Text style={isDarkTheme ? darkSetting.loginText : lightSetting.loginText}>Đăng ký</Text>
-                            </TouchableOpacity>
+                {(!user) &&
+                    <View style={lightSetting.accountSuccess}>
+                        <Image
+                            source={{
+                                uri: avatar,
+                            }}
+                            style={lightSetting.avatar}
+                        />
+                        <View style={{ marginLeft: 16 }}>
+                            <Text style={{ fontSize: 19, fontWeight: "600", marginBottom: 3 }}>Xin chào!</Text>
+                            {/* <Text style={{ fontSize: 16, }}>Ấn vào đây để Đăng nhập hoặc Đăng ký</Text> */}
+                            <View style={{ flexDirection: 'row' }}>
+                                <TouchableOpacity style={isDarkTheme ? darkSetting.loginButton : lightSetting.loginButton}
+                                    onPress={() => {
+                                        handleLogin();
+                                    }}
+                                >
+                                    <Text style={isDarkTheme ? darkSetting.loginText : lightSetting.loginText}>Đăng nhập</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={isDarkTheme ? darkSetting.loginButton : lightSetting.loginButton}
+                                    onPress={() => {
+                                        navigate('Register');
+                                    }}
+                                >
+                                    <Text style={isDarkTheme ? darkSetting.loginText : lightSetting.loginText}>Đăng ký</Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     </View>}
-                {(loginSuccess) && (user) &&
+                {(user) &&
                     <View style={lightSetting.accountSuccess}>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={()=>{handleLogin()}}>
                             <Image
                                 source={{
                                     uri: avatar,
@@ -87,9 +92,9 @@ export default function Setting(props) {
                                 style={lightSetting.avatarSuccess}
                             />
                         </TouchableOpacity>
-                        <View style={{marginLeft: 16}}>
-                            <Text style={{ fontSize: 18, fontWeight: "bold" }}>{user.fullName}</Text>
-                            <Text style={{ fontSize: 16, }}>{user.userName}</Text>
+                        <View style={{ marginLeft: 16 }}>
+                            <Text style={{ fontSize: 19, fontWeight: "600", marginBottom: 3 }}>{user.fullName}</Text>
+                            <Text style={{ fontSize: 16, }}>@{user.userName}</Text>
                         </View>
                     </View>}
                 <View>

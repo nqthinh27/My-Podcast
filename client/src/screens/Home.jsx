@@ -15,7 +15,6 @@ import { useSelector } from "react-redux";
 import { HeaderUI } from "../components";
 import ReleasedPodcast from "../components/ReleasedPodcast"
 import SlideItem from "../components/SlideItem";
-import variable from "../constants/variable";
 import GlobalStyles from "../components/GlobalStyles";
 import TopTrendingItem from "../components/TopTrendingItem";
 
@@ -29,7 +28,6 @@ export default function Home(props) {
     const { navigation, route } = props;
     //function of navigate
     const { navigate, goback } = navigation;
-    // variable.isLogin = 2
 
     const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -133,7 +131,7 @@ export default function Home(props) {
                                 })}
                             </View>
                         </View>
-                        <View style={[isDarkTheme ? darkTrendingHome.contentWrapper : lightTrendingHome.contentWrapper, {width: screenWidth}]}>
+                        <View style={[isDarkTheme ? darkTrendingHome.contentWrapper : lightTrendingHome.contentWrapper]}>
                             <View style={lightTrendingHome.contentSection}>
                                 {TopTrendingData.slice(3, 6).map((item) => {
                                     return (
@@ -154,7 +152,7 @@ export default function Home(props) {
                                 })}
                             </View>
                         </View>
-                        <View style={[isDarkTheme ? darkTrendingHome.contentWrapper : lightTrendingHome.contentWrapper, {width: screenWidth}]}>
+                        <View style={[isDarkTheme ? darkTrendingHome.contentWrapper : lightTrendingHome.contentWrapper]}>
                             <View style={lightTrendingHome.contentSection}>
                                 {TopTrendingData.slice(6, 10).map((item) => {
                                     return (
@@ -183,7 +181,7 @@ export default function Home(props) {
                     <Text style={[isDarkTheme ? darkHome.title : lightHome.title, lightHome.blank]}>Mới phát hành</Text>
                     <Icon
                         name='chevron-right'
-                        style={{ opacity: 1, marginLeft: 8, marginTop: 16 }}
+                        style={{ opacity: 1, marginLeft: 8, marginTop: 13}}
                         size={16} color={isDarkTheme ? darkHome.wrapper.color : lightHome.wrapper.color}
                     />
                 </TouchableOpacity>

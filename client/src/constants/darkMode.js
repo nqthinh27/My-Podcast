@@ -21,8 +21,9 @@ export const lightSetting = StyleSheet.create({
     },
     loginButton: {
         // color: colors.black,
-        marginLeft: 10,
-        // borderRadius: 0,
+        marginRight: 10,
+        borderRadius: 5,
+        paddingHorizontal: 5,
         backgroundColor: 'rgba(0, 0, 0, 0.05)',
     },
     loginText: {
