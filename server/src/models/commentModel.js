@@ -1,25 +1,22 @@
 const mongoose = require('mongoose');
 
 const commentSchema = new mongoose.Schema({
-    content: {
-        type: String,
-        required: true
-    },
-    // tag: Object,
-    // reply: mongoose.Types.ObjectId,
-    // likes: [{type: mongoose.Types.ObjectId, ref: 'user'}],
-    owner: {
-        type: mongoose.Types.ObjectId,
-        ref: 'user',
-        required: true
-    },
-    post: {
+    comment: [{
+        userId: {
+            type: mongoose.Types.ObjectId,
+            ref: 'user',
+        },
+        content: {
+            type: String,
+        },
+    }],
+    postId: {
         type: mongoose.Types.ObjectId,
         ref: 'post',
-        required: true
+        require: true,
     }
 }, {
-    timestamps: true,
+    timestamps: { currentTime: () => new Date(Date.now() + (7 * 60 * 60 * 1000)) },
 })
 
 module.exports = mongoose.model('comment', commentSchema)

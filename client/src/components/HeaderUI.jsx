@@ -6,16 +6,18 @@ import {
     SafeAreaView,
     Keyboard,
     Modal,
+    TouchableOpacity,
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import GlobalStyles from "./GlobalStyles";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
+import { lightHeader, darkHeader } from '../constants/darkLight/themeHeaderUI'
 import { useSelector, useDispatch } from "react-redux";
 import { isTokenExpired } from "../ultis/auth";
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { stayLogged } from "../redux/actions/authApi";
+import { warningLogin } from "../ultis/warning";
 
 export default function HeaderUI(props) {
     //navigation
@@ -51,28 +53,29 @@ export default function HeaderUI(props) {
     const [showResult, setShowResult] = useState(true);
     const [data, setData] = useState([]);
     const textInputRef = useRef(null);
+    const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
 
     useEffect(() => {
         textInputRef.current?.focus();
     }, []);
 
     const handleSearch = () => {
-        setSearchValue(!searchValue);
+        setSearchValue(true);
     }
 
     const handleLogin = () => {
         if (user) {
             // navigate("MyProfile");   
+            // Làm trang profile xong thì bỏ cái alert đi nhé
             alert('Bạn đã đăng nhập!');
         } else {
-            navigate("Login");
+            navigate("Login");   
         }
     }
 
     const goBack = () => {
         Keyboard.dismiss();
         setSearchValue(!searchValue);
-
     }
 
     const filteredData = data.filter((item) =>
@@ -85,8 +88,8 @@ export default function HeaderUI(props) {
 
 
     return (
-        <SafeAreaView style={[styles.wrapper, GlobalStyles.customSafeArea]}>
-            <View style={styles.Header}>
+        <SafeAreaView style={[GlobalStyles.customSafeArea]}>
+            <View style={lightHeader.header}>
                 <TouchableOpacity
                     onPress={() => {
                         handleLogin();
@@ -96,20 +99,20 @@ export default function HeaderUI(props) {
                         source={{
                             uri: avatar,
                         }}
-                        style={styles.avatar}
+                        style={lightHeader.avatar}
                     />
                 </TouchableOpacity>
                 {/* <TouchableOpacity onPress={handleSearch}> */}
-                <View style={styles.searchSection}>
+                <View style={isDarkTheme ? darkHeader.searchSection : lightHeader.searchSection}>
                     <Icon
-                        style={styles.searchIcon}
+                        style={lightHeader.searchIcon}
                         name="search"
                         size={20}
                         color="#ccc"
                     />
                     <TextInput
-                        style={styles.input}
-                        autoFocus={false}
+                        style={lightHeader.input}
+                        // autoFocus={false}
                         // value={searchValue}
                         placeholder="Tìm kiếm podcast, tác giả, album,..."
                         // onChange={(event) => setSearchResult(event.target.value)}
@@ -118,23 +121,23 @@ export default function HeaderUI(props) {
                     />
                 </View>
                 <Modal visible={searchValue}>
-                    <SafeAreaView style={[styles.wrapper, GlobalStyles.customSafeArea]}>
-                        <View style={styles.Header}>
-                            <Icon style={styles.back}
+                    <SafeAreaView style={[GlobalStyles.customSafeArea]}>
+                        <View style={lightHeader.header}>
+                            <Icon style={lightHeader.back}
                                 name={'chevron-left'}
                                 size={26}
                                 onPress={goBack}
                             />
-                            <View style={styles.searchSection}>
+                            <View style={lightHeader.searchSection}>
                                 <Icon
-                                    style={styles.searchIcon}
+                                    style={lightHeader.searchIcon}
                                     name="search"
                                     size={20}
                                     color="#ccc"
                                 />
                                 <TextInput
                                     autoFocus={true}
-                                    style={styles.input}
+                                    style={lightHeader.input}
                                     // ref={textInputRef}
                                     placeholder="Tìm kiếm podcast, tác giả, album,..."
                                 // onChangeText={(searchString) => { this.setState({ searchString }) }}
@@ -149,60 +152,10 @@ export default function HeaderUI(props) {
                         source={{
                             uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_bell1.png?alt=media&token=85036c85-d95d-4b34-bff2-7f193a3149a4",
                         }}
-                        style={styles.bell}
+                        style={lightHeader.bell}
                     />
                 </TouchableOpacity>
             </View>
         </SafeAreaView>
     );
 }
-
-
-
-const styles = StyleSheet.create({
-    Header: {
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-        marginHorizontal: 16,
-    },
-    blank: {
-        flex: 1,
-    },
-    avatar: {
-        width: 35,
-        height: 35,
-        borderRadius: 35,
-    },
-    searchSection: {
-        flex: 1,
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#F0F0F0",
-        color: "#000000",
-        borderRadius: 32,
-        marginHorizontal: 8,
-    },
-    searchIcon: {
-        paddingVertical: 8,
-        paddingRight: 4,
-        paddingLeft: 10,
-    },
-
-    input: {
-        height: 32,
-        marginRight: 12,
-        backgroundColor: "#F0F0F0",
-        padding: 0,
-        flex: 1,
-        color: "#000",
-    },
-
-    bell: {
-        height: 26,
-        width: 26,
-    },
-
-    wrapper: {},
-});
