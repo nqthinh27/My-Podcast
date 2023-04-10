@@ -1,5 +1,6 @@
 import { StyleSheet } from "react-native";
 import colors from "../colors";
+import { device } from '../device'
 
 export const lightfollowStyles = StyleSheet.create({
     contentWrapper: {
@@ -72,8 +73,8 @@ export const lightFollowingItem = StyleSheet.create({
     },
     imageWrapper: {
         //position: 'absolute',
-        width: 355,
-        height: 355,
+        width: device.width-32,
+        height: device.width-32,
         alignSelf: "center",
         // top: 15,
         borderRadius: 16,
@@ -98,6 +99,7 @@ export const lightFollowingItem = StyleSheet.create({
         borderWidth: 0.8,
         borderColor: colors.black,
     },
+
     comment: {
         height: 32,
         marginLeft: 12,
@@ -124,7 +126,7 @@ export const lightFollowingItem = StyleSheet.create({
     },
     progressBar: {
         // width: '100%',
-        flex:1,
+        flex: 1,
     },
 });
 

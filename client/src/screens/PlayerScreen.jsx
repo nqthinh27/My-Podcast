@@ -12,7 +12,7 @@ import {
 import Slider from "@react-native-community/slider";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import colors from "../constants/colors";
-import device from "../constants/device";
+import {device} from "../constants/device";
 import GlobalStyles from "../components/GlobalStyles";
 import { Audio } from 'expo-av';
 

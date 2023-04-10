@@ -159,10 +159,10 @@ export default function FollowingItem(props) {
                             thumbTintColor = {isDarkTheme ? colors.white : colors.black}
                             minimumTrackTintColor={isDarkTheme ? colors.white : colors.black}
                             maximumTrackTintColor={isDarkTheme ? colors.white : colors.black}
-                            thumbStyle={{ width: 2, height: 2 }} // set the size of the thumb
-                            thumbProps={{
-                              borderRadius: 8, // set the border radius to half the width/height to make it round
-                            }}
+                            // thumbStyle={{ width: 2, height: 2 }} // set the size of the thumb
+                            // thumbProps={{
+                            //   borderRadius: 8, // set the border radius to half the width/height to make it round
+                            // }}
                         />
                         <TouchableOpacity onPress={handleVolume}>
                             {(volume) && <Icon
