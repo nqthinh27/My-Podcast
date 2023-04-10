@@ -54,7 +54,7 @@ export const TopTrendingData =
         ranking: 3
     },
     {
-        avtUrl: 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/trending%2Fimage%2Fhoctienganh.jpg?alt=media&token=d3164959-8bd4-444a-9d34-18242bfb9dda',
+        avtUrl: 'https://media.istockphoto.com/id/1300370449/photo/online-english-courses-distance-learning-concept.jpg?b=1&s=170667a&w=0&k=20&c=BBB9TplN62e3eNL2XB_mKOkgpN4yNEhxjs3r2Mx2yBo=',
         audioUrl: 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/trending%2Fpodcast%2Fluyenngehtienganh.mp3?alt=media&token=4646ba85-5597-41d4-80a2-e744ab43113d',
         title: 'learnEnglish',
         author: 'MT',
@@ -329,7 +329,7 @@ export const NewReLeaseData =
         id: 3,
     },
     {
-        avtUrl: 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/trending%2Fimage%2Fhoctienganh.jpg?alt=media&token=d3164959-8bd4-444a-9d34-18242bfb9dda',
+        avtUrl: 'https://media.istockphoto.com/id/1300370449/photo/online-english-courses-distance-learning-concept.jpg?b=1&s=170667a&w=0&k=20&c=BBB9TplN62e3eNL2XB_mKOkgpN4yNEhxjs3r2Mx2yBo=',
         audioUrl: 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/trending%2Fpodcast%2Fluyenngehtienganh.mp3?alt=media&token=4646ba85-5597-41d4-80a2-e744ab43113d',
         title: 'learnEnglish',
         author: 'MT',
