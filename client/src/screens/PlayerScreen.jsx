@@ -133,11 +133,7 @@ export default function PlayerScreen(props) {
     }, [sound]);
 
     return (
-        <SafeAreaView
-            style={
-                GlobalStyles.customSafeArea
-            }
-        >
+        <SafeAreaView style={GlobalStyles.customSafeArea}>
             <View style={styles.playscreenHeader}>
                 <TouchableOpacity>
                     <Icon
@@ -161,28 +157,19 @@ export default function PlayerScreen(props) {
                 </TouchableOpacity>
             </View>
 
-            <ScrollView
-                onScroll={handleScroll}
-                onScrollEndDrag={handleScrollEndDrag}
-                scrollEventThrottle={16}
-                style={
-                    {
-                        // flex: 1,
-                        // backgroundColor: "yellow",
-                        
-                        
-                    }
-                }
-            >
-                <View>
+            <View style={{borderRadius: 80, overflow: 'hidden'}}>
+                <ScrollView
+                    onScroll={handleScroll}
+                    onScrollEndDrag={handleScrollEndDrag}
+                    scrollEventThrottle={16}
+                >
                     <ImageBackground
                         source={{
                             uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Tu%2FRectangle%2038.png?alt=media&token=780197d0-e51a-496c-8ff1-006b24341c50",
                         }}
                         resizeMode="cover"
                         style={styles.playscreenMain}
-                        opacity={0.5}
-                        
+                        opacity={0.09}
                     >
                         <View>
                             <Image
@@ -192,7 +179,6 @@ export default function PlayerScreen(props) {
                                 style={styles.playscreenImgAvt}
                             />
                         </View>
-
                         <View>
                             <Text style={styles.playscreenTitle}>
                                 The future is good
@@ -216,14 +202,12 @@ export default function PlayerScreen(props) {
                                 minimumTrackTintColor="black"
                                 maximumTrackTintColor="black"
                                 onValueChange={onSliderValueChange}
-
                             />
                             <View style={styles.progressLevelDur}>
                                 <Text style={styles.progressLabelText}>{formatTime(position)}</Text>
                                 <Text style={styles.progressLabelText}>{formatTime(duration)}</Text>
                             </View>
                         </View>
-
                         <View style={styles.playscreenControl}>
                             <TouchableOpacity>
                                 <Image
@@ -274,7 +258,6 @@ export default function PlayerScreen(props) {
                                     />
                                 </TouchableOpacity>
                             )}
-
                             <TouchableOpacity>
                                 <Image
                                     style={{ width: 28, height: 28 }}
@@ -293,54 +276,53 @@ export default function PlayerScreen(props) {
                             </TouchableOpacity>
                         </View>
                     </ImageBackground>
-                </View>
-                <View style={styles.playscreenInteractionBar}>
-                    <View style={styles.playscreenSocial}>
-                        <TouchableOpacity>
-                            <Icon
-                                name="heart"
-                                style={{}}
-                                size={30}
-                                color={"red"}
-                            />
-                        </TouchableOpacity>
-                        <TouchableOpacity>
-                            <Icon
-                                name="comment"
-                                style={{}}
-                                size={30}
-                                color={"#15d147"}
-                            />
-                        </TouchableOpacity>
-                        <TouchableOpacity>
-                            <Icon
-                                name="share-variant"
-                                style={{}}
-                                size={30}
-                                color={"#0d72ff"}
-                            />
-                        </TouchableOpacity>
-                        <TouchableOpacity>
-                            <Icon
-                                name="bookmark"
-                                style={{}}
-                                size={30}
-                                color={colors.primary}
-                            />
-                        </TouchableOpacity>
+                    <View style={styles.playscreenInteractionBar}>
+                        <View style={styles.playscreenSocial}>
+                            <TouchableOpacity>
+                                <Icon
+                                    name="cards-heart-outline"
+                                    style={{}}
+                                    size={30}
+                                // color={"red"}
+                                />
+                            </TouchableOpacity>
+                            <TouchableOpacity>
+                                <Icon
+                                    name="comment-outline"
+                                    style={{}}
+                                    size={30}
+                                // color={"#15d147"}
+                                />
+                            </TouchableOpacity>
+                            <TouchableOpacity>
+                                <Icon
+                                    name="share-variant"
+                                    style={{}}
+                                    size={30}
+                                // color={"#0d72ff"}
+                                />
+                            </TouchableOpacity>
+                            <TouchableOpacity>
+                                <Icon
+                                    name="bookmark-outline"
+                                    style={{}}
+                                    size={30}
+                                // color={colors.primary}
+                                />
+                            </TouchableOpacity>
+                        </View>
                     </View>
-                </View>
-
-                <TouchableOpacity
-                    style={styles.playscreenMore}
-                    onPress={() => {
-                        playerNavigate();
-                    }}
-                >
-                    <Text style={{ fontSize: 18 }}>Xem thêm</Text>
-                    <Icon name={"chevron-down"} size={20} color="black" />
-                </TouchableOpacity>
-            </ScrollView>
+                    <TouchableOpacity
+                        style={styles.playscreenMore}
+                        onPress={() => {
+                            playerNavigate();
+                        }}
+                    >
+                        <Text style={{ fontSize: 18, color: colors.white }}>Xem thêm</Text>
+                        <Icon name={"chevron-down"} size={20} color={colors.white} />
+                    </TouchableOpacity>
+                </ScrollView>
+            </View>
         </SafeAreaView>
     );
 }
@@ -391,7 +373,7 @@ const styles = StyleSheet.create({
         width: device.width - 64,
         height: device.width - 64,
         alignSelf: "center",
-        top: 15,
+        top: 16,
         borderRadius: 20,
         backgroundColor: "#000000",
         resizeMode: "cover",

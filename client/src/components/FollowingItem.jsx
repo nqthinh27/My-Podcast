@@ -5,6 +5,7 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useSelector } from 'react-redux';
 import colors from '../constants/colors'
 import {lightFollowingItem, darkFollowingItem} from '../constants/darkLight/themeFollowing'
+import GlobalStyles from './GlobalStyles';
 
 export default function FollowingItem(props) {
 
@@ -178,12 +179,7 @@ export default function FollowingItem(props) {
                 </View>
             </View>
             <View
-                style={{
-                    width: '100%',
-                    height: 10,
-                    backgroundColor: isDarkTheme ? colors.dark : colors.white,
-                    borderRadius: 5
-                }}
+               style={{ borderBottomWidth: 0.2, borderColor: colors.black, marginBottom: 12, marginHorizontal: 16}}
             />
         </SafeAreaView>
     )

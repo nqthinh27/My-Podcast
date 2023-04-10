@@ -4,7 +4,7 @@ import colors from "../colors";
 export const lightfollowStyles = StyleSheet.create({
     contentWrapper: {
         marginTop: 10,
-        backgroundColor: "#EDEDED",
+        // backgroundColor: "#EDEDED",
     },
 });
 
@@ -76,7 +76,7 @@ export const lightFollowingItem = StyleSheet.create({
         height: 355,
         alignSelf: "center",
         // top: 15,
-        borderRadius: 20,
+        borderRadius: 16,
         backgroundColor: colors.black,
         //ma: 15,
     },
@@ -108,7 +108,7 @@ export const lightFollowingItem = StyleSheet.create({
         right: 12
     },
     interactPlayTime: {
-        top: 15,
+        marginTop: 15,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
