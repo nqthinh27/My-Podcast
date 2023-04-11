@@ -1,3 +1,4 @@
+import axios from 'axios';
 import {
     StyleSheet,
     Text,
@@ -9,17 +10,40 @@ import {
 import { React, useState } from "react";
 import colors from "../../constants/colors";
 import Icon from "react-native-vector-icons/Entypo";
+import { BASE_URL } from "../../ultis/config";
+import { useNavigation } from "@react-navigation/native";
 
 function Register(props) {
-    //navigation
-    // const { navigation, route } = props;
+    const navigation = useNavigation();
     // //function of navigate
-    // const { navigate, goback } = navigation;
+    const { navigate, goBack } = navigation;
 
+    const [fullName, setFullName] = useState("");
+    const [userName, setUserName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [repassword, setRepassword] = useState("");
 
+    const handleRegister = async () => {
+        try {
+            if (password === repassword) {
+                const newUser = {
+                    fullName: fullName,
+                    userName: userName,
+                    email: email,
+                    password: password
+                }
+                res = await axios.post(`${BASE_URL}/auth/register`, newUser);
+                alert('Đăng ký thành công');
+                console.log(res.data);
+            } else {
+                alert('Mật khẩu nhập lại không khớp');
+            }
+        } catch (err) {
+            console.log(err.message);
+            alert('Không hợp lệ! Vui lòng kiểm tra lại thông tin');
+        }
+    }
     return (
         <SafeAreaView style={styles.register}>
             <View style={styles.registerHeader}>
@@ -28,7 +52,7 @@ function Register(props) {
                     size={30}
                     // color={colors.primary}
                     onPress={() => {
-                        navigate("Login");
+                        navigation.goBack();
                     }}
                 />
                 <Text style={styles.registerTextHeader}>Đăng kí</Text>
@@ -36,35 +60,53 @@ function Register(props) {
             </View>
 
             <View style={styles.registerContainer}>
-                <View style={styles.registerViewInputEmail}>
+                <View style={styles.registerViewInputForm}>
                     <TextInput
-                        style={{
-                            fontSize: 15,
-                        }}
-                        placeholder="Email"
+                        style={styles.registerInputText}
+                        placeholder="Họ và tên"
+                        value={fullName}
+                        onChangeText={setFullName}
                     ></TextInput>
                 </View>
-                <View style={styles.registerViewInputPassword}>
+                <View style={styles.registerViewInputForm}>
                     <TextInput
-                        style={styles.registerInputPassword}
+                        style={styles.registerInputText}
+                        placeholder="Tên người dùng"
+                        value={userName}
+                        onChangeText={setUserName}
+                    ></TextInput>
+                </View>
+                <View style={styles.registerViewInputForm}>
+                    <TextInput
+                        style={styles.registerInputText}
+                        placeholder="Email"
+                        value={email}
+                        onChangeText={setEmail}
+                    ></TextInput>
+                </View>
+                <View style={styles.registerViewInputForm}>
+                    <TextInput
+                        style={styles.registerInputText}
                         placeholder="Mật khẩu"
                         secureTextEntry={true}
+                        value={password}
+                        onChangeText={setPassword}
                     ></TextInput>
                 </View>
 
-                <View style={styles.registerViewInputPassword}>
+                <View style={styles.registerViewInputForm}>
                     <TextInput
-                        style={styles.registerInputPassword}
+                        style={styles.registerInputText}
                         placeholder="Nhập lại Mật khẩu"
                         secureTextEntry={true}
+                        value={repassword}
+                        onChangeText={setRepassword}
                     ></TextInput>
                 </View>
 
                 <TouchableOpacity
                     style={styles.registerViewButtonRegister}
-                    onPress={() => {
-                        // navigate('OTPcodeSU');
-                    }}
+                    onPress={handleRegister}
                 >
                     <Text style={styles.registerButtonRegister}>Đăng ký</Text>
                 </TouchableOpacity>
@@ -73,7 +115,7 @@ function Register(props) {
                     <Text
                         style={{
                             color: "#B0ADAD",
-                            fontSize: 15,
+                            fontSize: 17,
                             borderBottomWidth: 1,
                             borderBottomColor: "#FF6363",
                         }}
@@ -83,7 +125,7 @@ function Register(props) {
 
                     <Text
                         style={{
-                            fontSize: 15,
+                            fontSize: 17,
                             color: "#FF6363",
                         }}
                         onPress={() => {
@@ -132,13 +174,13 @@ const styles = StyleSheet.create({
         width: "100%",
     },
 
-    registerViewInputPassword: {
+    registerViewInputForm: {
         flexDirection: "row",
         marginHorizontal: 20,
         borderBottomWidth: 1,
         borderBottomColor: "#C0C0C0",
         width: "100%",
-        marginTop: 46,
+        marginBottom: 46,
         justifyContent: "space-between",
     },
 
@@ -154,8 +196,8 @@ const styles = StyleSheet.create({
         fontSize: 15,
     },
 
-    registerInputPassword: {
-        fontSize: 15,
+    registerInputText: {
+        fontSize: 18,
         width: "100%",
     },
 
@@ -168,11 +210,10 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         borderColor: "white",
-        marginTop: 63,
     },
     registerButtonRegister: {
         color: "white",
-        fontSize: 17,
+        fontSize: 18,
         fontWeight: "bold",
     },
 });

@@ -1,7 +1,10 @@
 const router = require('express').Router();
 const commentController = require('../controllers/commentController');
+const authMiddleware = require('../middleware/authMiddleware');
 
-router.post('/create', commentController.createComment);
+router.post('/:id/create', authMiddleware, commentController.createComment);
+
+router.get('/:id', commentController.getAllComments);
 
 // router.patch('/comment/:id', auth, commentController.updateComment);
 

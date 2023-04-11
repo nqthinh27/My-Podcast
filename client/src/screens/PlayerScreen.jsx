@@ -1,4 +1,4 @@
-import { React, useState, useRef } from "react";
+import { React, useState, useRef, useEffect } from "react";
 import {
     Text,
     View,
@@ -12,15 +12,20 @@ import {
 import Slider from "@react-native-community/slider";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import colors from "../constants/colors";
-import device from "../constants/device";
+import {device} from "../constants/device";
+import GlobalStyles from "../components/GlobalStyles";
+import { Audio } from 'expo-av';
 
 export default function PlayerScreen(props) {
     // navigation
     const { navigation, route } = props;
     //function of navigate
     const { navigate, goback } = navigation;
-
     const [isPlaying, setIsPlaying] = useState(false);
+    const [playValue, setPlayValue] = useState(false);
+    const [sound, setSound] = useState(null);
+    const [position, setPosition] = useState(0);
+    const [duration, setDuration] = useState(null);
 
     const handlePlayPause = () => {
         setIsPlaying((prevState) => !prevState);
@@ -43,14 +48,92 @@ export default function PlayerScreen(props) {
         navigate("Library");
     }
 
-    return (
-        <SafeAreaView
-            style={
-                {
-                    // flex: 1,
-                }
+    // useEffect(() => { 
+    //     handlePlay()
+    // }, [playValue]);
+
+    // const handlePlay = () => {
+    //     setPlayValue(!playValue);
+    // }
+
+    async function playSound() {
+        try {
+            const { sound } = await Audio.Sound.createAsync(
+                { uri: 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Sound%2FLoi-Nho.mp3?alt=media&token=b522c960-115d-49ba-8d6d-5f1f2dbb9d77' },
+                { shouldPlay: true },
+                onPlaybackStatusUpdate
+            );
+            setSound(sound);
+            setPlayValue(true);
+            // const status = await sound.getStatusAsync();
+            // setDuration(status.durationMillis);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    async function pauseSound() {
+        if (sound != null) {
+            await sound.pauseAsync();
+            setPlayValue(false);
+        }
+    }
+
+    async function resumeSound() {
+        if (sound != null) {
+            const status = await sound.getStatusAsync();
+            if (!status.isLoaded) {
+                await sound.loadAsync(
+                    { uri: 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Sound%2FLoi-Nho.mp3?alt=media&token=b522c960-115d-49ba-8d6d-5f1f2dbb9d77' },
+                    { shouldPlay: true }
+                );
             }
-        >
+            await sound.playAsync();
+            setPlayValue(true);
+        }
+    }
+
+
+    function onPlaybackStatusUpdate(status) {
+        if (status.isPlaying) {
+            setPosition(status.positionMillis);
+            setDuration(status.durationMillis);
+        }
+    }
+
+    function onSliderValueChange(value) {
+        if (sound != null) {
+            sound.setPositionAsync(value);
+            setPosition(value);
+        }
+    }
+    const formatTime = (time) => {
+        if (time == null) {
+            return '--:--';
+        }
+        const minutes = Math.floor(time / 60000);
+        const seconds = ((time % 60000) / 1000).toFixed(0);
+        return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    };
+
+
+    async function stopSound() {
+        if (sound) {
+            await sound.stopAsync();
+            setPlayValue(false);
+        }
+    }
+
+    useEffect(() => {
+        return sound
+            ? () => {
+                sound.unloadAsync();
+            }
+            : undefined;
+    }, [sound]);
+
+    return (
+        <SafeAreaView style={GlobalStyles.customSafeArea}>
             <View style={styles.playscreenHeader}>
                 <TouchableOpacity>
                     <Icon
@@ -74,25 +157,19 @@ export default function PlayerScreen(props) {
                 </TouchableOpacity>
             </View>
 
-            <ScrollView
-                onScroll={handleScroll}
-                onScrollEndDrag={handleScrollEndDrag}
-                scrollEventThrottle={16}
-                style={
-                    {
-                        // flex: 1,
-                        // backgroundColor: "yellow",
-                    }
-                }
-            >
-                <View>
+            <View style={{borderRadius: 80, overflow: 'hidden'}}>
+                <ScrollView
+                    onScroll={handleScroll}
+                    onScrollEndDrag={handleScrollEndDrag}
+                    scrollEventThrottle={16}
+                >
                     <ImageBackground
                         source={{
                             uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Tu%2FRectangle%2038.png?alt=media&token=780197d0-e51a-496c-8ff1-006b24341c50",
                         }}
                         resizeMode="cover"
-                        blurRadius={30}
                         style={styles.playscreenMain}
+                        opacity={0.09}
                     >
                         <View>
                             <Image
@@ -102,7 +179,6 @@ export default function PlayerScreen(props) {
                                 style={styles.playscreenImgAvt}
                             />
                         </View>
-
                         <View>
                             <Text style={styles.playscreenTitle}>
                                 The future is good
@@ -119,51 +195,75 @@ export default function PlayerScreen(props) {
                         <View>
                             <Slider
                                 style={styles.progressBar}
-                                value={10}
                                 minimumValue={0}
-                                maximumValue={100}
+                                maximumValue={duration}
+                                value={position}
                                 thumbTintColor="black"
                                 minimumTrackTintColor="black"
                                 maximumTrackTintColor="black"
+                                onValueChange={onSliderValueChange}
                             />
                             <View style={styles.progressLevelDur}>
-                                <Text style={styles.progressLabelText}>
-                                    00:00
-                                </Text>
-                                <Text style={styles.progressLabelText}>
-                                    05:06
-                                </Text>
+                                <Text style={styles.progressLabelText}>{formatTime(position)}</Text>
+                                <Text style={styles.progressLabelText}>{formatTime(duration)}</Text>
                             </View>
                         </View>
-
                         <View style={styles.playscreenControl}>
                             <TouchableOpacity>
                                 <Image
-                                    style={{ width: 23.79, height: 20.15 }}
+                                    style={{ width: 23.79, height: 20.15, opacity: 0.8 }}
                                     source={{
                                         uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_random_btn.png?alt=media&token=dda7b7d4-d4f8-4f2f-a5fe-ceb20ad135e7",
                                     }}
                                 />
                             </TouchableOpacity>
                             <TouchableOpacity>
-                                <Icon
-                                    name={"skip-previous"}
-                                    size={40}
-                                    color="black"
+                                <Image
+                                    style={{ width: 28, height: 28 }}
+                                    source={{
+                                        uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Tu%2Fbxs_skip-next-circle.png?alt=media&token=10b12ffd-b779-4fdf-8376-b1f8baa92256",
+                                    }}
                                 />
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={handlePlayPause}>
-                                <Icon
-                                    name={isPlaying ? "pause" : "play"}
-                                    size={55}
-                                    style={{ color: colors.primary }}
-                                />
-                            </TouchableOpacity>
+                            {sound == null && (
+                                <TouchableOpacity onPress={() => playSound()}>
+                                    <Image
+                                        style={{ width: 55, height: 55 }}
+                                        source={{
+                                            uri:
+                                                "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Tu%2FGroup%2066.png?alt=media&token=5fb2d1e2-48a0-43bb-9773-ce3424e388f4",
+                                        }}
+                                    />
+                                </TouchableOpacity>
+                            )}
+                            {sound != null && !playValue && (
+                                <TouchableOpacity onPress={() => resumeSound()}>
+                                    <Image
+                                        style={{ width: 55, height: 55 }}
+                                        source={{
+                                            uri:
+                                                "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Tu%2FGroup%2066.png?alt=media&token=5fb2d1e2-48a0-43bb-9773-ce3424e388f4",
+                                        }}
+                                    />
+                                </TouchableOpacity>
+                            )}
+                            {sound != null && playValue && (
+                                <TouchableOpacity onPress={() => pauseSound()}>
+                                    <Image
+                                        style={{ width: 55, height: 55 }}
+                                        source={{
+                                            uri:
+                                                "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Tu%2FGroup%2066.png?alt=media&token=5fb2d1e2-48a0-43bb-9773-ce3424e388f4",
+                                        }}
+                                    />
+                                </TouchableOpacity>
+                            )}
                             <TouchableOpacity>
-                                <Icon
-                                    name={"skip-next"}
-                                    size={40}
-                                    color="black"
+                                <Image
+                                    style={{ width: 28, height: 28 }}
+                                    source={{
+                                        uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Tu%2Ffluent_next-32-regular.png?alt=media&token=db668d13-33de-4f5b-99bd-c5723dd21f13",
+                                    }}
                                 />
                             </TouchableOpacity>
                             <TouchableOpacity>
@@ -176,54 +276,53 @@ export default function PlayerScreen(props) {
                             </TouchableOpacity>
                         </View>
                     </ImageBackground>
-                </View>
-                <View style={styles.playscreenInteractionBar}>
-                    <View style={styles.playscreenSocial}>
-                        <TouchableOpacity>
-                            <Icon
-                                name="heart"
-                                style={{}}
-                                size={30}
-                                color={"red"}
-                            />
-                        </TouchableOpacity>
-                        <TouchableOpacity>
-                            <Icon
-                                name="comment"
-                                style={{}}
-                                size={30}
-                                color={"#15d147"}
-                            />
-                        </TouchableOpacity>
-                        <TouchableOpacity>
-                            <Icon
-                                name="share-variant"
-                                style={{}}
-                                size={30}
-                                color={"#0d72ff"}
-                            />
-                        </TouchableOpacity>
-                        <TouchableOpacity>
-                            <Icon
-                                name="bookmark"
-                                style={{}}
-                                size={30}
-                                color={colors.primary}
-                            />
-                        </TouchableOpacity>
+                    <View style={styles.playscreenInteractionBar}>
+                        <View style={styles.playscreenSocial}>
+                            <TouchableOpacity>
+                                <Icon
+                                    name="cards-heart-outline"
+                                    style={{}}
+                                    size={30}
+                                // color={"red"}
+                                />
+                            </TouchableOpacity>
+                            <TouchableOpacity>
+                                <Icon
+                                    name="comment-outline"
+                                    style={{}}
+                                    size={30}
+                                // color={"#15d147"}
+                                />
+                            </TouchableOpacity>
+                            <TouchableOpacity>
+                                <Icon
+                                    name="share-variant"
+                                    style={{}}
+                                    size={30}
+                                // color={"#0d72ff"}
+                                />
+                            </TouchableOpacity>
+                            <TouchableOpacity>
+                                <Icon
+                                    name="bookmark-outline"
+                                    style={{}}
+                                    size={30}
+                                // color={colors.primary}
+                                />
+                            </TouchableOpacity>
+                        </View>
                     </View>
-                </View>
-
-                <TouchableOpacity
-                    style={styles.playscreenMore}
-                    onPress={() => {
-                        playerNavigate();
-                    }}
-                >
-                    <Text style={{ fontSize: 18 }}>Xem thêm</Text>
-                    <Icon name={"chevron-down"} size={20} color="black" />
-                </TouchableOpacity>
-            </ScrollView>
+                    <TouchableOpacity
+                        style={styles.playscreenMore}
+                        onPress={() => {
+                            playerNavigate();
+                        }}
+                    >
+                        <Text style={{ fontSize: 18, color: colors.white }}>Xem thêm</Text>
+                        <Icon name={"chevron-down"} size={20} color={colors.white} />
+                    </TouchableOpacity>
+                </ScrollView>
+            </View>
         </SafeAreaView>
     );
 }
@@ -237,13 +336,10 @@ const styles = StyleSheet.create({
     },
 
     playscreenMain: {
-        //flex: 1,
-
-        borderRadius: 20,
+        borderRadius: 30,
         paddingBottom: 20,
         marginHorizontal: 16,
-        // margin: 20,
-        borderRadius: 20,
+        marginTop: 20,
     },
 
     playscreenInteractionBar: {
@@ -277,7 +373,7 @@ const styles = StyleSheet.create({
         width: device.width - 64,
         height: device.width - 64,
         alignSelf: "center",
-        top: 15,
+        top: 16,
         borderRadius: 20,
         backgroundColor: "#000000",
         resizeMode: "cover",
@@ -308,7 +404,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        marginHorizontal: 16,
+        marginHorizontal: 30,
         marginTop: 20,
     },
 

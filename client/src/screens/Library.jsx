@@ -11,10 +11,11 @@ import colors from "../constants/colors";
 import PodcastListLibrary from "../components/PodcastListLibrary";
 import { SafeAreaView } from "react-navigation";
 import GlobalStyles from "../components/GlobalStyles";
+import { warningLogin } from "../ultis/warning";
+import { useSelector } from "react-redux";
+import { useIsFocused } from "@react-navigation/native";
 import { RecommendData } from "../../dummyData";
 import HeaderUI from "../components/HeaderUI";
-import { useSelector, useDispatch } from "react-redux";
-import { useIsFocused } from "@react-navigation/native";
 
 function Library(props) {
     const { navigation, route } = props;
@@ -23,7 +24,6 @@ function Library(props) {
     const isFocused = useIsFocused();
     useEffect(() => {
         if (isFocused && !user) {
-            // navigate("MyProfile");
             warningLogin(navigate, "Login", "Home");
         }
     }, [isFocused]);

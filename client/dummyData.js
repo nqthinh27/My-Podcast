@@ -54,7 +54,7 @@ export const TopTrendingData =
         ranking: 3
     },
     {
-        avtUrl: 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/trending%2Fimage%2Fhoctienganh.jpg?alt=media&token=d3164959-8bd4-444a-9d34-18242bfb9dda',
+        avtUrl: 'https://media.istockphoto.com/id/1300370449/photo/online-english-courses-distance-learning-concept.jpg?b=1&s=170667a&w=0&k=20&c=BBB9TplN62e3eNL2XB_mKOkgpN4yNEhxjs3r2Mx2yBo=',
         audioUrl: 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/trending%2Fpodcast%2Fluyenngehtienganh.mp3?alt=media&token=4646ba85-5597-41d4-80a2-e744ab43113d',
         title: 'learnEnglish',
         author: 'MT',
@@ -329,7 +329,7 @@ export const NewReLeaseData =
         id: 3,
     },
     {
-        avtUrl: 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/trending%2Fimage%2Fhoctienganh.jpg?alt=media&token=d3164959-8bd4-444a-9d34-18242bfb9dda',
+        avtUrl: 'https://media.istockphoto.com/id/1300370449/photo/online-english-courses-distance-learning-concept.jpg?b=1&s=170667a&w=0&k=20&c=BBB9TplN62e3eNL2XB_mKOkgpN4yNEhxjs3r2Mx2yBo=',
         audioUrl: 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/trending%2Fpodcast%2Fluyenngehtienganh.mp3?alt=media&token=4646ba85-5597-41d4-80a2-e744ab43113d',
         title: 'learnEnglish',
         author: 'MT',
@@ -362,6 +362,32 @@ export const NewReLeaseData =
     },
 ]
 
+// -------------- Data Following ---------------------
+
+export const FollowingData = [
+    {
+        avtUrl: 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/avatar.jpg?alt=media&token=fc074eb8-e67f-4235-8230-160cae1557b5',
+        audioUrl: 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/trending%2Fpodcast%2Fgiatrisunoluc.mp3?alt=media&token=d1a6f25b-e9cb-48e1-992b-980e67070505',
+        name: 'Nguyễn Quang Thịnh',
+        date: '27 tháng 12, 2022',
+        title: 'Sự nỗ lực đáng giá bao nhiêu',
+        author: 'Sunhuyn',
+        descripttion: 'Sự nỗ lực đáng giá bao nhiêu? Liệu rằng cứ nỗ lực rồi sẽ thành công phải không? Sun mong những điều này có thể giúp bạn cảm thấy an lòng và tin tưởng vào bản thân mình hơn.',
+        id: 1,
+        ranking: 1
+    },
+    {
+        avtUrl: 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/avatar.jpg?alt=media&token=fc074eb8-e67f-4235-8230-160cae1557b5',
+        audioUrl: 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/trending%2Fpodcast%2Fgiatrisunoluc.mp3?alt=media&token=d1a6f25b-e9cb-48e1-992b-980e67070505',
+        name: 'Phạm Đức Tú',
+        date: '10 tháng 5, 2022',
+        title: 'Sự nỗ lực đáng giá bao nhiêu',
+        author: 'Sunhuyn',
+        descripttion: 'Sự nỗ lực đáng giá bao nhiêu? Liệu rằng cứ nỗ lực rồi sẽ thành công phải không? Sun mong những điều này có thể giúp bạn cảm thấy an lòng và tin tưởng vào bản thân mình hơn.',
+        id: 2,
+        ranking: 1
+    },
+]
 export const MyPopularData =
     [{
         avtUrl: 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/mypupular%2Fvuot-qua-chinh-minh-ohay-tv-22943.jpg?alt=media&token=b7e149c4-a269-432a-b51e-4742c4646f8d',
