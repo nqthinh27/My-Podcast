@@ -5,6 +5,7 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useSelector } from 'react-redux';
 import colors from '../constants/colors'
 import {lightFollowingItem, darkFollowingItem} from '../constants/darkLight/themeFollowing'
+import GlobalStyles from './GlobalStyles';
 
 export default function FollowingItem(props) {
 
@@ -153,12 +154,15 @@ export default function FollowingItem(props) {
                         </View>
                         <Slider
                             style={lightFollowingItem.progressBar}
-
                             minimumValue={0}
                             maximumValue={100}
                             thumbTintColor = {isDarkTheme ? colors.white : colors.black}
                             minimumTrackTintColor={isDarkTheme ? colors.white : colors.black}
                             maximumTrackTintColor={isDarkTheme ? colors.white : colors.black}
+                            // thumbStyle={{ width: 2, height: 2 }} // set the size of the thumb
+                            // thumbProps={{
+                            //   borderRadius: 8, // set the border radius to half the width/height to make it round
+                            // }}
                         />
                         <TouchableOpacity onPress={handleVolume}>
                             {(volume) && <Icon
@@ -178,12 +182,7 @@ export default function FollowingItem(props) {
                 </View>
             </View>
             <View
-                style={{
-                    width: '100%',
-                    height: 10,
-                    backgroundColor: isDarkTheme ? colors.dark : colors.white,
-                    borderRadius: 5
-                }}
+               style={{ borderBottomWidth: 0.2, borderColor: colors.black, marginBottom: 12, marginHorizontal: 16}}
             />
         </SafeAreaView>
     )

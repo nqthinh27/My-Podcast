@@ -24,8 +24,7 @@ function Library(props) {
     const isFocused = useIsFocused();
     useEffect(() => {
         if (isFocused && !user) {
-            // navigate("MyProfile");
-            // warningLogin(navigate, "Login", "Home");
+            warningLogin(navigate, "Login", "Home");
         }
     }, [isFocused]);
 

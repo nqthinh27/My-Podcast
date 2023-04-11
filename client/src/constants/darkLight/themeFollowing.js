@@ -1,10 +1,11 @@
 import { StyleSheet } from "react-native";
 import colors from "../colors";
+import { device } from '../device'
 
 export const lightfollowStyles = StyleSheet.create({
     contentWrapper: {
         marginTop: 10,
-        backgroundColor: "#EDEDED",
+        // backgroundColor: "#EDEDED",
     },
 });
 
@@ -72,11 +73,11 @@ export const lightFollowingItem = StyleSheet.create({
     },
     imageWrapper: {
         //position: 'absolute',
-        width: 355,
-        height: 355,
+        width: device.width-32,
+        height: device.width-32,
         alignSelf: "center",
         // top: 15,
-        borderRadius: 20,
+        borderRadius: 16,
         backgroundColor: colors.black,
         //ma: 15,
     },
@@ -98,6 +99,7 @@ export const lightFollowingItem = StyleSheet.create({
         borderWidth: 0.8,
         borderColor: colors.black,
     },
+
     comment: {
         height: 32,
         marginLeft: 12,
@@ -108,7 +110,7 @@ export const lightFollowingItem = StyleSheet.create({
         right: 12
     },
     interactPlayTime: {
-        top: 15,
+        marginTop: 15,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -123,7 +125,8 @@ export const lightFollowingItem = StyleSheet.create({
         // alignSelf: 'center',
     },
     progressBar: {
-        width: 230,
+        // width: '100%',
+        flex: 1,
     },
 });
 
