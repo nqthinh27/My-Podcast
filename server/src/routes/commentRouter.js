@@ -6,6 +6,8 @@ router.post('/:id/create', authMiddleware, commentController.createComment);
 
 router.get('/:id', commentController.getAllComments);
 
+router.delete('/:id', authMiddleware, commentController.deleteComment);
+
 // router.patch('/comment/:id', auth, commentController.updateComment);
 
 // router.patch('/comment/:id/like', auth, commentController.likeComment);
