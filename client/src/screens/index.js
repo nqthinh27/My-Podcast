@@ -4,7 +4,7 @@ import Library from "./Library";
 import Post from "./Post";
 import Setting from "./Setting";
 import Login from "./Login";
-import PlayerScreen from "./PlayerScreen";
+import PlayerScreen from "./Player/PlayerScreen";
 
 export {
     Home,

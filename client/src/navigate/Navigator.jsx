@@ -6,7 +6,7 @@ import Following from "../screens/Following";
 import Post from "../screens/Post";
 import Setting from "../screens/Setting";
 import UIScreen from "./UIScreen";
-import PlayerScreen from "../screens/PlayerScreen";
+import PlayerScreen from "../screens/Player/PlayerScreen";
 import Login from "../screens/Login";
 import MyProfile from "../screens/MyProfile";
 import Register from "../screens/Register/Register";

@@ -9,27 +9,27 @@ import {
     ScrollView,
     SafeAreaView,
 } from "react-native";
+import { useDispatch, useSelector } from 'react-redux';
 import Slider from "@react-native-community/slider";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import colors from "../constants/colors";
-import { device } from "../constants/device";
-import GlobalStyles from "../components/GlobalStyles";
+import colors from "../../constants/colors";
+import { device } from "../../constants/device";
+import GlobalStyles from "../../components/GlobalStyles";
 import { Audio } from 'expo-av';
+import { setSoundUrl, setDuration, setPlayValue, setPosition, setIsMiniPlayer, setIsPlayer } from '../../redux/slices/playerSlice'
+import { useNavigation } from "@react-navigation/native";
 
 export default function PlayerScreen(props) {
-    // navigation
-    const { navigation, route } = props;
-    //function of navigate
-    const { navigate, goback } = navigation;
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [playValue, setPlayValue] = useState(false);
-    const [sound, setSound] = useState(null);
-    const [position, setPosition] = useState(0);
-    const [duration, setDuration] = useState(null);
+    const navigation = useNavigation();
 
-    const handlePlayPause = () => {
-        setIsPlaying((prevState) => !prevState);
-    };
+    const dispatch = useDispatch();
+    const [sound, setSound] = useState(null);
+    const soundUrl = useSelector((state) => state.player.soundUrl);
+    const playValue = useSelector((state) => state.player.playValue);
+    const position = useSelector((state) => state.player.position);
+    const duration = useSelector((state) => state.player.duration);
+    const isMiniPlayer = useSelector((state) => state.player.isMiniPlayer);
+    const isPlayer = useSelector((state) => state.player.isPlayer);
 
     const [scrollOffset, setScrollOffset] = useState(0);
 
@@ -48,78 +48,137 @@ export default function PlayerScreen(props) {
         navigate("Library");
     }
 
-    // useEffect(() => { 
-    //     handlePlay()
-    // }, [playValue]);
-
-    // const handlePlay = () => {
-    //     setPlayValue(!playValue);
-    // }
-
     async function playSound() {
+        // try {
+        //     await Audio.setAudioModeAsync({
+        //         staysActiveInBackground: true,
+        //         interruptionModeAndroid: 1,
+        //         shouldDuckAndroid: true,
+        //         interruptionModeIOS: 1,
+        //         playsInSilentModeIOS: true,
+        //     });
+        //     if (!isMiniPlayer) {
+        //         const { sound } = await Audio.Sound.createAsync(
+        //             { uri: soundUrl },
+        //             {
+        //                 shouldPlay: true,
+        //                 isLooping: true,
+        //             },
+        //             onPlaybackStatusUpdate
+        //         );
+        //         setSound(sound);
+        //         // dispatch(setPlayValue(true));
+        //     }
+        //     else {
+        //         const { sound } = await Audio.Sound.createAsync(
+        //             { uri: soundUrl },
+        //             onPlaybackStatusUpdate
+        //         );
+        //         setSound(sound);
+        //         // dispatch(setPlayValue(true));
+        //     }
+        // } catch (error) {
+        //     console.log(error);
+        // }
         try {
             await Audio.setAudioModeAsync({
                 staysActiveInBackground: true,
                 interruptionModeAndroid: 1,
                 shouldDuckAndroid: true,
-                // playThroughEarpieceAndroid: true,
-                // allowsRecordingIOS: true,
                 interruptionModeIOS: 1,
                 playsInSilentModeIOS: true,
             });
-
             const { sound } = await Audio.Sound.createAsync(
-                { uri: 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Sound%2FLoi-Nho.mp3?alt=media&token=b522c960-115d-49ba-8d6d-5f1f2dbb9d77' },
+                { uri: soundUrl },
                 {
                     shouldPlay: true,
                     isLooping: true,
+                    positionMillis: position,
+
                 },
                 onPlaybackStatusUpdate
             );
-            
             setSound(sound);
-            setPlayValue(true);
+            // dispatch(setPlayValue(true));
         } catch (error) {
             console.log(error);
         }
     }
 
-    async function pauseSound() {
+    useEffect(() => {
+        if (soundUrl && !isMiniPlayer) {
+            playSound();
+            console.log("ductu");
+        }
+        return () => {
+            if (sound != null) {
+                sound.unloadAsync();
+            }
+        };
+    }, [soundUrl]);
+
+    useEffect(() => {
         if (sound != null) {
-            await sound.pauseAsync();
-            setPlayValue(false);
+            if (playValue) {
+                resumeSound();
+            } else {
+                pauseSound();
+            }
+        }
+    }, [playValue]);
+
+    async function pauseSound() {
+        if (playValue) {
+            if (sound != null) {
+                await sound.pauseAsync();
+                dispatch(setPlayValue(false));
+            }
         }
     }
+
+    useEffect(() => {
+        if (isMiniPlayer && playValue) {
+            playSound();
+            dispatch(setIsMiniPlayer(false));
+            console.log("2")
+        } 
+    }, [isMiniPlayer]);
 
     async function resumeSound() {
         if (sound != null) {
             const status = await sound.getStatusAsync();
             if (!status.isLoaded) {
                 await sound.loadAsync(
-                    { uri: 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Sound%2FLoi-Nho.mp3?alt=media&token=b522c960-115d-49ba-8d6d-5f1f2dbb9d77' },
+                    { uri: soundUrl },
                     { shouldPlay: true }
                 );
             }
             await sound.playAsync();
-            setPlayValue(true);
+            dispatch(setPlayValue(true));
+            console.log(playValue);
+        }
+        if (isMiniPlayer) {
+            playSound();
+            dispatch(setPlayValue(true));
+            dispatch(setIsMiniPlayer(false));
         }
     }
 
-
-
     function onPlaybackStatusUpdate(status) {
         if (status.isPlaying) {
-            setPosition(status.positionMillis);
-            setDuration(status.durationMillis);
+            dispatch(setPosition(status.positionMillis));
+            dispatch(setDuration(status.durationMillis));
         }
     }
 
     function onSliderValueChange(value) {
         if (sound != null) {
             sound.setPositionAsync(value);
-            setPosition(value);
+            dispatch(setPosition(value));
         }
     }
+
+
     const formatTime = (time) => {
         if (time == null) {
             return '--:--';
@@ -143,6 +202,7 @@ export default function PlayerScreen(props) {
                 sound.unloadAsync();
             }
             : undefined;
+            
     }, [sound]);
 
     return (
@@ -155,8 +215,11 @@ export default function PlayerScreen(props) {
                         size={35}
                         color={"black"}
                         onPress={() => {
-                            navigate("UIScreen");
+                            dispatch(setIsMiniPlayer(true));
+                            if (!playValue) dispatch(setIsPlayer(true));
+                            navigation.navigate('UIScreen');
                         }}
+                        value={isMiniPlayer}
                     />
                 </TouchableOpacity>
 
@@ -238,7 +301,7 @@ export default function PlayerScreen(props) {
                                     }}
                                 />
                             </TouchableOpacity>
-                            {sound == null && (
+                            {/* {isMiniPlayer && (
                                 <TouchableOpacity onPress={() => playSound()}>
                                     <Image
                                         style={{ width: 55, height: 55 }}
@@ -248,20 +311,19 @@ export default function PlayerScreen(props) {
                                         }}
                                     />
                                 </TouchableOpacity>
-                            )}
-                            {sound != null && !playValue && (
-                                <TouchableOpacity onPress={() => resumeSound()}>
+                            )} */}
+                            {playValue ? (
+                                <TouchableOpacity onPress={() => pauseSound()}>
                                     <Image
                                         style={{ width: 55, height: 55 }}
                                         source={{
                                             uri:
-                                                "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Tu%2FGroup%2066.png?alt=media&token=5fb2d1e2-48a0-43bb-9773-ce3424e388f4",
+                                                "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fpause.png?alt=media&token=ae6b74e7-ac06-40a8-a1a7-09d3380e2863",
                                         }}
                                     />
                                 </TouchableOpacity>
-                            )}
-                            {sound != null && playValue && (
-                                <TouchableOpacity onPress={() => pauseSound()}>
+                            ) : (
+                                <TouchableOpacity onPress={() => resumeSound()}>
                                     <Image
                                         style={{ width: 55, height: 55 }}
                                         source={{
