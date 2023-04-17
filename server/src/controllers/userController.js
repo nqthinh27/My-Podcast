@@ -40,8 +40,28 @@ const userController = {
     // GET USER POST
     getUserPost: async (req, res) => {
         try {
-            const user = await Users.findById(req.params.id).populate('posts');
-            res.status(200).json(user.posts);
+            const page = parseInt(req.query.page) || 1;
+            const limit = parseInt(req.query.limit) || 15;
+            const skip = (page - 1) * limit;
+
+            const user = await Users.findById(req.params.id).populate({
+                path: 'posts',
+                select: '_id title image likes views',
+                options: {
+                    skip,
+                    limit: parseInt(limit)
+                }
+            });
+
+            const totalPosts = user.posts.length;
+            const totalPages = Math.ceil(totalPosts / limit);
+
+            res.status(200).json({
+                posts: user.posts,
+                currentPage: parseInt(page),
+                totalPages,
+                totalPosts
+            });
         } catch (err) {
             return res.status(500).json({ msg: err.message })
         }

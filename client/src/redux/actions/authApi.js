@@ -37,8 +37,13 @@ export const stayLogged = async (refresh_token, dispatch, navigate) => {
         // giải mã token 
         decodedToken = jwtDecode(rf_token.data.access_token);
         // Lấy data người dùng
-        const res = await axios.get(`${BASE_URL}/user/${decodedToken.id}`);
+        const res = await axios.post(`${BASE_URL}/auth`, null, {
+            headers: { 
+                token: rf_token.data.access_token,
+            }
+        });
         dispatch(loginSuccess(res.data));
+        dispatch(loginAccount());
         navigate('UIScreen');
     } catch (err) {
         dispatch(loginFailed());

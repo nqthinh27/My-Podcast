@@ -16,16 +16,16 @@ import ProfileInfo from "../components/ProfileInfo";
 import { MyPopularData } from "../../dummyData";
 import ProfilePodcast from "../components/ProfilePodcast";
 import { MyNewReLeaseData } from "../../dummyData";
+import { useSelector } from "react-redux";
+import { device } from "../constants/device";
 
 function MyProfile(props) {
     //navigation
-    // const { navigation, route } = props;
+    const { navigation, route } = props;
     // //function of navigate
-    // const { navigate, goback } = navigation;
-
-    const [posts, setPosts] = useState(1)
-    const [followers, setFollowers] = useState(1)
-    const [following, setFollowing] = useState(1)
+    const { navigate, goBack } = navigation;
+    const user = useSelector((state) => state.auth.login.currentUser);
+    const {fullName, userName, avatar, moblie, address, story, website, posts, following, followers } = user;
 
     function updatePosts() {
         setPosts(posts + 1)
@@ -39,7 +39,7 @@ function MyProfile(props) {
                         name={"chevron-left"}
                         size={26}
                         onPress={() => {
-                            navigate("UIScreen");
+                            goBack();
                         }}
                     />
                     <Text style={styles.myprofileTextHeader}>
@@ -51,14 +51,15 @@ function MyProfile(props) {
                 <View style={styles.myprofileContainer}>
                     <ProfileInfo
                         styles={{
+                            // marginLeft: 0,
                             width: "100%",
                             backgroundColor: "red",
                         }}
-                        avt="https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/avatar.jpg?alt=media&token=fc074eb8-e67f-4235-8230-160cae1557b5"
-                        name="Nguyễn Quang Thịnh"
-                        followers={2002}
-                        following={2002}
-                        posts={20}
+                        avt={avatar}
+                        name={fullName}
+                        followers={followers}
+                        following={following}
+                        posts={posts}
                     ></ProfileInfo>
 
                     <TouchableOpacity style={styles.myprofileEditProfile}>
