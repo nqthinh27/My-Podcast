@@ -10,7 +10,7 @@ import {
     Dimensions,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome5";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { HeaderUI } from "../components";
 import ReleasedPodcast from "../components/ReleasedPodcast"
@@ -20,6 +20,8 @@ import TopTrendingItem from "../components/TopTrendingItem";
 
 import { TopTrendingData, PlaylistData, RecommendData, RelexData, NewReLeaseData, dummyData } from "../../dummyData";
 import { lightHome, darkHome, lightTrendingHome, darkTrendingHome } from "../constants/darkLight/themeHome"
+import MiniPlayer from "./Player/MiniPlayer";
+import { setSoundUrl, setPlayValue } from "../redux/slices/playerSlice";
 
 // import PlayerScreen from "./PlayerScreen";
 
@@ -29,7 +31,10 @@ export default function Home(props) {
     //function of navigate
     const { navigate, goback } = navigation;
 
+    const dispatch = useDispatch();
     const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
+    const isMiniPlayer = useSelector((state) => state.player.isMiniPlayer);
+    const playValue = useSelector((state) => state.player.playValue);
     const [currentIndex, setCurrentIndex] = useState(0);
     const flatListRef = useRef(null);
     const scrollViewRef = useRef(null);
@@ -54,9 +59,11 @@ export default function Home(props) {
         }
         console.log('ductu');
     }
-
+    const soundUrl1 = 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Sound%2FLoi-Nho.mp3?alt=media&token=b522c960-115d-49ba-8d6d-5f1f2dbb9d77';
     function playerNavigate() {
         navigate('PlayerScreen');
+        dispatch(setSoundUrl(soundUrl1));
+        dispatch(setPlayValue(true))
     }
 
     return (
@@ -105,10 +112,10 @@ export default function Home(props) {
                     <ScrollView
                         style={lightTrendingHome.wrapper}
                         horizontal={true}
-                        pagingEnabled={true} 
+                        pagingEnabled={true}
                         showsHorizontalScrollIndicator={false}
-                        // ref={scrollViewRef}
-                        // onScroll={handleScroll}
+                    // ref={scrollViewRef}
+                    // onScroll={handleScroll}
                     >
                         <View style={isDarkTheme ? darkTrendingHome.contentWrapper : lightTrendingHome.contentWrapper}>
                             <View style={lightTrendingHome.contentSection}>
@@ -181,7 +188,7 @@ export default function Home(props) {
                     <Text style={[isDarkTheme ? darkHome.title : lightHome.title, lightHome.blank]}>Mới phát hành</Text>
                     <Icon
                         name='chevron-right'
-                        style={{ opacity: 1, marginLeft: 8, marginTop: 13}}
+                        style={{ opacity: 1, marginLeft: 8, marginTop: 13 }}
                         size={16} color={isDarkTheme ? darkHome.wrapper.color : lightHome.wrapper.color}
                     />
                 </TouchableOpacity>
@@ -285,6 +292,11 @@ export default function Home(props) {
                     })}
                 </ScrollView>
             </ScrollView>
+            {isMiniPlayer && <MiniPlayer
+                avtUrl="https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Tu%2FRectangle%2038.png?alt=media&token=780197d0-e51a-496c-8ff1-006b24341c50"
+                tittle="Tuổi trẻ, tinh yêu và sự nghiệp"
+                author="Tun Phạm"
+            />}
         </SafeAreaView>
     );
 }
