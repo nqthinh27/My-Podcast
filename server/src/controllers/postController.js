@@ -43,8 +43,8 @@ const postController = {
                 });
                 await tag.save();
             }
-            if (req.body.owner_id) {
-                const post = Users.findById(req.body.owner_id);
+            if (req.user._id) {
+                const post = Users.findById(req.user._id);
                 await post.updateOne({ $push: { posts: newPost._id } });
             }
             await newPost.save()

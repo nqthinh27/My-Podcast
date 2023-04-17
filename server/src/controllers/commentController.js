@@ -3,11 +3,54 @@ const Users = require('../models/userModel');
 const Posts = require('../models/postModel');
 
 const commentController = {
+    getUserPost: async (req, res) => {
+        try {
+            const page = parseInt(req.query.page) || 1;
+            const limit = parseInt(req.query.limit) || 15;
+            const skip = (page - 1) * limit;
+
+            const user = await Users.findById(req.params.id).populate({
+                path: 'posts',
+                select: '_id title image likes views',
+                options: {
+                    skip,
+                    limit: parseInt(limit)
+                }
+            });
+
+            const totalPosts = user.posts.length;
+            const totalPages = Math.ceil(totalPosts / limit);
+
+            res.status(200).json({
+                posts: user.posts,
+                currentPage: parseInt(page),
+                totalPages,
+                totalPosts
+            });
+        } catch (err) {
+            return res.status(500).json({ msg: err.message })
+        }
+    },
     getAllComments: async (req, res) => {
         try {
-            const comments = await Comments.find({ postId: req.params.id }).populate('comment.userId', 'fullName userName avatar');
-            if (!comments) return res.status(400).json({ msg: "This post does not exists!" });
-            return res.status(200).json(comments[0].comment);
+            const page = parseInt(req.query.page) || 1;
+            const limit = parseInt(req.query.limit) || 10;
+            const skip = (page - 1) * limit;
+            const comment = await Comments.findOne({ postId: req.params.id }, { comment: { $slice: [skip, limit] } })
+                                          .populate('comment.userId', 'userName fullName avatar')
+                                          .lean();
+            if (!comment) return res.status(400).json({ msg: "This post does not exist!" });
+            const totalComments = comment.comment.length;
+            const totalPages = Math.ceil(totalComments / limit);
+            const currentPage = page > totalPages ? totalPages : page;
+            res.status(200).json({
+                comment: comment.comment,
+                pagination: {
+                    currentPage,
+                    totalPages,
+                    totalComments
+                }
+            });
         } catch (err) {
             return res.status(500).json({ msg: err.message });
         }
@@ -48,7 +91,7 @@ const commentController = {
         }
     },
 
-    deleteComment: async(req,res) => {
+    deleteComment: async (req, res) => {
         try {
             const post = await Posts.findById(req.params.id)
             if (!post) return res.status(400).json({ msg: "This post does not exist." });
@@ -57,7 +100,7 @@ const commentController = {
             }, { new: true })
             console.log(comments);
             if (!comments) return res.status(400).json({ msg: "This post does not exist!" });
-            return res.status(200).json({msg: "Deleted comment!"})
+            return res.status(200).json({ msg: "Deleted comment!" })
         } catch (err) {
             return res.status(500).json({ msg: err.message });
         }
