@@ -18,8 +18,7 @@ export default function Following(props) {
     const isFocused = useIsFocused();
     useEffect(() => {
         if (isFocused && !user) {
-            // navigate("MyProfile");   
-            // warningLogin(navigate, 'Login', 'Home');
+            warningLogin(navigate, 'Login', 'Home');
         } 
     }, [isFocused]);
     const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);

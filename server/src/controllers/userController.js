@@ -40,23 +40,30 @@ const userController = {
     // GET USER POST
     getUserPost: async (req, res) => {
         try {
-            const user = await Users.findById(req.params.id).populate('posts');
-            res.status(200).json(user.posts);
+            const page = parseInt(req.query.page) || 1;
+            const limit = parseInt(req.query.limit) || 15;
+            const skip = (page - 1) * limit;
+
+            const user = await Users.findById(req.params.id).populate({
+                path: 'posts',
+                select: '_id title image likes views',
+                options: {
+                    skip,
+                    limit: parseInt(limit)
+                }
+            });
+
+            const totalPosts = user.posts.length;
+            const totalPages = Math.ceil(totalPosts / limit);
+
+            res.status(200).json({
+                posts: user.posts,
+                currentPage: parseInt(page),
+                totalPages,
+                totalPosts
+            });
         } catch (err) {
             return res.status(500).json({ msg: err.message })
-        }
-    },
-
-    // Get all followers
-    getAllFollowers: async (req, res) => {
-        try {
-            const user = await Users.findById(req.params.id).populate({
-                path: 'followers',
-                select: 'fullName userName avatar gender'
-              });
-            res.status(200).json(user.followers);
-        } catch (err) {
-            return res.status(500).json({ msg: err.message });
         }
     },
 
@@ -73,24 +80,7 @@ const userController = {
         }
     },
     
-    // FOLLOW OTHER USER
-    followOther: async (req, res) => {
-        try {
-            const user = await Users.findOneAndUpdate({ _id: req.user._id }, {
-                $push: { following: req.params.id }
-            }, { new: true })
-            if (!user) return res.status(400).json({ msg: 'This user does not exist or not logged in' });
-            
-            const other = await Users.findOneAndUpdate({ _id: req.params.id }, {
-                $push: { followers: req.user._id }
-            }, { new: true })
-            if (!other) return res.status(400).json({ msg: 'This user does not exist or not logged in' });
 
-            res.status(200).json({ msg: 'Followed!' });
-        } catch (err) {
-            return res.status(500).json({ msg: err.message });
-        }
-    },
 
     /**
     * for Library
