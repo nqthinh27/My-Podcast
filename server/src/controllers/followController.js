@@ -54,6 +54,62 @@ const followController = {
             return res.status(500).json({ msg: err.message })
         }
     },
+
+    // Get all followers
+    getFollowers: async (req, res) => {
+        try {
+            const page = parseInt(req.query.page) || 1;
+            const limit = parseInt(req.query.limit) || 15;
+            const skip = (page - 1) * limit;
+
+            const user = await Users.findById(req.params.id).populate({
+                path: 'followers',
+                select: 'fullName userName avatar',
+                options: {
+                    skip,
+                    limit: parseInt(limit)
+                }
+            });
+            const totalFollower = user.followers.length;
+            const totalPages = Math.ceil(totalFollower / limit);
+            res.status(200).json({
+                follower: user.followers,
+                currentPage: parseInt(page),
+                totalPages,
+                totalFollower
+            });
+        } catch (err) {
+            return res.status(500).json({ msg: err.message });
+        }
+    },
+
+    // Get all following
+    getFollowing: async (req, res) => {
+        try {
+            const page = parseInt(req.query.page) || 1;
+            const limit = parseInt(req.query.limit) || 15;
+            const skip = (page - 1) * limit;
+
+            const user = await Users.findById(req.params.id).populate({
+                path: 'following',
+                select: 'fullName userName avatar',
+                options: {
+                    skip,
+                    limit: parseInt(limit)
+                }
+            });
+            const totalFollowing = user.following.length;
+            const totalPages = Math.ceil(totalFollowing / limit);
+            res.status(200).json({
+                following: user.following,
+                currentPage: parseInt(page),
+                totalPages,
+                totalFollowing
+            });
+        } catch (err) {
+            return res.status(500).json({ msg: err.message });
+        }
+    },
 }
 
 module.exports = followController;
