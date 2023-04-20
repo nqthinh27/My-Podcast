@@ -66,9 +66,9 @@ export default function HeaderUI(props) {
 
     const handleLogin = () => {
         if (user) {
-            // navigate("MyProfile");   
+            navigate("MyProfile");   
             // Làm trang profile xong thì bỏ cái alert đi nhé
-            alert('Bạn đã đăng nhập!');
+            // alert('Bạn đã đăng nhập!');
         } else {
             navigate("Login");   
         }

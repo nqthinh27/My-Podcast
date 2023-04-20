@@ -10,7 +10,7 @@ const likeController = {
                 select: '_id title owner',
                 populate: {
                     path: 'owner',
-                    select: 'userName fullName'
+                    select: 'userName fullName avatar'
                 }
             });
             if (!userLiked) return res.status(400).json({ msg: 'User doest not exist or not logged in' });
@@ -23,7 +23,6 @@ const likeController = {
         try {
             const userLikedId = req.user.liked.toString();
             const userLiked = await Likes.findById(userLikedId);
-            console.log(userLiked);
             if (!userLiked) return res.status(400).json({ msg: 'User doest not exist or not logged in' });
             userLiked.liked.push({
                 $each: [req.params.id],

@@ -37,8 +37,7 @@ export default function Setting(props) {
 
     const handleLogin = () => {
         if (user) {
-            // navigate("MyProfile");   
-            alert('Bạn đã đăng nhập!');
+            navigate("MyProfile");   
         } else {
             navigate("Login");
         }

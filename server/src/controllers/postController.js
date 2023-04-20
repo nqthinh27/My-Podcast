@@ -1,6 +1,7 @@
 const Posts = require('../models/postModel')
 const Comments = require('../models/commentModel')
 const Users = require('../models/userModel')
+const Tags = require('../models/tagModel')
 
 // class APIfeatures {
 //     constructor(query, queryString){
@@ -30,12 +31,20 @@ const postController = {
                 return res.status(400).json({ msg: "Please add your audio." });
 
             const newPost = new Posts({
-                title, content, image, audio, owner: req.user._id,
+                title, content, image, audio, owner: req.user._id, tag: req.body.tag || [],
             })
-            const newPostComment = new Comments({postId: newPost._id});
+            const newPostComment = new Comments({ postId: newPost._id });
             await newPostComment.save();
-            if (req.body.owner_id) {
-                const post = Users.findById(req.body.owner_id);
+            const tags = await Tags.find({ tag: { $in: req.body.tag } });
+            for (const tag of tags) {
+                tag.postIds.push({
+                    $each: [newPost._id],
+                    $position: 0,
+                });
+                await tag.save();
+            }
+            if (req.user._id) {
+                const post = Users.findById(req.user._id);
                 await post.updateOne({ $push: { posts: newPost._id } });
             }
             await newPost.save()

@@ -1,22 +1,21 @@
 import React from "react";
 import { StyleSheet, Text, View, Image } from "react-native";
+import { device } from "../constants/device";
 function ProfileInfo(props) {
     const { avt, name, followers, following, posts } = props;
 
     return (
         <View style={styles.profileinfo}>
-            <View style={{ marginHorizontal: 20 }}>
-                <Image
-                    style={{
-                        width: 75,
-                        height: 75,
-                        borderRadius: 50,
-                    }}
-                    source={{
-                        uri: avt,
-                    }}
-                />
-            </View>
+            <Image
+                style={{
+                    width: 75,
+                    height: 75,
+                    borderRadius: 50,
+                }}
+                source={{
+                    uri: avt,
+                }}
+            />
 
             <View style={styles.profileinfoUser}>
                 <View style={styles.profileinfoName}>
@@ -51,7 +50,15 @@ function ProfileInfo(props) {
 
 const styles = StyleSheet.create({
     profileinfo: {
+        width: '100%',
         flexDirection: "row",
+        marginHorizontal: 16
+    },
+    profileinfoAvt: {
+
+    },
+    profileinfoUser: {
+        marginLeft: 10
     },
 
     profileinfoName: {
@@ -65,6 +72,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-around",
+        width: 270
     },
 
     textsmall: {
@@ -74,7 +82,7 @@ const styles = StyleSheet.create({
     textmedium: {
         fontSize: 15,
     },
-    
+
     profileinfoPostView: {
         justifyContent: "center",
         alignItems: "center",
@@ -82,7 +90,6 @@ const styles = StyleSheet.create({
     profileinfoFollowerView: {
         justifyContent: "center",
         alignItems: "center",
-        marginHorizontal: "9%",
     },
 
     profileinfoFollowingView: {

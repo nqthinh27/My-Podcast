@@ -1,4 +1,4 @@
- const mongoose = require('mongoose')
+const mongoose = require('mongoose')
 
 const postSchema = new mongoose.Schema({
     title: {
@@ -14,7 +14,7 @@ const postSchema = new mongoose.Schema({
         type: String,
         require: true,
     },
-    likes:{
+    likes: {
         type: Number,
         default: 0,
     },
@@ -31,6 +31,14 @@ const postSchema = new mongoose.Schema({
         ref: 'user',
         require: true,
     },
+    tag: {
+        type: [String],
+        default: [],
+    },
+    // album: {
+    //     type: mongoose.Types.ObjectId,
+    //     ref: 'album',
+    // },
 }, {
     timestamps: { currentTime: () => new Date(Date.now() + (7 * 60 * 60 * 1000)) }
 })

@@ -19,13 +19,4 @@ router.put('/:id', authMiddleware, userController.updateUserById);
 // GET USER POST
 router.get('/:id/posts', userController.getUserPost);
 
-// GET FOLLOWERS
-router.get('/:id/followers', userController.getAllFollowers);
-
-// GET FOLLOWING
-router.get('/:id/following', userController.getAllFollowing);
-
-// FOLLOW OTHER USER
-router.post('/:id/follow',authMiddleware, userController.followOther);
-
 module.exports = router;
