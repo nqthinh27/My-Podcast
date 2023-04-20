@@ -1,4 +1,4 @@
-import { React, useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback, useLayoutEffect } from "react";
 import {
     Text,
     View,
@@ -8,6 +8,7 @@ import {
     TouchableOpacity,
     ScrollView,
     SafeAreaView,
+    BackHandler,
 } from "react-native";
 import { useDispatch, useSelector } from 'react-redux';
 import Slider from "@react-native-community/slider";
@@ -16,11 +17,16 @@ import colors from "../../constants/colors";
 import { device } from "../../constants/device";
 import GlobalStyles from "../../components/GlobalStyles";
 import { Audio } from 'expo-av';
-import { setSoundUrl, setDuration, setPlayValue, setPosition, setIsMiniPlayer, setIsPlayer } from '../../redux/slices/playerSlice'
-import { useNavigation } from "@react-navigation/native";
+import { setSoundUrl, setDuration, setPlayValue, setPosition, setIsMiniPlayer, setIsPlayer, setCurrentTrack } from '../../redux/slices/playerSlice'
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { songs } from "../../../dummyData";
 
 export default function PlayerScreen(props) {
     const navigation = useNavigation();
+    // //navigation
+    // const { navigation, route } = props;
+    // //function of navigate
+    // const { navigate, goback } = navigation;
 
     const dispatch = useDispatch();
     const [sound, setSound] = useState(null);
@@ -29,6 +35,7 @@ export default function PlayerScreen(props) {
     const position = useSelector((state) => state.player.position);
     const duration = useSelector((state) => state.player.duration);
     const isMiniPlayer = useSelector((state) => state.player.isMiniPlayer);
+    const currentTrack = useSelector(state => state.player.currentTrack); //chọn giá trị currentTrack từ store
     const isPlayer = useSelector((state) => state.player.isPlayer);
 
     const [scrollOffset, setScrollOffset] = useState(0);
@@ -48,38 +55,100 @@ export default function PlayerScreen(props) {
         navigate("Library");
     }
 
+    // ấn nút back cũng thu nhỏ màn hình
+    // useEffect(
+    //     React.useCallback(() => {
+    //         const onBackPress = () => {
+    //             navigation.goBack();
+    //             dispatch(setIsMiniPlayer(true));
+    //             if (!playValue) setIsPlayer(true);
+    //             console.log("back isMiniPlayer: " + isMiniPlayer);
+    //             console.log("back isPlayer: " + isPlayer);
+    //             return true; // Trả về false để thoát khỏi màn hình
+    //         };
+
+    //         BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    //         return () => {
+    //             BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    //         };
+    //     }, [navigation])
+    // );
+
+    const onBackPress = () => {
+        navigation.goBack();
+        dispatch(setIsMiniPlayer(true));
+        console.log("back isMiniPlayer: " + isMiniPlayer);
+        console.log("back isPlayer: " + isPlayer);
+        return true;
+    };
+
+    useEffect(() => {
+        BackHandler.addEventListener('hardwareBackPress', onBackPress);
+        return () => {
+            BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+        };
+    }, [navigation]);
+
+    // 
+    useEffect(() => {
+        if (navigation.isFocused() && isMiniPlayer && playValue) {
+            playSound();
+            dispatch(setIsMiniPlayer(false));
+            console.log("phát nhạc khi focus trở lại màn hình PlayerScreen");
+        }
+    }, [navigation.isFocused(), isMiniPlayer, playValue]);
+
+
+    // ấn nút thu nhỏ màn hình
+    function changeMiniPlayer() {
+        setSound(null);
+        dispatch(setIsMiniPlayer(true));
+        if (!playValue) dispatch(setIsPlayer(true));
+        navigation.navigate('UIScreen');
+    }
+
+    useEffect(() => {
+        if (soundUrl === null) {
+            async function loadInitialData() {
+                dispatch(setCurrentTrack(songs[0]));
+                dispatch(setSoundUrl(songs[0].url));
+            }
+            console.log("nhập bài hát");
+            loadInitialData();
+        }
+    }, []);
+    useEffect(() => {
+        if (soundUrl && !isMiniPlayer) {
+            playSound();
+            console.log("ductu");
+        }
+        return () => {
+            if (sound != null) {
+                sound.unloadAsync();
+                setSound(null);
+            }
+        };
+    }, [soundUrl]);
+
+    useEffect(() => {
+        if (sound != null) {
+            if (playValue) {
+                resumeSound();
+            } else {
+                pauseSound();
+            }
+        }
+    }, [playValue]);
+
+    // useEffect(() => {
+    //     if (isMiniPlayer && playValue) {
+    //         playSound();
+    //         dispatch(setIsMiniPlayer(false));
+    //         console.log("phát khi ấn vào màn hình miniPlayer")
+    //     }
+    // }, [isMiniPlayer]);
+
     async function playSound() {
-        // try {
-        //     await Audio.setAudioModeAsync({
-        //         staysActiveInBackground: true,
-        //         interruptionModeAndroid: 1,
-        //         shouldDuckAndroid: true,
-        //         interruptionModeIOS: 1,
-        //         playsInSilentModeIOS: true,
-        //     });
-        //     if (!isMiniPlayer) {
-        //         const { sound } = await Audio.Sound.createAsync(
-        //             { uri: soundUrl },
-        //             {
-        //                 shouldPlay: true,
-        //                 isLooping: true,
-        //             },
-        //             onPlaybackStatusUpdate
-        //         );
-        //         setSound(sound);
-        //         // dispatch(setPlayValue(true));
-        //     }
-        //     else {
-        //         const { sound } = await Audio.Sound.createAsync(
-        //             { uri: soundUrl },
-        //             onPlaybackStatusUpdate
-        //         );
-        //         setSound(sound);
-        //         // dispatch(setPlayValue(true));
-        //     }
-        // } catch (error) {
-        //     console.log(error);
-        // }
         try {
             await Audio.setAudioModeAsync({
                 staysActiveInBackground: true,
@@ -105,28 +174,6 @@ export default function PlayerScreen(props) {
         }
     }
 
-    useEffect(() => {
-        if (soundUrl && !isMiniPlayer) {
-            playSound();
-            console.log("ductu");
-        }
-        return () => {
-            if (sound != null) {
-                sound.unloadAsync();
-            }
-        };
-    }, [soundUrl]);
-
-    useEffect(() => {
-        if (sound != null) {
-            if (playValue) {
-                resumeSound();
-            } else {
-                pauseSound();
-            }
-        }
-    }, [playValue]);
-
     async function pauseSound() {
         if (playValue) {
             if (sound != null) {
@@ -135,15 +182,6 @@ export default function PlayerScreen(props) {
             }
         }
     }
-
-    useEffect(() => {
-        if (isMiniPlayer && playValue) {
-            playSound();
-            dispatch(setIsMiniPlayer(false));
-            console.log("2")
-        } 
-    }, [isMiniPlayer]);
-
     async function resumeSound() {
         if (sound != null) {
             const status = await sound.getStatusAsync();
@@ -155,7 +193,7 @@ export default function PlayerScreen(props) {
             }
             await sound.playAsync();
             dispatch(setPlayValue(true));
-            console.log(playValue);
+            console.log("dừng: " + playValue);
         }
         if (isMiniPlayer) {
             playSound();
@@ -188,6 +226,44 @@ export default function PlayerScreen(props) {
         return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     };
 
+    async function switchToNewSound(newSoundUrl) {
+        try {
+            if (sound != null) {
+                await sound.unloadAsync();
+                console.log(sound);
+            }
+            if (newSoundUrl) {
+                dispatch(setSoundUrl(newSoundUrl));
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    function onNextPress() {
+        console.log("currentNext: " + currentTrack.id)
+        const currentIndex = songs.findIndex((song) => song.id === currentTrack?.id);
+        const nextTrack = songs[currentIndex + 1];
+        if (nextTrack) {
+            switchToNewSound(nextTrack.url);
+            dispatch(setCurrentTrack(nextTrack));
+            dispatch(setPlayValue(true));
+            dispatch(setPosition(0));
+        }
+    }
+
+    function onPrevPress() {
+        console.log("currentPrev: " + currentTrack.id)
+        const currentIndex = songs.findIndex((song) => song.id === currentTrack?.id);
+        const prevTrack = songs[currentIndex - 1];
+        if (prevTrack) {
+            switchToNewSound(prevTrack.url);
+            dispatch(setCurrentTrack(prevTrack));
+            dispatch(setPlayValue(true));
+            dispatch(setPosition(0));
+        }
+    }
+
 
     async function stopSound() {
         if (sound) {
@@ -202,7 +278,7 @@ export default function PlayerScreen(props) {
                 sound.unloadAsync();
             }
             : undefined;
-            
+
     }, [sound]);
 
     return (
@@ -215,9 +291,7 @@ export default function PlayerScreen(props) {
                         size={35}
                         color={"black"}
                         onPress={() => {
-                            dispatch(setIsMiniPlayer(true));
-                            if (!playValue) dispatch(setIsPlayer(true));
-                            navigation.navigate('UIScreen');
+                            changeMiniPlayer();
                         }}
                         value={isMiniPlayer}
                     />
@@ -293,7 +367,9 @@ export default function PlayerScreen(props) {
                                     }}
                                 />
                             </TouchableOpacity>
-                            <TouchableOpacity>
+                            <TouchableOpacity onPress={() => {
+                                onPrevPress()
+                            }}>
                                 <Image
                                     style={{ width: 28, height: 28 }}
                                     source={{
@@ -333,7 +409,7 @@ export default function PlayerScreen(props) {
                                     />
                                 </TouchableOpacity>
                             )}
-                            <TouchableOpacity>
+                            <TouchableOpacity onPress={() => onNextPress()}>
                                 <Image
                                     style={{ width: 28, height: 28 }}
                                     source={{

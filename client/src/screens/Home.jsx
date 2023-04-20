@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
     SafeAreaView,
     Text,
@@ -21,15 +21,18 @@ import TopTrendingItem from "../components/TopTrendingItem";
 import { TopTrendingData, PlaylistData, RecommendData, RelexData, NewReLeaseData, dummyData } from "../../dummyData";
 import { lightHome, darkHome, lightTrendingHome, darkTrendingHome } from "../constants/darkLight/themeHome"
 import MiniPlayer from "./Player/MiniPlayer";
-import { setSoundUrl, setPlayValue } from "../redux/slices/playerSlice";
+import { setSoundUrl, setPlayValue, setIsMiniPlayer } from "../redux/slices/playerSlice";
+import { useNavigation } from "@react-navigation/native";
 
 // import PlayerScreen from "./PlayerScreen";
 
 export default function Home(props) {
-    //navigation
-    const { navigation, route } = props;
-    //function of navigate
-    const { navigate, goback } = navigation;
+    // //navigation
+    // const { navigation, route } = props;
+    // //function of navigate
+    // const { navigate, goback } = navigation;
+
+    const navigation = useNavigation();
 
     const dispatch = useDispatch();
     const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
@@ -61,10 +64,18 @@ export default function Home(props) {
     }
     const soundUrl1 = 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Sound%2FLoi-Nho.mp3?alt=media&token=b522c960-115d-49ba-8d6d-5f1f2dbb9d77';
     function playerNavigate() {
-        navigate('PlayerScreen');
-        dispatch(setSoundUrl(soundUrl1));
-        dispatch(setPlayValue(true))
+        //if (!isMiniPlayer) {
+            navigation.navigate('PlayerScreen');
+            // dispatch(setSoundUrl(soundUrl1));
+            dispatch(setPlayValue(true))
+        
     }
+    // useLayoutEffect(() => {
+    //     const isMiniPlayerVisible = navigation && navigation.getParam('isMiniPlayerVisible', false);
+    //     if (isMiniPlayerVisible !== undefined) {
+    //       dispatch(setIsMiniPlayer(isMiniPlayerVisible));
+    //     }
+    //   }, [dispatch, navigation]);
 
     return (
         <SafeAreaView style={[

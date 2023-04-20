@@ -85,6 +85,7 @@ export default function MiniPlayer(props) {
     useEffect(() => {
         if (soundUrl && !isPlayer) {
             playSound();
+            console.log("phát nhạc")
         }
         return () => {
             if (sound != null) {
