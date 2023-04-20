@@ -5,7 +5,13 @@ const Tags = require('../models/tagModel')
 
 
 const postController = {
+    getAllTag: async (req, res) => {
+    },
     // FOR USER
+    // { tag: "Tâm sự", postIds: [] },
+    // { tag: "Thư dãn cuối ngày", postIds: [] },
+    // { tag: "Sức khỏe", postIds: [] },
+    // { tag: "Đời sống", postIds: [] },
     createTag: async (req, res) => {
         try {
             const { tag } = req.body
