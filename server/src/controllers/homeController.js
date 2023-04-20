@@ -16,7 +16,13 @@ const homeController = {
                     select: 'userName fullName',
                 })
                 .select('_id title image views owner');
-            return res.status(200).json(topTrending);
+            const trendingWithIndex = topTrending.map((post, index) => {
+                return {
+                    ...post.toObject(),
+                    index: index + 1,
+                };
+            });
+            return res.status(200).json(trendingWithIndex);
         } catch (err) {
             return res.status(500).json({ msg: err.message })
         }
@@ -24,15 +30,17 @@ const homeController = {
 
     getSliderPost: async (req, res) => {
         try {
-            const topTrending = await Posts.find({ createdAt: { $gte: last7Days } })
+            const sliders = await Posts.find({ createdAt: { $gte: last7Days } })
                 .sort({ likes: -1 })
                 .limit(5)
-                // .populate({
-                //     path: 'owner',
-                //     select: 'userName fullName',
-                // })
                 .select('_id title content image likes');
-            return res.status(200).json(topTrending);
+            const slidersWithIndex = sliders.map((post, index) => {
+                return {
+                    ...post.toObject(),
+                    index: index + 1,
+                };
+            });
+            return res.status(200).json(slidersWithIndex);
         } catch (err) {
             return res.status(500).json({ msg: err.message })
         }
@@ -40,31 +48,37 @@ const homeController = {
 
     getNewReleasePosts: async (req, res) => {
         try {
-          const topUsers = await Users.aggregate([
-            { $project: { followers: { $size: '$followers' }, _id: 1 } },
-            { $sort: { followers: -1 } },
-            { $limit: 100 },
-          ]);
-    
-          const topUserIds = topUsers.map((user) => user._id);
-    
-          const newRelasePosts = await Posts.find({
-            createdAt: { $gte: last7Days },
-            owner: { $in: topUserIds },
-          })
-            .sort({ createdAt: -1 })
-            .limit(10)
-            .populate({
-              path: 'owner',
-              select: 'userName fullName',
+            const topUsers = await Users.aggregate([
+                { $project: { followers: { $size: '$followers' }, _id: 1 } },
+                { $sort: { followers: -1 } },
+                { $limit: 100 },
+            ]);
+
+            const topUserIds = topUsers.map((user) => user._id);
+
+            const newRelasePosts = await Posts.find({
+                createdAt: { $gte: last7Days },
+                owner: { $in: topUserIds },
             })
-            .select('_id title image owner createdAt');
-    
-          return res.status(200).json(newRelasePosts);
+                .sort({ createdAt: -1 })
+                .limit(10)
+                .populate({
+                    path: 'owner',
+                    select: 'userName fullName',
+                })
+                .select('_id title image owner createdAt');
+
+            const newRelasePostsWithIndex = newRelasePosts.map((post, index) => {
+                return {
+                    ...post.toObject(),
+                    index: index + 1,
+                };
+            });
+            return res.status(200).json(newRelasePostsWithIndex);
         } catch (err) {
             return res.status(500).json({ msg: err.message })
         }
-      },
+    },
 
     getPostsByTag: async (req, res) => {
         try {
@@ -89,21 +103,21 @@ const homeController = {
             const users = await Users.aggregate([
                 { $unwind: '$followers' },
                 {
-                  $group: {
-                    _id: '$_id',
-                    totalFollowers: { $sum: 1 }
-                  }
+                    $group: {
+                        _id: '$_id',
+                        totalFollowers: { $sum: 1 }
+                    }
                 },
                 { $sort: { totalFollowers: -1 } },
                 { $limit: 10 }
-              ]);
-          
-              const userIds = users.map(user => user._id);
-          
-              const mostFollowedUsers = await Users.find({ _id: { $in: userIds } })
+            ]);
+
+            const userIds = users.map(user => user._id);
+
+            const mostFollowedUsers = await Users.find({ _id: { $in: userIds } })
                 .select('avatar userName fullName followers');
-          
-              res.status(200).json(mostFollowedUsers);
+
+            res.status(200).json(mostFollowedUsers);
         } catch (err) {
             return res.status(500).json({ msg: err.message })
         }
