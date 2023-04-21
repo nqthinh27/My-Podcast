@@ -40,6 +40,7 @@ export default function Home(props) {
     const dispatch = useDispatch();
     const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
     const isMiniPlayer = useSelector((state) => state.player.isMiniPlayer);
+    const currentUser = useSelector((state) => state.auth.login.currentUser);
     const playValue = useSelector((state) => state.player.playValue);
     const [currentIndex, setCurrentIndex] = useState(0);
     const flatListRef = useRef(null);
@@ -260,7 +261,7 @@ export default function Home(props) {
                         return (
                             <TouchableOpacity
                                 onPress={() => {
-                                    getOtherUser(item._id, dispatch, navigation.navigate)
+                                    getOtherUser(item._id, dispatch, navigation.navigate, currentUser)
                                 }}
                                 key={index}
                             >

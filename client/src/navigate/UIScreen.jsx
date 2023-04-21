@@ -35,7 +35,7 @@ const screenOptions = ({ route }) => ({
         } else if (screenName == "Setting") {
             return <Image
                 style={{ width: 25, height: 25, marginTop: 3 }}
-                source={focused ? require("../../assets/navBar/ico_home_active.png") : require("../../assets/navBar/ico_home_inactive.png") } />
+                source={focused ? require("../../assets/navBar/ico_setting_active.png") : require("../../assets/navBar/ico_setting_inactive.png") } />
         }
     }
 });
