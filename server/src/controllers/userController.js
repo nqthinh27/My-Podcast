@@ -17,9 +17,18 @@ const userController = {
     getUserById: async (req, res) => {
         try {
             const user = await Users.findById(req.params.id);
-            res.status(200).json(user);
+            if (!user) {
+                return res.status(400).json({ msg: 'This user does not exists.' });
+            }
+            res.json({
+                ...user._doc,
+                password: '',
+                posts: user.posts.length,
+                following: user.following.length,
+                followers: user.followers.length,
+            });
         } catch (err) {
-            return res.status(500).json({ msg: err.message })
+            return res.status(500).json({ msg: err.message });
         }
     },
 

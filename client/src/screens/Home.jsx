@@ -18,11 +18,14 @@ import SlideItem from "../components/SlideItem";
 import GlobalStyles from "../components/GlobalStyles";
 import TopTrendingItem from "../components/TopTrendingItem";
 
-import { TopTrendingData, PlaylistData, RecommendData, RelexData, NewReLeaseData, dummyData } from "../../dummyData";
+import { PlaylistData, RecommendData, RelexData, dummyData } from "../../dummyData";
 import { lightHome, darkHome, lightTrendingHome, darkTrendingHome } from "../constants/darkLight/themeHome"
 import MiniPlayer from "./Player/MiniPlayer";
 import { setSoundUrl, setPlayValue, setIsMiniPlayer } from "../redux/slices/playerSlice";
 import { useNavigation } from "@react-navigation/native";
+import { fetchNewRelease, fetchSlider, fetchTopAuthor, fetchTopTrending } from "../redux/actions/homeApi";
+import TopAuthorItem from "../components/TopAuThorItem";
+import { getOtherUser } from "../redux/actions/profileApi";
 
 // import PlayerScreen from "./PlayerScreen";
 
@@ -65,11 +68,24 @@ export default function Home(props) {
     const soundUrl1 = 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Sound%2FLoi-Nho.mp3?alt=media&token=b522c960-115d-49ba-8d6d-5f1f2dbb9d77';
     function playerNavigate() {
         //if (!isMiniPlayer) {
-            navigation.navigate('PlayerScreen');
-            // dispatch(setSoundUrl(soundUrl1));
-            dispatch(setPlayValue(true))
-        
+        navigation.navigate('PlayerScreen');
+        // dispatch(setSoundUrl(soundUrl1));
+        dispatch(setPlayValue(true))
+
     }
+
+    useEffect(() => {
+        dispatch(fetchSlider);
+        dispatch(fetchTopTrending);
+        dispatch(fetchNewRelease);
+        dispatch(fetchTopAuthor);
+    }, []);
+
+    const SliderData = useSelector((state) => state.home.slider.data);
+    const TopTrendingData = useSelector((state) => state.home.topTrending.data);
+    const NewReleaseData = useSelector((state) => state.home.newReLease.data);
+    const TopAuThorData = useSelector((state) => state.home.topAuthor.data);
+
     // useLayoutEffect(() => {
     //     const isMiniPlayerVisible = navigation && navigation.getParam('isMiniPlayerVisible', false);
     //     if (isMiniPlayerVisible !== undefined) {
@@ -92,12 +108,14 @@ export default function Home(props) {
                     ref={flatListRef}
                     horizontal
                     style={isDarkTheme ? darkHome.wrapper : lightHome.wrapper}
-                    data={dummyData}
+                    data={SliderData}
                     renderItem={({ item }) => {
                         return (
                             <TouchableOpacity
                                 onPress={() => {
-                                    playerNavigate();
+                                    navigation.navigate('PlayerScreen');
+                                    // dispatch(setSoundUrl(item.));
+                                    dispatch(setPlayValue(true))
                                 }}
                             >
                                 <SlideItem item={item} />
@@ -130,19 +148,19 @@ export default function Home(props) {
                     >
                         <View style={isDarkTheme ? darkTrendingHome.contentWrapper : lightTrendingHome.contentWrapper}>
                             <View style={lightTrendingHome.contentSection}>
-                                {TopTrendingData.slice(0, 3).map((item) => {
+                                {TopTrendingData.slice(0, 3).map((item, index) => {
                                     return (
                                         <TouchableOpacity
                                             onPress={() => {
                                                 playerNavigate();
                                             }}
-                                            key={item.id}
+                                            key={index}
                                         >
                                             <TopTrendingItem
-                                                avtUrl={item.avtUrl}
+                                                avtUrl={item.image}
                                                 title={item.title}
-                                                author={item.author}
-                                                ranking={item.ranking}
+                                                author={item.owner.fullName}
+                                                ranking={index + 1}
                                             />
                                         </TouchableOpacity>
                                     );
@@ -151,19 +169,19 @@ export default function Home(props) {
                         </View>
                         <View style={[isDarkTheme ? darkTrendingHome.contentWrapper : lightTrendingHome.contentWrapper]}>
                             <View style={lightTrendingHome.contentSection}>
-                                {TopTrendingData.slice(3, 6).map((item) => {
+                                {TopTrendingData.slice(3, 6).map((item, index) => {
                                     return (
                                         <TouchableOpacity
                                             onPress={() => {
                                                 playerNavigate();
                                             }}
-                                            key={item.id}
+                                            key={index}
                                         >
                                             <TopTrendingItem
-                                                avtUrl={item.avtUrl}
+                                                avtUrl={item.image}
                                                 title={item.title}
-                                                author={item.author}
-                                                ranking={item.ranking}
+                                                author={item.owner.fullName}
+                                                ranking={index + 4}
                                             />
                                         </TouchableOpacity>
                                     );
@@ -172,19 +190,19 @@ export default function Home(props) {
                         </View>
                         <View style={[isDarkTheme ? darkTrendingHome.contentWrapper : lightTrendingHome.contentWrapper]}>
                             <View style={lightTrendingHome.contentSection}>
-                                {TopTrendingData.slice(6, 10).map((item) => {
+                                {TopTrendingData.slice(6, 10).map((item, index) => {
                                     return (
                                         <TouchableOpacity
                                             onPress={() => {
                                                 playerNavigate();
                                             }}
-                                            key={item.id}
+                                            key={index}
                                         >
                                             <TopTrendingItem
-                                                avtUrl={item.avtUrl}
+                                                avtUrl={item.image}
                                                 title={item.title}
-                                                author={item.author}
-                                                ranking={item.ranking}
+                                                author={item.owner.fullName}
+                                                ranking={index + 7}
                                             />
                                         </TouchableOpacity>
                                     );
@@ -208,7 +226,7 @@ export default function Home(props) {
                     horizontal={true}
                     showsHorizontalScrollIndicator={false}
                 >
-                    {NewReLeaseData.map((item, index) => {
+                    {NewReleaseData.map((item, index) => {
                         return (
                             <TouchableOpacity
                                 onPress={() => {
@@ -216,14 +234,17 @@ export default function Home(props) {
                                 }}
                                 key={index}
                             >
-                                <ReleasedPodcast item={item} />
+                                <ReleasedPodcast
+                                    image={item.image}
+                                    title={item.title}
+                                    fullName={item.owner.fullName} />
                             </TouchableOpacity>
                         );
                     })}
                 </ScrollView>
-                {/* ==========================================Thư giãn cuối ngày==========================================*/}
+                {/* ==========================================Tác giả nổi bật==========================================*/}
                 <TouchableOpacity style={lightHome.coverAll}>
-                    <Text style={isDarkTheme ? darkHome.title : lightHome.title}>Thư giãn cuối ngày</Text>
+                    <Text style={isDarkTheme ? darkHome.title : lightHome.title}>Tác giả nổi bật</Text>
                     <Icon
                         name='chevron-right'
                         style={{ opacity: 1, marginLeft: 8 }}
@@ -235,15 +256,15 @@ export default function Home(props) {
                     horizontal={true}
                     showsHorizontalScrollIndicator={false}
                 >
-                    {RelexData.map((item, index) => {
+                    {TopAuThorData.map((item, index) => {
                         return (
                             <TouchableOpacity
                                 onPress={() => {
-                                    playerNavigate();
+                                    getOtherUser(item._id, dispatch, navigation.navigate)
                                 }}
                                 key={index}
                             >
-                                <ReleasedPodcast item={item} />
+                                <TopAuthorItem item={item} />
                             </TouchableOpacity>
                         );
                     })}

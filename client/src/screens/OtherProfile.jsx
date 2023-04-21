@@ -8,7 +8,7 @@ import {
     TouchableOpacity,
     SafeAreaView,
 } from "react-native";
-import React , { useState }from "react";
+import React, { useState } from "react";
 import colors from "../constants/colors";
 import Icon from "react-native-vector-icons/Feather";
 import ProfileInfo from "../components/ProfileInfo";
@@ -16,21 +16,22 @@ import { MyPopularData } from "../../dummyData";
 import ProfilePodcast from "../components/ProfilePodcast";
 import { MyNewReLeaseData } from "../../dummyData";
 import GlobalStyles from "../components/GlobalStyles";
+import { useSelector } from "react-redux";
 // import Icon from "react-native-vector-icons/Entypo";
 
-export default function OtherProfile(props) {
+export default function OtherProfile() {
     //navigation
     // const { navigation, route } = props;
     // //function of navigate
     // const { navigate, goback } = navigation;
-
+    const otherUser = useSelector((state) => state.profile.otherUser);
     const [isFollowed, setIsFollowed] = useState(false);
     const handlePress = () => {
         setIsFollowed(!isFollowed);
-      };
+    };
 
     return (
-        <SafeAreaView style={[styles.otherprofile, GlobalStyles.droidSafeArea]}>
+        <SafeAreaView style={[styles.otherprofile, GlobalStyles.customSafeArea]}>
             <ScrollView showsVerticalScrollIndicator={false}>
                 <View style={styles.otherprofileHeader}>
                     <Icon
@@ -41,14 +42,14 @@ export default function OtherProfile(props) {
                             navigate("UIScreen");
                         }}
                     />
-                    {/* <Text
+                    <Text
                         style={{
-                            fontWeight: "bold",
+                            fontWeight: "500",
                             fontSize: 21,
                         }}
                     >
-                        Trang cá nhân
-                    </Text> */}
+                        @{otherUser.userName}
+                    </Text>
                     <Text> </Text>
                 </View>
 
@@ -58,25 +59,27 @@ export default function OtherProfile(props) {
                             width: "100%",
                             backgroundColor: "red",
                         }}
-                        avt="https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/avatar.jpg?alt=media&token=fc074eb8-e67f-4235-8230-160cae1557b5"
-                        name="Nguyễn Quang Thịnh"
-                        followers={2002}
-                        following={2002}
-                        posts={20}
+                        avt={otherUser.avatar}
+                        name={otherUser.fullName}
+                        followers={otherUser.followers}
+                        following={otherUser.following}
+                        posts={otherUser.posts}
                     />
 
                     <View style={styles.otherprofileFollowButton}>
                         <TouchableOpacity style={styles.otherprofileFollow} onPress={handlePress}>
-                            <View style={{ flexDirection: "row", 
-                        justifyContent: 'center',
-                        alignContent: 'center' }}>
+                            <View style={{
+                                flexDirection: "row",
+                                justifyContent: 'center',
+                                alignContent: 'center'
+                            }}>
                                 <Text
                                     style={{
                                         fontSize: 16,
                                         fontWeight: "500",
                                     }}
                                 >
-                                     {isFollowed ?  'Đang theo dõi   ' :'Theo dõi  '}
+                                    {isFollowed ? 'Đang theo dõi   ' : 'Theo dõi  '}
                                 </Text>
                                 <Icon
                                     name={isFollowed ? "user-check" : 'user'}
@@ -121,7 +124,7 @@ export default function OtherProfile(props) {
                             flexDirection: "row",
                             justifyContent: "space-around",
                         }}
-                        // horizontal={true}
+                    // horizontal={true}
                     >
                         <ScrollView
                             horizontal={true}

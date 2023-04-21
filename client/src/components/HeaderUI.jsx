@@ -89,7 +89,7 @@ export default function HeaderUI(props) {
 
 
     return (
-        <SafeAreaView style={[GlobalStyles.customSafeArea]}>
+        <View>
             <View style={lightHeader.header}>
                 <TouchableOpacity
                     onPress={() => {
@@ -122,7 +122,7 @@ export default function HeaderUI(props) {
                     />
                 </View>
                 <Modal visible={searchValue}>
-                    <SafeAreaView style={[GlobalStyles.customSafeArea]}>
+                    <View>
                         <View style={lightHeader.header}>
                             <Icon style={lightHeader.back}
                                 name={'chevron-left'}
@@ -146,7 +146,7 @@ export default function HeaderUI(props) {
                                 />
                             </View>
                         </View>
-                    </SafeAreaView>
+                    </View>
                 </Modal>
                 <TouchableOpacity>
                     <Image
@@ -157,6 +157,6 @@ export default function HeaderUI(props) {
                     />
                 </TouchableOpacity>
             </View>
-        </SafeAreaView>
+        </View>
     );
 }

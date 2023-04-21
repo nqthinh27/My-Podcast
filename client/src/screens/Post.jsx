@@ -66,7 +66,7 @@ function Post(props) {
     };
 
     return (
-        <SafeAreaView style={GlobalStyles.customSafeArea}>
+        <SafeAreaView style={[GlobalStyles.customSafeArea, {backgroundColor: '#fff'}]}>
             <View style={styles.postHeader}>
                 <View style={styles.postAvatar}>
                     <Image
@@ -351,6 +351,7 @@ function Post(props) {
 const styles = StyleSheet.create({
     postHeader: {
         // flex: 1,
+
         marginHorizontal: 20,
         flexDirection: "row",
         justifyContent: "space-between",

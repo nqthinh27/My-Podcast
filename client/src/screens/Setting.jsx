@@ -37,7 +37,7 @@ export default function Setting(props) {
 
     const handleLogin = () => {
         if (user) {
-            navigate("MyProfile");   
+            navigate("MyProfile");
         } else {
             navigate("Login");
         }
@@ -83,7 +83,7 @@ export default function Setting(props) {
                     </View>}
                 {(user) &&
                     <View style={lightSetting.accountSuccess}>
-                        <TouchableOpacity onPress={()=>{handleLogin()}}>
+                        <TouchableOpacity onPress={() => { handleLogin() }}>
                             <Image
                                 source={{
                                     uri: avatar,
@@ -177,20 +177,19 @@ export default function Setting(props) {
                     </TouchableOpacity>
 
                     <View style={isDarkTheme ? darkSetting.setIco : lightSetting.setIco}>
-                        <Icon
-                            name='moon'
-                            style={{ paddingStart: 10 }}
-                            size={18} color={isDarkTheme ? darkSetting.dark.color : lightSetting.light.color}
-                        />
-                        <Text style={isDarkTheme ? darkSetting.fontText : lightSetting.fontText}>Chế độ tối</Text>
-                        <View style={{ flex: 1 }} />
+                        <View style={{ flexDirection: 'row' }}>
+                            <Icon
+                                name='moon'
+                                style={{ paddingStart: 10 }}
+                                size={18} color={isDarkTheme ? darkSetting.dark.color : lightSetting.light.color}
+                            />
+                            <Text style={isDarkTheme ? darkSetting.fontText : lightSetting.fontText}>Chế độ tối</Text>
+                        </View>
+                        {/* <View style={{ flex: 1 }} /> */}
                         <Switch
                             trackColor={{ false: "#767577", true: "#2196F3" }}
                             thumbColor={"#fff"}
-                            style={{
-                                height: 25,
-                                width: 25,
-                            }}
+                            style={{marginRight: 5}}
                             onValueChange={() => dispatch(toggleDarkMode())}
                             value={isDarkTheme}
                         />
