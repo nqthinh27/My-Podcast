@@ -31,7 +31,7 @@ export const getOtherUser = async (userId, dispatch, navigate, user) => {
             await getOtherFollowers(userId, dispatch)
             await getOtherFollowing(userId, dispatch)
     // const following = getPublicDataAPI(`follow/${otherUser._id}/following`).data.following;
-            await 
+            // await 
             navigate('OtherProfile');
         }
     } catch (err) {

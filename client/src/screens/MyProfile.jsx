@@ -18,12 +18,10 @@ import ProfilePodcast from "../components/ProfilePodcast";
 import { MyNewReLeaseData } from "../../dummyData";
 import { useSelector } from "react-redux";
 import { device } from "../constants/device";
+import { useNavigation } from "@react-navigation/native";
 
 function MyProfile(props) {
-    //navigation
-    const { navigation, route } = props;
-    // //function of navigate
-    const { navigate, goBack } = navigation;
+    const { navigate, goBack } = useNavigation();
     const user = useSelector((state) => state.auth.login.currentUser);
     const {fullName, userName, avatar, moblie, address, story, website, posts, following, followers } = user;
 

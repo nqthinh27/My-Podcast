@@ -21,6 +21,7 @@ import { useNavigation } from "@react-navigation/native";
 import { checkIdInclude, timeDiff } from "../ultis/helper";
 import { getPublicDataAPI, patchDataAPI } from "../ultis/fetchData";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { warningLogin } from "../ultis/warning";
 // import Icon from "react-native-vector-icons/Entypo";
 
 export default function OtherProfile() {
@@ -31,14 +32,18 @@ export default function OtherProfile() {
     const topPosts = useSelector((state) => state.profile.topPosts.data);
     const followers = useSelector((state) => state.profile.followers.data);
     const following = useSelector((state) => state.profile.following.data);
-    const [isFollowed, setIsFollowed] = useState(checkIdInclude(followers, currentUser._id));
+    const [isFollowed, setIsFollowed] = useState(currentUser ? checkIdInclude(followers, currentUser._id) : false);
     // info
     const [token, setToken] = useState("");
     const [currenFollowers, setCurrenFollowers] = useState(otherUser.followers);
-    const handlePress = () => {
-        if (isFollowed) setCurrenFollowers(prevFollowers => prevFollowers - 1);
-        else setCurrenFollowers(prevFollowers => prevFollowers + 1);
-        setIsFollowed(!isFollowed);
+    const handleFollowOther = () => {
+        if (!currentUser) {
+            warningLogin(navigate, 'Login', 'OtherProfile');
+        } else {
+            if (isFollowed) setCurrenFollowers(prevFollowers => prevFollowers - 1);
+            else setCurrenFollowers(prevFollowers => prevFollowers + 1);
+            setIsFollowed(!isFollowed);
+        }
     };
     AsyncStorage.getItem('access_token').then((value) => {
         setToken(value);
@@ -46,15 +51,15 @@ export default function OtherProfile() {
     useEffect(() => {
         if (!isFollowed) {
             patchDataAPI(`follow/${otherUser._id}/undo`, null, token)
-            .catch((error) => {
-              console.log('Error while unfollowing user:', error);
-            });
-          } else {
+                .catch((error) => {
+                    console.log('Error while unfollowing user:', error);
+                });
+        } else {
             patchDataAPI(`follow/${otherUser._id}`, null, token)
-            .catch((error) => {
-              console.log('Error while following user:', error);
-            });
-          }
+                .catch((error) => {
+                    console.log('Error while following user:', error);
+                });
+        }
     }, [isFollowed]);
     return (
         <SafeAreaView style={[styles.otherprofile, GlobalStyles.customSafeArea]}>
@@ -93,7 +98,7 @@ export default function OtherProfile() {
                     />
 
                     <View style={styles.otherprofileFollowButton}>
-                        <TouchableOpacity style={styles.otherprofileFollow} onPress={handlePress}>
+                        <TouchableOpacity style={styles.otherprofileFollow} onPress={handleFollowOther}>
                             <View style={{
                                 flexDirection: "row",
                                 justifyContent: 'center',
