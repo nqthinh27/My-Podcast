@@ -4,7 +4,9 @@ import themeReducer from './slices/themeSlice';
 import loginReducer from './slices/loginSlice';
 import playerReducer from './slices/playerSlice';
 import homeReducer from './slices/homeSlice';
+import libraryReducer from './slices/librarySlice';
 import profileReducer from './slices/profileSlice';
+import searchReducer from './slices/searchSlice';
 
 export default configureStore({
     reducer: {
@@ -13,6 +15,8 @@ export default configureStore({
         loginSuccess: loginReducer,
         player: playerReducer,
         home: homeReducer,
-        profile: profileReducer
+        library: libraryReducer,
+        profile: profileReducer,
+        search: searchReducer
     }
 });

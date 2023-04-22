@@ -35,12 +35,10 @@ function Register(props) {
                 }
                 res = await axios.post(`${BASE_URL}/auth/register`, newUser);
                 alert('Đăng ký thành công');
-                console.log(res.data);
             } else {
                 alert('Mật khẩu nhập lại không khớp');
             }
         } catch (err) {
-            console.log(err.message);
             alert('Không hợp lệ! Vui lòng kiểm tra lại thông tin');
         }
     }

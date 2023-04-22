@@ -8,18 +8,17 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/Fontisto";
 import colors from "../constants/colors";
-import PodcastListLibrary from "../components/PodcastListLibrary";
-import { SafeAreaView } from "react-navigation";
-import GlobalStyles from "../components/GlobalStyles";
+import PodcastListItem from "../components/PodcastListItem";
 import { warningLogin } from "../ultis/warning";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useIsFocused } from "@react-navigation/native";
-import { RecommendData } from "../../dummyData";
 import HeaderUI from "../components/HeaderUI";
+import { getRecommendData } from "../redux/actions/libraryApi";
 
 function Library(props) {
     const { navigation, route } = props;
     const { navigate, goback } = navigation;
+    const dispatch = useDispatch();
     const user = useSelector((state) => state.auth.login.currentUser);
     const isFocused = useIsFocused();
     useEffect(() => {
@@ -27,6 +26,11 @@ function Library(props) {
             warningLogin(navigate, "Login", "Home");
         }
     }, [isFocused]);
+    
+    const recommendData = useSelector((state) => state.library.recommend.data);
+    useEffect(() => {
+        getRecommendData(dispatch)
+    }, []);
 
     const [clickSong, setClickSong] = useState(false);
 
@@ -39,7 +43,7 @@ function Library(props) {
     }
 
     return (
-        <SafeAreaView style={GlobalStyles.customSafeArea}>
+        <View>
             <ScrollView>
                 <HeaderUI />
 
@@ -151,22 +155,21 @@ function Library(props) {
                     </Text>
 
                     <View style={{ marginHorizontal: 16 }}>
-                        {RecommendData.map((item, index) => {
+                        {recommendData.map((item, index) => {
                             return (
                                 <TouchableOpacity
                                     onPress={() => {
-                                        playerNavigate();
                                     }}
                                     key={index}
                                 >
-                                    <PodcastListLibrary item={item} />
+                                    <PodcastListItem item={item} />
                                 </TouchableOpacity>
                             );
                         })}
                     </View>
                 </View>
             </ScrollView>
-        </SafeAreaView>
+        </View>
     );
 }
 

@@ -7,6 +7,7 @@ import {
     Keyboard,
     Modal,
     TouchableOpacity,
+    Text
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import GlobalStyles from "./GlobalStyles";
@@ -19,15 +20,18 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { stayLogged } from "../redux/actions/authApi";
 import { warningLogin } from "../ultis/warning";
 import { avatarDefault } from "../constants/app";
+import { searchPosts, searchUsers } from "../redux/actions/searchApi";
+import PodcastListItem from "./PodcastListItem";
+import { RecommendData } from "../../dummyData";
+import UserListItem from "./UserListItem";
+import { ScrollView } from "react-native-gesture-handler";
 
 export default function HeaderUI(props) {
     //navigation
     const navigation = useNavigation();
     //function of navigate 
     const { navigate, goback } = navigation;
-
     const dispatch = useDispatch();
-
     const fetchUser = async () => {
         const refresh_token = await AsyncStorage.getItem('refresh_token');
         if (refresh_token) {
@@ -37,51 +41,52 @@ export default function HeaderUI(props) {
             }
         }
     }
-
     useEffect(() => {
         fetchUser();
     }, [])
-
     const user = useSelector((state) => state.auth.login.currentUser);
-
     let avatar = avatarDefault;
     if (user) {
         avatar = user.avatar;
     }
-
     const [searchValue, setSearchValue] = useState(false); //Ấn vào search hiện ra màn hình search
-    const [searchResult, setSearchResult] = useState("");
-    const [showResult, setShowResult] = useState(true);
-    const [data, setData] = useState([]);
+    const [keyword, setKeyword] = useState("");
+    const [firstSearch, setFirstSearch] = useState(true);
     const textInputRef = useRef(null);
     const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
-
     useEffect(() => {
         textInputRef.current?.focus();
     }, []);
-
     const handleSearch = () => {
         setSearchValue(true);
     }
-
     const handleLogin = () => {
         if (user) {
-            navigate("MyProfile");   
+            navigate("MyProfile");
             // Làm trang profile xong thì bỏ cái alert đi nhé
             // alert('Bạn đã đăng nhập!');
         } else {
-            navigate("Login");   
+            navigate("Login");
         }
     }
-
     const goBack = () => {
         Keyboard.dismiss();
         setSearchValue(!searchValue);
     }
-
-    const filteredData = data.filter((item) =>
-        item.title.toLowerCase().includes(searchText.toLowerCase())
-    );
+    const [searchResult, setSearchResult] = useState();
+    const usersResult = useSelector((state) => state.search.users.data);
+    const postsResult = useSelector((state) => state.search.posts.data);
+    const handleSearchResult = () => {
+        const keywordUser = { userName: keyword };
+        searchUsers(keywordUser, dispatch);
+        const keywordPost = { title: keyword };
+        searchPosts(keywordPost, dispatch);
+        setFirstSearch(false);
+        // if (usersResult.length == 0 && postsResult == 0) alert("Không có kết quả phù hợp");
+    }
+    // const filteredData = data.filter((item) =>
+    //     item.title.toLowerCase().includes(searchText.toLowerCase())
+    // );
 
     // const handleHideResult = () => {
     //   setShowResult(false);
@@ -89,7 +94,7 @@ export default function HeaderUI(props) {
 
 
     return (
-        <View>
+        <SafeAreaView style={GlobalStyles.customSafeArea}>
             <View style={lightHeader.header}>
                 <TouchableOpacity
                     onPress={() => {
@@ -121,8 +126,8 @@ export default function HeaderUI(props) {
 
                     />
                 </View>
-                <Modal visible={searchValue}>
-                    <View>
+                <Modal visible={searchValue} >
+                    <SafeAreaView style={GlobalStyles.customSafeArea}>
                         <View style={lightHeader.header}>
                             <Icon style={lightHeader.back}
                                 name={'chevron-left'}
@@ -140,13 +145,77 @@ export default function HeaderUI(props) {
                                     autoFocus={true}
                                     style={lightHeader.input}
                                     // ref={textInputRef}
+                                    value={keyword}
                                     placeholder="Tìm kiếm podcast, tác giả, album,..."
-                                // onChangeText={(searchString) => { this.setState({ searchString }) }}
-                                // underlineColorAndroid="transparent"
+                                    onChangeText={(text) => setKeyword(text)}
+                                    // underlineColorAndroid="transparent"
+                                    onSubmitEditing={handleSearchResult}
                                 />
                             </View>
                         </View>
-                    </View>
+                        {postsResult.length == 0 && usersResult.length == 0 && !firstSearch &&
+                            <Text
+                                style={{
+                                    fontSize: 20,
+                                    fontWeight: "500",
+                                    alignSelf: "center",
+                                    marginTop: 40
+                                }}
+                            >
+                                Oops! Không tìm thấy kết quả...
+                            </Text>}
+                        <ScrollView>
+                            {usersResult.length > 0 && <Text
+                                style={{
+                                    fontSize: 18,
+                                    fontWeight: "bold",
+                                    marginHorizontal: 16,
+                                    marginTop: 16,
+                                    marginBottom: 8,
+                                }}
+                            >
+                                Người dùng liên quan
+                            </Text>}
+                            <View style={{ marginHorizontal: 16 }}>
+                                {usersResult.map((item, index) => {
+                                    return (
+                                        <TouchableOpacity
+                                            onPress={() => {
+                                                // playerNavigate();
+                                            }}
+                                            key={index}
+                                        >
+                                            <UserListItem item={item} />
+                                        </TouchableOpacity>
+                                    );
+                                })}
+                            </View>
+                            {postsResult.length > 0 && <Text
+                                style={{
+                                    fontSize: 18,
+                                    fontWeight: "bold",
+                                    marginHorizontal: 16,
+                                    marginBottom: 8,
+                                }}
+                            >
+                                Podcast liên quan
+                            </Text>}
+                            <View style={{ marginHorizontal: 16 }}>
+                            {postsResult.map((item, index) => {
+                                return (
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            // playerNavigate();
+                                        }}
+                                        key={index}
+                                    >
+                                        <PodcastListItem item={item} />
+                                    </TouchableOpacity>
+                                );
+                            })}
+                        </View>
+                        </ScrollView>
+                    </SafeAreaView>
                 </Modal>
                 <TouchableOpacity>
                     <Image
@@ -157,6 +226,6 @@ export default function HeaderUI(props) {
                     />
                 </TouchableOpacity>
             </View>
-        </View>
+        </SafeAreaView>
     );
 }

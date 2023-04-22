@@ -22,8 +22,6 @@ export const timeDiff = begin => {
 
 export const checkIdInclude = (elements, userId) => {
     for (let i = 0; i < elements.length; i++) {
-        // console.log("elemt: " +  elements[i]._id + "   usser: " + userId);
-        // console.log(elements[i]._id == userId);
         if (elements[i]._id == userId) return true;
     }
     return false;

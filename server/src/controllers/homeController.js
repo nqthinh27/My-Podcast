@@ -46,6 +46,28 @@ const homeController = {
         }
     },
 
+    getRecommendPost: async (req, res) => {
+        try {
+            const recommend = await Posts.find({ createdAt: { $gte: last7Days } })
+                .sort({ likes: -1 })
+                .limit(15)
+                .select('_id title image likes views owner createdAt')
+                .populate({
+                    path: 'owner',
+                    select: 'fullName userName'
+                });
+            const recommendWithIndex = recommend.slice(4).map((post, index) => {
+                return {
+                    ...post.toObject(),
+                    index: index + 1,
+                };
+            });
+            return res.status(200).json(recommendWithIndex);
+        } catch (err) {
+            return res.status(500).json({ msg: err.message })
+        }
+    },
+
     getNewReleasePosts: async (req, res) => {
         try {
             const topUsers = await Users.aggregate([

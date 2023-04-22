@@ -30,11 +30,6 @@ import { getOtherUser } from "../redux/actions/profileApi";
 // import PlayerScreen from "./PlayerScreen";
 
 export default function Home(props) {
-    // //navigation
-    // const { navigation, route } = props;
-    // //function of navigate
-    // const { navigate, goback } = navigation;
-
     const navigation = useNavigation();
 
     const dispatch = useDispatch();
@@ -95,10 +90,7 @@ export default function Home(props) {
     //   }, [dispatch, navigation]);
 
     return (
-        <SafeAreaView style={[
-            { backgroundColor: isDarkTheme ? darkHome.wrapper.backgroundColor : lightHome.wrapper.backgroundColor },
-            GlobalStyles.customSafeArea]}
-        >
+        <View style={{ backgroundColor: isDarkTheme ? darkHome.wrapper.backgroundColor : lightHome.wrapper.backgroundColor }}>
             {/* <NavigationEvents onDidFocus={()=> this.setState({})} /> */}
             <ScrollView>
                 {/* ==========================================HEADER========================================== */}
@@ -244,7 +236,7 @@ export default function Home(props) {
                     })}
                 </ScrollView>
                 {/* ==========================================Tác giả nổi bật==========================================*/}
-                <TouchableOpacity style={lightHome.coverAll}>
+                <TouchableOpacity style={[lightHome.coverAll, {marginTop: 16}]}>
                     <Text style={isDarkTheme ? darkHome.title : lightHome.title}>Tác giả nổi bật</Text>
                     <Icon
                         name='chevron-right'
@@ -271,7 +263,7 @@ export default function Home(props) {
                     })}
                 </ScrollView>
                 {/* ========================================Album thịnh hành============================================*/}
-                <TouchableOpacity style={lightHome.coverAll}>
+                <TouchableOpacity style={[lightHome.coverAll, {marginTop: 16}]}>
                     <Text style={isDarkTheme ? darkHome.title : lightHome.title}>Album thịnh hành</Text>
                     <Icon
                         name='chevron-right'
@@ -330,7 +322,7 @@ export default function Home(props) {
                 tittle="Tuổi trẻ, tinh yêu và sự nghiệp"
                 author="Tun Phạm"
             />}
-        </SafeAreaView>
+        </View>
     );
 }
 
