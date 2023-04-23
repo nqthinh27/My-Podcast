@@ -17,6 +17,7 @@ const searchController = {
                 .select('userName fullName avatar followers following posts');
             const byUserName = users.map(user => {
                 return {
+                    _id: user._id,
                     userName: user.userName,
                     fullName: user.fullName,
                     avatar: user.avatar,
@@ -39,6 +40,7 @@ const searchController = {
                     }
                 });
                 return { 
+                    _id: user._id,
                     userName: user.userName,
                     fullName: user.fullName,
                     avatar: user.avatar,

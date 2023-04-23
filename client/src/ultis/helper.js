@@ -26,3 +26,9 @@ export const checkIdInclude = (elements, userId) => {
     }
     return false;
 }
+
+export const removeItem = (elements, userId) => {
+    return elements.map(item => {
+        return item._id != userId;
+    })
+}

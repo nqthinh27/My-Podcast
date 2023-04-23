@@ -1,28 +1,32 @@
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View, SafeAreaView } from "react-native";
-import { useSelector } from "react-redux";
-
 import { HeaderUI, FollowingItem } from "../components";
-import GlobalStyles from "../components/GlobalStyles";
 import { FollowingData } from "../../dummyData";
 import { lightfollowStyles, darkfollowStyles} from "../constants/darkLight/themeFollowing"
-
-import colors from "../constants/colors";
+import { useDispatch, useSelector } from "react-redux";
 import { useIsFocused } from "@react-navigation/native";
 import { useEffect } from "react";
 import { warningLogin } from "../ultis/warning";
+import GlobalStyles from "../components/GlobalStyles";
+import colors from "../constants/colors";
+import { getNewFeed } from "../redux/actions/followingApi";
 
 export default function Following(props) {
     const { navigation, route } = props;
     const { navigate, goback } = navigation;
     const user = useSelector((state) => state.auth.login.currentUser);
+    const access_token = useSelector((state) => state.auth.login.access_token);
+    const dispatch = useDispatch();
     const isFocused = useIsFocused();
     useEffect(() => {
         if (isFocused && !user) {
             warningLogin(navigate, 'Login', 'Home');
         } 
     }, [isFocused]);
+    useEffect(() => {
+        getNewFeed(dispatch, access_token);
+    }, []);
     const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
-
+    const newFeed = useSelector((state) => state.following.newFeed.data);
     return (
         <View style={{backgroundColor: isDarkTheme ? colors.dark : colors.white}}>
             <ScrollView>
@@ -34,15 +38,21 @@ export default function Following(props) {
                         //     playerNavigate();
                         // }}
                         >
-                            {FollowingData.map((item, index) => {
+                            {newFeed.map((item, index) => {
                                 return (
                                     <View key={index}>
                                         <FollowingItem
-                                            avtUrl={item.avtUrl}
-                                            name={item.name}
+                                            avatar={item.avatar}
+                                            owner={item.owner}
                                             date={item.date}
                                             title={item.title}
-                                            descripttion={item.descripttion}
+                                            likes={item.likes}
+                                            views={item.views}
+                                            comments={item.comments}
+                                            content={item.content}
+                                            createdAt={item.createdAt}
+                                            audio={item.audio}
+                                            image={item.image}
                                         />
                                     </View>
                                 )

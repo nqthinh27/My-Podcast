@@ -68,7 +68,7 @@ export const getOtherFollowers = async (userId, dispatch) => {
         const res = await axios.get(`${BASE_URL}/follow/${userId}/followers`);
         dispatch(getFollowersSuccess(res.data.follower));
     } catch (err) {
-        dispatch(getFollowingFailed());
+        dispatch(getFollowersFailed());
         alert('User không tồn tại!');
     }
 }

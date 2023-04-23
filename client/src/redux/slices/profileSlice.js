@@ -4,17 +4,25 @@ const profileSlice = createSlice({
     name: 'profile',
     initialState: {
         otherUser: {
-            data: null,
+            data: {
+                _id: '',
+                followers: 0,
+                following: 0,
+                userName: '',
+                avatar: '',
+                fullName: '',
+                posts: 0
+            },
             isFetching: false,
             error: false,
         },
         allPosts: {
-            data: null,
+            data: [],
             isFetching: false,
             error: false,
         },
         topPosts: {
-            data: null,
+            data: [],
             isFetching: false,
             error: false,
         },
@@ -30,6 +38,13 @@ const profileSlice = createSlice({
         }
     },
     reducers: {
+        desOtherFollower: (state) => {
+            state.otherUser.data.followers--;
+            console.log(state.otherUser.data.followers);
+        },
+        incOtherFollower: (state) => {
+            state.otherUser.data.followers++;
+        },
         getOtherUserStart: (state) => {
             state.otherUser.isFetching = true;
             console.log('Start Get Other profile!');
@@ -128,5 +143,7 @@ export const {
     getFollowingStart,
     getFollowingSuccess,
     getFollowingFailed,
+    desOtherFollower,
+    incOtherFollower,
 } = profileSlice.actions;
 export default profileSlice.reducer;

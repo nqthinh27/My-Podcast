@@ -25,6 +25,7 @@ import PodcastListItem from "./PodcastListItem";
 import { RecommendData } from "../../dummyData";
 import UserListItem from "./UserListItem";
 import { ScrollView } from "react-native-gesture-handler";
+import { getOtherUser } from "../redux/actions/profileApi";
 
 export default function HeaderUI(props) {
     //navigation
@@ -32,6 +33,7 @@ export default function HeaderUI(props) {
     //function of navigate 
     const { navigate, goback } = navigation;
     const dispatch = useDispatch();
+    const currentUser = useSelector((state) => state.auth.login.currentUser);
     const fetchUser = async () => {
         const refresh_token = await AsyncStorage.getItem('refresh_token');
         if (refresh_token) {
@@ -44,10 +46,9 @@ export default function HeaderUI(props) {
     useEffect(() => {
         fetchUser();
     }, [])
-    const user = useSelector((state) => state.auth.login.currentUser);
     let avatar = avatarDefault;
-    if (user) {
-        avatar = user.avatar;
+    if (currentUser) {
+        avatar = currentUser.avatar;
     }
     const [searchValue, setSearchValue] = useState(false); //Ấn vào search hiện ra màn hình search
     const [keyword, setKeyword] = useState("");
@@ -61,7 +62,7 @@ export default function HeaderUI(props) {
         setSearchValue(true);
     }
     const handleLogin = () => {
-        if (user) {
+        if (currentUser) {
             navigate("MyProfile");
             // Làm trang profile xong thì bỏ cái alert đi nhé
             // alert('Bạn đã đăng nhập!');
@@ -181,7 +182,9 @@ export default function HeaderUI(props) {
                                     return (
                                         <TouchableOpacity
                                             onPress={() => {
-                                                // playerNavigate();
+                                                setSearchValue(false);
+                                                getOtherUser(item._id, dispatch, navigate, currentUser)
+                                                // console.log(currentUser);
                                             }}
                                             key={index}
                                         >
@@ -201,19 +204,19 @@ export default function HeaderUI(props) {
                                 Podcast liên quan
                             </Text>}
                             <View style={{ marginHorizontal: 16 }}>
-                            {postsResult.map((item, index) => {
-                                return (
-                                    <TouchableOpacity
-                                        onPress={() => {
-                                            // playerNavigate();
-                                        }}
-                                        key={index}
-                                    >
-                                        <PodcastListItem item={item} />
-                                    </TouchableOpacity>
-                                );
-                            })}
-                        </View>
+                                {postsResult.map((item, index) => {
+                                    return (
+                                        <TouchableOpacity
+                                            onPress={() => {
+                                                // playerNavigate();
+                                            }}
+                                            key={index}
+                                        >
+                                            <PodcastListItem item={item} />
+                                        </TouchableOpacity>
+                                    );
+                                })}
+                            </View>
                         </ScrollView>
                     </SafeAreaView>
                 </Modal>

@@ -4,6 +4,7 @@ import themeReducer from './slices/themeSlice';
 import loginReducer from './slices/loginSlice';
 import playerReducer from './slices/playerSlice';
 import homeReducer from './slices/homeSlice';
+import followingReducer from './slices/followingSlice';
 import libraryReducer from './slices/librarySlice';
 import profileReducer from './slices/profileSlice';
 import searchReducer from './slices/searchSlice';
@@ -15,6 +16,7 @@ export default configureStore({
         loginSuccess: loginReducer,
         player: playerReducer,
         home: homeReducer,
+        following: followingReducer,
         library: libraryReducer,
         profile: profileReducer,
         search: searchReducer
