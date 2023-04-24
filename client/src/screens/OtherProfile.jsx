@@ -202,9 +202,9 @@ export default function OtherProfile() {
 
                     <View
                         style={{
-                            marginHorizontal: 9,
+                            marginHorizontal: 8,
                             flexDirection: "row",
-                            justifyContent: "space-around",
+                            // justifyContent: "space-around",
                             flexWrap: "wrap",
                         }}
                         horizontal={true}
@@ -214,7 +214,7 @@ export default function OtherProfile() {
                             return (
                                 <TouchableOpacity
                                     key={index}
-                                    style={{ marginRight: 16 }}
+                                    style={{ marginHorizontal: 8 }}
                                 >
                                     <ProfilePodcast
                                         image={item.image}

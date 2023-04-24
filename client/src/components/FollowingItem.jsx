@@ -85,7 +85,7 @@ export default function FollowingItem(props) {
                 </View>
                 <View style={lightFollowingItem.followingItemInteract}>
                     <View style={lightFollowingItem.interact}>
-                        <View style={lightFollowingItem.interactIcon}>
+                        <View style={[lightFollowingItem.interactIcon, {alignItems: "center"}]}>
                             <TouchableOpacity onPress={handleHeart}>
                                 {(heart) && <Icon
                                     name="cards-heart-outline"
@@ -115,7 +115,7 @@ export default function FollowingItem(props) {
                                 <Text style={{ color: isDarkTheme ? colors.white : colors.black }}>{props.comments} Bình luận</Text>
                             </View>
                         </View>
-                        <View style={lightFollowingItem.interactIcon}>
+                        <View style={[lightFollowingItem.interactIcon, {alignItems: "center"}]}>
                             <TouchableOpacity>
                                 <Icon
                                     name="headphones"
