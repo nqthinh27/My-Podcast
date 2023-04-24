@@ -1,34 +1,38 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-const profileSlice = createSlice({
-    name: 'profile',
+const postSlice = createSlice({
+    name: 'post',
     initialState: {
-        otherUser: null,
+        detailPost: null,
         isFetching: false,
         error: false,
     },
     reducers: {
-        getOtherUserStart: (state) => {
+        getPostDataStart: (state) => {
             state.isFetching = true;
-            console.log('Start Get Other profile!');
+            console.log('Start Post Data!');
         },
-        getOtherUserSuccess: (state, action) => {
+        getPostDataSuccess: (state, action) => {
             state.isFetching = false;
-            state.otherUser = action.payload;
+            state.detailPost = action.payload;
             state.error = false;
-            console.log('Get Other profile Success!');
+            console.log('Post Data Success!');
         },
-        getOtherUserFailed: (state) => {
+        getPostDataFailed: (state) => {
             state.isFetching = false;
             state.error = true;
-            console.log('Get Other profile Failed!');
+            console.log('Post Data Failed!');
+        },
+        setDetailPost: (state, action) => {
+            state.detailPost = action.payload;
         },
     },
 });
 
 export const {
-    getOtherUserStart,
-    getOtherUserSuccess,
-    getOtherUserFailed
-} = profileSlice.actions;
-export default profileSlice.reducer;
+    getPostDataStart,
+    getPostDataSuccess,
+    getPostDataFailed,
+    setDetailPost
+} = postSlice.actions;
+export default postSlice.reducer;

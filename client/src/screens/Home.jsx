@@ -18,14 +18,18 @@ import SlideItem from "../components/SlideItem";
 import GlobalStyles from "../components/GlobalStyles";
 import TopTrendingItem from "../components/TopTrendingItem";
 
-import { PlaylistData, RecommendData, RelexData, dummyData } from "../../dummyData";
+// import { PlaylistData, RecommendData,  } from "../../dummyData";
 import { lightHome, darkHome, lightTrendingHome, darkTrendingHome } from "../constants/darkLight/themeHome"
 import MiniPlayer from "./Player/MiniPlayer";
-import { setSoundUrl, setPlayValue, setIsMiniPlayer } from "../redux/slices/playerSlice";
+import { setIsMiniPlayer, setCurrentSound, setPosition, setDuration, setIsPlayScreen, setDataSound } from "../redux/slices/playerSlice";
 import { useNavigation } from "@react-navigation/native";
 import { fetchNewRelease, fetchSlider, fetchTopAuthor, fetchTopTrending } from "../redux/actions/homeApi";
 import TopAuthorItem from "../components/TopAuThorItem";
 import { getOtherUser } from "../redux/actions/profileApi";
+import { getPost } from "../redux/actions/postApi";
+import { getPostDataSuccess, setDetailPost } from "../redux/slices/postSlice";
+import { Audio } from "expo-av";
+import PlayerScreen from "./Player/PlayerScreen";
 
 // import PlayerScreen from "./PlayerScreen";
 
@@ -38,40 +42,71 @@ export default function Home(props) {
     const navigation = useNavigation();
 
     const dispatch = useDispatch();
+
     const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
     const isMiniPlayer = useSelector((state) => state.player.isMiniPlayer);
-    const playValue = useSelector((state) => state.player.playValue);
+    // const playValue = useSelector((state) => state.player.playValue);
+    const detailPost = useSelector((state) => state.post.detailPost);
+    const currentSound = useSelector((state) => state.player.currentSound);
+    const isPlayScreen = useSelector((state) => state.player.isPlayScreen);
     const [currentIndex, setCurrentIndex] = useState(0);
     const flatListRef = useRef(null);
     const scrollViewRef = useRef(null);
     const screenWidth = Math.min(325);
+    const position = useSelector((state) => state.player.position);
 
-    useEffect(() => {
-        const intervalId = setInterval(() => {
-            const nextIndex = (currentIndex + 1) % dummyData.length;
-            flatListRef.current.scrollToIndex({ index: nextIndex });
-            setCurrentIndex(nextIndex);
-        }, 3000);
 
-        return () => clearInterval(intervalId);
-    }, [currentIndex]);
+    const [sound, setSound] = useState(null);
 
-    const handleScroll = (event) => {
-        const contentOffsetX = event.nativeEvent.contentOffset.x;
-        if (contentOffsetX % screenWidth === 0) {
-            const pageIndex = contentOffsetX / screenWidth;
-            // Chuyển sang trang kế tiếp
-            scrollViewRef.current.scrollTo({ x: (pageIndex + 1) * screenWidth, animated: true });
+    async function loadSound(uri) {
+        try {
+            // if (sound) {
+            //     await sound.unloadAsync();
+            //     sound = null;
+            //   }
+            await Audio.setAudioModeAsync({
+                staysActiveInBackground: true,
+                interruptionModeAndroid: 1,
+                shouldDuckAndroid: true,
+                interruptionModeIOS: 1,
+                playsInSilentModeIOS: true,
+            });
+            const { sound } = await Audio.Sound.createAsync(
+                { uri },
+                {
+                    shouldPlay: true,
+                    isLooping: true,
+                    positionMillis: position,
+                },
+                onPlaybackStatusUpdate
+            );
+            setSound(sound);
+            // dispatch(setPlayValue(true));
+        } catch (error) {
+            console.log(error);
         }
-        console.log('ductu');
     }
-    const soundUrl1 = 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Sound%2FLoi-Nho.mp3?alt=media&token=b522c960-115d-49ba-8d6d-5f1f2dbb9d77';
-    function playerNavigate() {
-        //if (!isMiniPlayer) {
-        navigation.navigate('PlayerScreen');
-        // dispatch(setSoundUrl(soundUrl1));
-        dispatch(setPlayValue(true))
 
+    function onPlaybackStatusUpdate(status) {
+        if (status.isPlaying) {
+            dispatch(setPosition(status.positionMillis));
+            dispatch(setDuration(status.durationMillis));
+        }
+    }
+
+
+    async function switchToNewSound(uri) {
+        try {
+            if (sound != null) {
+                await sound.unloadAsync();
+            }
+            if (uri) {
+                await getPost(uri, dispatch);
+
+            }
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     useEffect(() => {
@@ -80,6 +115,18 @@ export default function Home(props) {
         dispatch(fetchNewRelease);
         dispatch(fetchTopAuthor);
     }, []);
+
+    const nextPress = useSelector((state) => state.player.nextPress);
+
+    useEffect(() => {
+        return sound
+            ? () => {
+                sound.unloadAsync();
+                console.log("sound đang");
+            }
+            : undefined;
+    }, [sound]);
+
 
     const SliderData = useSelector((state) => state.home.slider.data);
     const TopTrendingData = useSelector((state) => state.home.topTrending.data);
@@ -99,7 +146,7 @@ export default function Home(props) {
             GlobalStyles.customSafeArea]}
         >
             {/* <NavigationEvents onDidFocus={()=> this.setState({})} /> */}
-            <ScrollView>
+            {!isPlayScreen ? <ScrollView>
                 {/* ==========================================HEADER========================================== */}
                 <HeaderUI />
 
@@ -112,10 +159,24 @@ export default function Home(props) {
                     renderItem={({ item }) => {
                         return (
                             <TouchableOpacity
-                                onPress={() => {
-                                    navigation.navigate('PlayerScreen');
-                                    // dispatch(setSoundUrl(item.));
-                                    dispatch(setPlayValue(true))
+                                onPress={async () => {
+                                    if (item.index != currentSound && sound != null) {
+                                        // await sound.unloadAsync();
+                                        setSound(null)
+                                        dispatch(setPosition(0));
+                                        dispatch(setDuration(0));
+                                        // dispatch(setIsPlaying(true));
+                                        dispatch(setIsMiniPlayer(false));
+                                        console.log("home");
+                                    }
+                                    await getPost(item._id, dispatch);
+                                    // if (isMiniPlayer) {
+                                    //     setDetailPost(null);
+                                    // }
+                                    dispatch(setDataSound(SliderData));
+                                    dispatch(setCurrentSound(item.index));
+                                    dispatch(setIsPlayScreen(true))
+                                    // dispatch(setCurrentSound(item._id));
                                 }}
                             >
                                 <SlideItem item={item} />
@@ -151,8 +212,22 @@ export default function Home(props) {
                                 {TopTrendingData.slice(0, 3).map((item, index) => {
                                     return (
                                         <TouchableOpacity
-                                            onPress={() => {
-                                                playerNavigate();
+                                            onPress={async () => {
+                                                if (item.index != currentSound) {
+                                                    // await sound.unloadAsync();
+                                                    setSound(null)
+                                                    dispatch(setPosition(0));
+                                                    dispatch(setDuration(0));
+                                                    dispatch(setIsMiniPlayer(false));
+                                                }
+                                                await getPost(item._id, dispatch);
+                                                // if (isMiniPlayer) {
+                                                //     setDetailPost(null);
+                                                // }
+                                                dispatch(setDataSound(TopTrendingData));
+                                                dispatch(setCurrentSound(item.index));
+                                                dispatch(setIsPlayScreen(true))
+                                                // dispatch(setCurrentSound(item._id));
                                             }}
                                             key={index}
                                         >
@@ -172,8 +247,22 @@ export default function Home(props) {
                                 {TopTrendingData.slice(3, 6).map((item, index) => {
                                     return (
                                         <TouchableOpacity
-                                            onPress={() => {
-                                                playerNavigate();
+                                            onPress={async () => {
+                                                if (item.index != currentSound) {
+                                                    // await sound.unloadAsync();
+                                                    setSound(null)
+                                                    dispatch(setPosition(0));
+                                                    dispatch(setDuration(0));
+                                                    dispatch(setIsMiniPlayer(false));
+                                                }
+                                                await getPost(item._id, dispatch);
+                                                // if (isMiniPlayer) {
+                                                //     setDetailPost(null);
+                                                // }
+                                                dispatch(setDataSound(TopTrendingData));
+                                                dispatch(setCurrentSound(item.index));
+                                                dispatch(setIsPlayScreen(true))
+                                                // dispatch(setCurrentSound(item._id));
                                             }}
                                             key={index}
                                         >
@@ -193,8 +282,22 @@ export default function Home(props) {
                                 {TopTrendingData.slice(6, 10).map((item, index) => {
                                     return (
                                         <TouchableOpacity
-                                            onPress={() => {
-                                                playerNavigate();
+                                            onPress={async () => {
+                                                if (item.index != currentSound) {
+                                                    // await sound.unloadAsync();
+                                                    setSound(null)
+                                                    dispatch(setPosition(0));
+                                                    dispatch(setDuration(0));
+                                                    dispatch(setIsMiniPlayer(false));
+                                                }
+                                                await getPost(item._id, dispatch);
+                                                // if (isMiniPlayer) {
+                                                //     setDetailPost(null);
+                                                // }
+                                                dispatch(setDataSound(TopTrendingData));
+                                                dispatch(setCurrentSound(item.index));
+                                                dispatch(setIsPlayScreen(true))
+                                                // dispatch(setCurrentSound(item._id));
                                             }}
                                             key={index}
                                         >
@@ -229,8 +332,22 @@ export default function Home(props) {
                     {NewReleaseData.map((item, index) => {
                         return (
                             <TouchableOpacity
-                                onPress={() => {
-                                    playerNavigate();
+                                onPress={async () => {
+                                    if (item.index != currentSound) {
+                                        // await sound.unloadAsync();
+                                        setSound(null)
+                                        dispatch(setPosition(0));
+                                        dispatch(setDuration(0));
+                                        dispatch(setIsMiniPlayer(false));
+                                    }
+                                    await getPost(item._id, dispatch);
+                                    // if (isMiniPlayer) {
+                                    //     setDetailPost(null);
+                                    // }
+                                    dispatch(setDataSound(NewReleaseData));
+                                    dispatch(setCurrentSound(item.index));
+                                    dispatch(setIsPlayScreen(true))
+                                    // dispatch(setCurrentSound(item._id));
                                 }}
                                 key={index}
                             >
@@ -270,7 +387,7 @@ export default function Home(props) {
                     })}
                 </ScrollView>
                 {/* ========================================Album thịnh hành============================================*/}
-                <TouchableOpacity style={lightHome.coverAll}>
+                {/* <TouchableOpacity style={lightHome.coverAll}>
                     <Text style={isDarkTheme ? darkHome.title : lightHome.title}>Album thịnh hành</Text>
                     <Icon
                         name='chevron-right'
@@ -295,9 +412,9 @@ export default function Home(props) {
                             </TouchableOpacity>
                         );
                     })}
-                </ScrollView>
+                </ScrollView> */}
                 {/* ==========================================Cuộc sống hằng ngày==========================================*/}
-                <TouchableOpacity style={lightHome.coverAll}>
+                {/* <TouchableOpacity style={lightHome.coverAll}>
                     <Text style={isDarkTheme ? darkHome.title : lightHome.title}>Cuộc sống hằng ngày</Text>
                     <Icon
                         name='chevron-right'
@@ -322,12 +439,22 @@ export default function Home(props) {
                             </TouchableOpacity>
                         );
                     })}
-                </ScrollView>
+                </ScrollView> */}
             </ScrollView>
+                :
+                <PlayerScreen
+                    sound={sound}
+                    loadSound={loadSound}
+                    switchToNewSound={switchToNewSound}>
+                </PlayerScreen>
+            }
             {isMiniPlayer && <MiniPlayer
-                avtUrl="https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Tu%2FRectangle%2038.png?alt=media&token=780197d0-e51a-496c-8ff1-006b24341c50"
-                tittle="Tuổi trẻ, tinh yêu và sự nghiệp"
-                author="Tun Phạm"
+                // avtUrl={detailPost.image}
+                // tittle={detailPost.title}
+                // author={detailPost.owner.fullName}
+                sound={sound}
+                loadSound={loadSound}
+                switchToNewSound={switchToNewSound}
             />}
         </SafeAreaView>
     );
