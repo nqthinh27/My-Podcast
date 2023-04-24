@@ -47,7 +47,7 @@ export default function FollowingItem(props) {
     return (
         <View>
             <View style={lightFollowingItem.followingItemWrapper}>
-                <View style={lightFollowingItem.followingItemIntroduction}>
+                {/* <View style={lightFollowingItem.followingItemIntroduction}>
                     <TouchableOpacity
                         style={{ flexDirection: 'row' }}
                         onPress={() => {
@@ -59,7 +59,6 @@ export default function FollowingItem(props) {
                             <Text style={isDarkTheme ? darkFollowingItem.date : lightFollowingItem.date} numberOfLines={1}>{props.createdAt}</Text>
                         </View>
                     </TouchableOpacity>
-                    {/* <View style={{ flex: 2 }} /> */}
                     <TouchableOpacity>
                         <Icon
                             name="dots-horizontal"
@@ -68,11 +67,11 @@ export default function FollowingItem(props) {
                             color={isDarkTheme ? colors.white : colors.black}
                         />
                     </TouchableOpacity>
-                </View>
+                </View> */}
                 {/* <Icon style={lightFollowingItem.more_btn} name="more-horizontal" size={26} color="#000" /> */}
                 <View style={lightFollowingItem.followingItemContent}>
                     <View style={{}}>
-                        <Text style={isDarkTheme ? darkFollowingItem.title : lightFollowingItem.title} numberOfLines={1}>{props.title}</Text>
+                        <Text style={[isDarkTheme ? darkFollowingItem.title : lightFollowingItem.title, {marginBottom: 3}]}>{props.title}</Text>
                         <Text style={isDarkTheme ? darkFollowingItem.descripttion : lightFollowingItem.descripttion}>{props.content}</Text>
                     </View>
                 </View>
@@ -193,7 +192,7 @@ export default function FollowingItem(props) {
                 </View>
             </View>
             <View
-                style={{ borderBottomWidth: 0.2, borderColor: colors.black, marginBottom: 12, marginHorizontal: 16 }}
+                style={{ borderBottomWidth: 0.2, borderColor: colors.black, marginBottom: 25, marginTop: 9, marginHorizontal: 16 }}
             />
         </View>
     )

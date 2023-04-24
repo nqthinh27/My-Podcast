@@ -1,7 +1,7 @@
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View, SafeAreaView } from "react-native";
 import { HeaderUI, FollowingItem } from "../components";
 import { FollowingData } from "../../dummyData";
-import { lightfollowStyles, darkfollowStyles} from "../constants/darkLight/themeFollowing"
+import { lightfollowStyles, darkfollowStyles } from "../constants/darkLight/themeFollowing"
 import { useDispatch, useSelector } from "react-redux";
 import { useIsFocused } from "@react-navigation/native";
 import { useEffect } from "react";
@@ -9,6 +9,8 @@ import { warningLogin } from "../ultis/warning";
 import GlobalStyles from "../components/GlobalStyles";
 import colors from "../constants/colors";
 import { getNewFeed } from "../redux/actions/followingApi";
+import { getOtherUser } from "../redux/actions/profileApi";
+import FollowingHeader from "../components/FollowingHeader";
 
 export default function Following(props) {
     const { navigation, route } = props;
@@ -20,7 +22,7 @@ export default function Following(props) {
     useEffect(() => {
         if (isFocused && !user) {
             warningLogin(navigate, 'Login', 'Home');
-        } 
+        }
     }, [isFocused]);
     useEffect(() => {
         getNewFeed(dispatch, access_token);
@@ -28,23 +30,27 @@ export default function Following(props) {
     const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
     const newFeed = useSelector((state) => state.following.newFeed.data);
     return (
-        <View style={{backgroundColor: isDarkTheme ? colors.dark : colors.white}}>
+        <View style={{ backgroundColor: isDarkTheme ? colors.dark : colors.white }}>
             <ScrollView>
                 <HeaderUI />
                 <View style={isDarkTheme ? darkfollowStyles.contentWrapper : lightfollowStyles.contentWrapper}>
                     <View style={followStyles.contentSection}>
-                        <View
-                        // onPress={() => {
-                        //     playerNavigate();
-                        // }}
-                        >
+                        <View>
                             {newFeed.map((item, index) => {
                                 return (
                                     <View key={index}>
+                                        <TouchableOpacity
+                                            onPress={() => {
+                                                getOtherUser(item.owner._id, dispatch, navigation.navigate, user)
+                                            }}
+                                        >
+                                            <FollowingHeader avatar={item.avatar}
+                                                owner={item.owner}
+                                                createdAt={item.createdAt}
+                                            />
+                                        </TouchableOpacity>
                                         <FollowingItem
-                                            avatar={item.avatar}
-                                            owner={item.owner}
-                                            date={item.date}
+
                                             title={item.title}
                                             likes={item.likes}
                                             views={item.views}

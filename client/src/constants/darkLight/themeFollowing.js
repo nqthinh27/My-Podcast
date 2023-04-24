@@ -33,7 +33,7 @@ export const lightFollowingItem = StyleSheet.create({
     },
     followingItemContent: {
         // top: 10,
-        marginTop: 6
+        // marginTop: 6
     },
     followingItemImage: {
         // top: 30,
