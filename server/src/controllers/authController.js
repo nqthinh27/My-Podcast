@@ -39,7 +39,6 @@ const authController = {
                 history: newUserHistory._id,
             });
             await newUser.save();
-            console.log({ newUser });
             res.json({
                 msg: 'Register Successfully!',
                 // access_token,

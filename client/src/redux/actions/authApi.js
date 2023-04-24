@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { loginFailed, loginStart, loginSuccess, logoutStart, logoutSuccess, setUserAccessToken } from '../slices/authSlice';
+import { getAllPostsFailed, getAllPostsStart, getAllPostsSuccess, getFollowersFailed, getFollowersStart, getFollowersSuccess, getFollowingFailed, getFollowingStart, getFollowingSuccess, getTopPostsFailed, getTopPostsStart, getTopPostsSuccess, loginFailed, loginStart, loginSuccess, logoutStart, logoutSuccess, setUserAccessToken } from '../slices/authSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState } from "react";
 import { BASE_URL } from '../../ultis/config';
@@ -71,6 +71,50 @@ export const refreshToken = async (dispatch) => {
         setFirstLogin(value);
     });
 
+}
+
+export const getMyUserAllPosts = async (userId, dispatch) => {
+    dispatch(getAllPostsStart());
+    try {
+        const res = await axios.get(`${BASE_URL}/user/${userId}/posts?page=1&limit=15`);
+        dispatch(getAllPostsSuccess(res.data.posts));
+    } catch (err) {
+        dispatch(getAllPostsFailed());
+        alert('User không tồn tại!');
+    }
+}
+
+export const getMyUserTopPosts = async (userId, dispatch) => {
+    dispatch(getTopPostsStart());
+    try {
+        const res = await axios.get(`${BASE_URL}/user/${userId}/topPosts`);
+        dispatch(getTopPostsSuccess(res.data.posts));
+    } catch (err) {
+        dispatch(getTopPostsFailed());
+        alert('User không tồn tại!');
+    }
+}
+
+export const getMyFollowers = async (userId, dispatch) => {
+    dispatch(getFollowersStart());
+    try {
+        const res = await axios.get(`${BASE_URL}/follow/${userId}/followers`);
+        dispatch(getFollowersSuccess(res.data.follower));
+    } catch (err) {
+        dispatch(getFollowersFailed());
+        alert('User không tồn tại!');
+    }
+}
+
+export const getMyFollowing = async (userId, dispatch) => {
+    dispatch(getFollowingStart());
+    try {
+        const res = await axios.get(`${BASE_URL}/follow/${userId}/following`);
+        dispatch(getFollowingSuccess(res.data.following));
+    } catch (err) {
+        dispatch(getFollowingFailed());
+        alert('User không tồn tại!');
+    }
 }
 
 // AsyncStorage.getItem('access_token').then((value) => {
