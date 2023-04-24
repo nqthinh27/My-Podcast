@@ -15,38 +15,27 @@ const screenOptions = ({ route }) => ({
     tabBarInactiveTintColor: '#888888',
     tabBarIcon: ({ focused, color, size }) => {
         let screenName = route.name;
-        let iconName = "";
         if (screenName == "Home") {
             return <Image
                 style={{ width: 25, height: 25, marginTop: 3 }}
-                source={{
-                    uri: focused ? 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_home_active.png?alt=media&token=06367cd4-32f6-4c85-9a88-1364c17788ce' : 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_home_inactive.png?alt=media&token=c4ecc541-505a-4ef5-90b8-0ad6f446404e',
-                }} />
+                source={focused ? require("../../assets/navBar/ico_home_active.png") : require("../../assets/navBar/ico_home_inactive.png") } />
         }
         else if (screenName == "Following") {
             return <Image
                 style={{ width: 25, height: 25, marginTop: 3 }}
-                source={{
-                    uri: focused ? 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_follow_active.png?alt=media&token=23ae2dd0-9ef7-40ad-894c-a0f3134eba18' : 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_follow_inactive.png?alt=media&token=513a3d05-afb5-4fb6-a6cc-ba6bcabb859b',
-                }} />
+                source={focused ? require("../../assets/navBar/ico_follow_active.png") : require("../../assets/navBar/ico_follow_inactive.png") } />
         } else if (screenName == "Post") {
             return <Image
                 style={{ width: 50, height: 50, marginTop: 14 }}
-                source={{
-                    uri: 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_post.png?alt=media&token=c5e877aa-948a-440a-9a5a-6973bbc09784',
-                }} />
+                source={require("../../assets/navBar/ico_post.png")} />
         } else if (screenName == "Library") {
             return <Image
                 style={{ width: 25, height: 25, marginTop: 3 }}
-                source={{
-                    uri: focused ? 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_lib_active.png?alt=media&token=0a3bb07a-79cc-4a92-a56f-ec496c8a95f9' : 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_lib_inactive.png?alt=media&token=a1d2afb9-f12c-4028-9536-39bd2511ecd0',
-                }} />
+                source={focused ? require("../../assets/navBar/ico_lib_active.png") : require("../../assets/navBar/ico_lib_inactive.png") } />
         } else if (screenName == "Setting") {
             return <Image
                 style={{ width: 25, height: 25, marginTop: 3 }}
-                source={{
-                    uri: focused ? 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_setting_active.png?alt=media&token=611639a8-001c-4230-ad75-7bd5f06d895c' : 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_setting_inactive.png?alt=media&token=822a3b0e-1060-4f19-a6d4-62a8aea50579',
-                }} />
+                source={focused ? require("../../assets/navBar/ico_setting_active.png") : require("../../assets/navBar/ico_setting_inactive.png") } />
         }
     }
 });

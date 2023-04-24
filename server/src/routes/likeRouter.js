@@ -5,6 +5,6 @@ const authMiddleware = require('../middleware/authMiddleware');
 router.post('/:id/add', authMiddleware, likeController.addToLiked);
 router.patch('/:id/remove', authMiddleware, likeController.removeFromLiked);
 router.patch('/remove', authMiddleware, likeController.removeMutipleFromLiked);
-router.get('/', authMiddleware, likeController.getUserLiked);
+router.post('/', authMiddleware, likeController.getUserLiked);
 
 module.exports = router;

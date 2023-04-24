@@ -28,7 +28,7 @@ const authController = {
             const newUserHistory = new Histories({});
             await newUserHistory.save();
             const newUserSaved = new Saves({});
-            await newUserSaved.save(); 
+            await newUserSaved.save();
             const newUser = new Users({
                 fullName,
                 userName: newUserName,
@@ -39,7 +39,6 @@ const authController = {
                 history: newUserHistory._id,
             });
             await newUser.save();
-            console.log({newUser});
             res.json({
                 msg: 'Register Successfully!',
                 // access_token,
@@ -72,11 +71,33 @@ const authController = {
                 refresh_token: refresh_token,
                 ...user._doc,
                 password: '',
+                posts: user.posts.length,
+                following: user.following.length,
+                followers: user.followers.length,
             });
         } catch (err) {
             return res.status(500).json({ msg: err.message });
         }
     },
+
+    staylogged: async (req, res) => {
+        try {
+            const user = await Users.findById(req.user._id);
+            if (!user) {
+                return res.status(400).json({ msg: 'This user does not exists.' });
+            }
+            res.json({
+                ...user._doc,
+                password: '',
+                posts: user.posts.length,
+                following: user.following.length,
+                followers: user.followers.length,
+            });
+        } catch (err) {
+            return res.status(500).json({ msg: err.message });
+        }
+    },
+
 
     // GENERATE ACCESS TOKEN
     generateAccessToken: async (req, res) => {
@@ -97,7 +118,10 @@ const authController = {
                 res.json({
                     access_token,
                     refresh_token: rf_token,
-                    user
+                    ...user._doc,
+                    posts: user.posts.length,
+                    following: user.following.length,
+                    followers: user.followers.length,
                 })
             })
 
