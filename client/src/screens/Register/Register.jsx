@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from "axios";
 import {
     StyleSheet,
     Text,
@@ -12,6 +12,8 @@ import colors from "../../constants/colors";
 import Icon from "react-native-vector-icons/Entypo";
 import { BASE_URL } from "../../ultis/config";
 import { useNavigation } from "@react-navigation/native";
+import { useDispatch, useSelector } from "react-redux";
+import { lightLogin, darkLogin } from "../../constants/darkLight/themeLogin";
 
 function Register(props) {
     const navigation = useNavigation();
@@ -23,6 +25,10 @@ function Register(props) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [repassword, setRepassword] = useState("");
+    const currentLanguage = useSelector(
+        (state) => state.language.currentLanguage
+    );
+    const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
 
     const handleRegister = async () => {
         try {
@@ -31,21 +37,29 @@ function Register(props) {
                     fullName: fullName,
                     userName: userName,
                     email: email,
-                    password: password
-                }
+                    password: password,
+                };
                 res = await axios.post(`${BASE_URL}/auth/register`, newUser);
+<<<<<<< Updated upstream
                 alert('Đăng ký thành công');
+=======
+                alert("Đăng ký thành công");
                 console.log(res.data);
+>>>>>>> Stashed changes
             } else {
-                alert('Mật khẩu nhập lại không khớp');
+                alert("Mật khẩu nhập lại không khớp");
             }
         } catch (err) {
-            console.log(err.message);
+<<<<<<< Updated upstream
             alert('Không hợp lệ! Vui lòng kiểm tra lại thông tin');
+=======
+            console.log(err.message);
+            alert("Không hợp lệ! Vui lòng kiểm tra lại thông tin");
+>>>>>>> Stashed changes
         }
-    }
+    };
     return (
-        <SafeAreaView style={styles.register}>
+        <SafeAreaView style={[styles.register, isDarkTheme ? darkLogin.background : lightLogin.background]}>
             <View style={styles.registerHeader}>
                 <Icon
                     name={"chevron-left"}
@@ -55,15 +69,19 @@ function Register(props) {
                         navigation.goBack();
                     }}
                 />
-                <Text style={styles.registerTextHeader}>Đăng kí</Text>
+                <Text style={styles.registerTextHeader}>
+                    {currentLanguage === "vi" ? "Đăng ký" : "Register"}
+                </Text>
                 <Text> </Text>
             </View>
 
-            <View style={styles.registerContainer}>
+            <View style={[styles.registerContainer, isDarkTheme ? darkLogin.background : lightLogin.background]}>
                 <View style={styles.registerViewInputForm}>
                     <TextInput
                         style={styles.registerInputText}
-                        placeholder="Họ và tên"
+                        placeholder={
+                            currentLanguage === "vi" ? "Họ tên" : "Full name"
+                        }
                         value={fullName}
                         onChangeText={setFullName}
                     ></TextInput>
@@ -71,7 +89,11 @@ function Register(props) {
                 <View style={styles.registerViewInputForm}>
                     <TextInput
                         style={styles.registerInputText}
-                        placeholder="Tên người dùng"
+                        placeholder={
+                            currentLanguage === "vi"
+                                ? "Tên người dùng"
+                                : "Username"
+                        }
                         value={userName}
                         onChangeText={setUserName}
                     ></TextInput>
@@ -87,7 +109,9 @@ function Register(props) {
                 <View style={styles.registerViewInputForm}>
                     <TextInput
                         style={styles.registerInputText}
-                        placeholder="Mật khẩu"
+                        placeholder={
+                            currentLanguage === "vi" ? "Mật khẩu" : "Password"
+                        }
                         secureTextEntry={true}
                         value={password}
                         onChangeText={setPassword}
@@ -97,7 +121,11 @@ function Register(props) {
                 <View style={styles.registerViewInputForm}>
                     <TextInput
                         style={styles.registerInputText}
-                        placeholder="Nhập lại Mật khẩu"
+                        placeholder={
+                            currentLanguage === "vi"
+                                ? "Nhập lại mật khẩu"
+                                : "Confirm password"
+                        }
                         secureTextEntry={true}
                         value={repassword}
                         onChangeText={setRepassword}
@@ -108,7 +136,9 @@ function Register(props) {
                     style={styles.registerViewButtonRegister}
                     onPress={handleRegister}
                 >
-                    <Text style={styles.registerButtonRegister}>Đăng ký</Text>
+                    <Text style={styles.registerButtonRegister}>
+                        {currentLanguage === "vi" ? "Đăng ký" : "Register"}
+                    </Text>
                 </TouchableOpacity>
 
                 <View style={styles.registerViewButtonHaveAcc}>
@@ -120,7 +150,9 @@ function Register(props) {
                             borderBottomColor: "#FF6363",
                         }}
                     >
-                        Đã có tài khoản?{" "}
+                        {currentLanguage === "vi"
+                            ? "Đã có tài khoản? "
+                            : "Have an account? "}
                     </Text>
 
                     <Text
@@ -132,7 +164,7 @@ function Register(props) {
                             navigate("Login");
                         }}
                     >
-                        Đăng nhập
+                        {currentLanguage === "vi" ? "Đăng nhập" : "Login"}
                     </Text>
                 </View>
             </View>

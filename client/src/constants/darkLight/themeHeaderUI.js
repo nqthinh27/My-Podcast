@@ -19,9 +19,9 @@ export const lightHeader = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: colors.white,
+        backgroundColor: "#EDEDED",
         borderWidth: 0.7,
-        borderColor: colors.black,
+        borderColor: "#EDEDED",
         borderRadius: 32,
         marginHorizontal: 8,
     },
@@ -35,7 +35,7 @@ export const lightHeader = StyleSheet.create({
         marginRight: 12,
         padding: 0,
         flex: 1,
-        color: colors.black,
+        color: "#A0A0A0",
     },
 
     bell: {
@@ -62,7 +62,7 @@ export const darkHeader = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: 'rgba(255, 255, 255, 0.7)',
+        backgroundColor: '#272727',
         borderColor: colors.black,
         borderRadius: 32,
         borderWidth: 1,
@@ -78,7 +78,7 @@ export const darkHeader = StyleSheet.create({
         marginRight: 12,
         padding: 0,
         flex: 1,
-        color: colors.black,
+        color: '#EAEAEA'
     },
 
     bell: {

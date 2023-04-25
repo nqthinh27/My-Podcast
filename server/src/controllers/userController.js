@@ -17,9 +17,18 @@ const userController = {
     getUserById: async (req, res) => {
         try {
             const user = await Users.findById(req.params.id);
-            res.status(200).json(user);
+            if (!user) {
+                return res.status(400).json({ msg: 'This user does not exists.' });
+            }
+            res.json({
+                ...user._doc,
+                password: '',
+                posts: user.posts.length,
+                following: user.following.length,
+                followers: user.followers.length,
+            });
         } catch (err) {
-            return res.status(500).json({ msg: err.message })
+            return res.status(500).json({ msg: err.message });
         }
     },
 
@@ -46,11 +55,12 @@ const userController = {
 
             const user = await Users.findById(req.params.id).populate({
                 path: 'posts',
-                select: '_id title image likes views',
+                select: '_id title image likes views createdAt',
                 options: {
                     skip,
-                    limit: parseInt(limit)
-                }
+                    limit: parseInt(limit),
+                    sort: { createdAt: -1 }
+                },
             });
 
             const totalPosts = user.posts.length;
@@ -61,6 +71,27 @@ const userController = {
                 currentPage: parseInt(page),
                 totalPages,
                 totalPosts
+            });
+        } catch (err) {
+            return res.status(500).json({ msg: err.message })
+        }
+    },
+
+    // Get user post Top trending
+    getUserTopPost: async (req, res) => {
+        try {
+            const limit = 3;
+            const user = await Users.findById(req.params.id).populate({
+                path: 'posts',
+                select: '_id title image likes views createdAt',
+                options: {
+                    limit: parseInt(limit),
+                    sort: { views: -1 }
+                },
+            });
+
+            res.status(200).json({
+                posts: user.posts,
             });
         } catch (err) {
             return res.status(500).json({ msg: err.message })

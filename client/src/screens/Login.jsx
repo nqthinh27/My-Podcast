@@ -8,28 +8,29 @@ import {
     SafeAreaView,
 } from "react-native";
 import AntDesignIcon from "react-native-vector-icons/AntDesign";
-import EntypoIcon from "react-native-vector-icons/Entypo";
+import Icon from "react-native-vector-icons/Entypo";
 import { useDispatch, useSelector } from "react-redux";
 import GlobalStyles from "../components/GlobalStyles";
 import { loginUser } from '../redux/actions/authApi';
+import { useNavigation } from "@react-navigation/native";
+import { lightLogin, darkLogin } from "../constants/darkLight/themeLogin";
+import colors from "../constants/colors";
 
-const colors = {
-    primary: '#FFA800',
-    inactive: '#888888',
-}
 
 function Login(props) {
     const dispatch = useDispatch();
     const loginSuccess = useSelector((state) => state.loginSuccess.isLoginSuccess)
-    const { navigation, route } = props;
-    // //function of navigate
-    const { navigate, goBack } = navigation;
+    const { navigate, goBack } = useNavigation();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [err, setErr] = useState(false);
     const [loginwGoogle, setloginwGoogle] = useState(false);
     const [loginwFb, setloginwFb] = useState(false);
+    const currentLanguage = useSelector(
+        (state) => state.language.currentLanguage
+    );
+    const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
 
     const handleLogin = () => {
         setErr(!err);
@@ -41,27 +42,28 @@ function Login(props) {
     }
 
     return (
-        <SafeAreaView style={[GlobalStyles.customSafeArea, {backgroundColor: "#fff"}]}>
+        <SafeAreaView style={[GlobalStyles.customSafeArea, isDarkTheme ? darkLogin.background : lightLogin.background]}>
             <View style={styles.loginHeader}>
-                <EntypoIcon
+                <Icon
                     name={"chevron-left"}
                     size={30}
-                    // color={colors.primary}
+                    color={isDarkTheme ? darkLogin.text.color : lightLogin.text.color}
                     onPress={() => {
                         goBack();
                     }}
                 />
-                <Text style={styles.loginTextHeader}>Đăng nhập</Text>
+                <Text style={[styles.loginTextHeader, isDarkTheme ? darkLogin.text : lightLogin.text ]}>{currentLanguage === "vi" ? "Đăng nhập" : "Login"}</Text>
                 <Text> </Text>
             </View>
 
-            <View style={styles.loginContainer}>
+            <View style={[styles.loginContainer, , isDarkTheme ? darkLogin.background : lightLogin.background]}>
                 <View style={styles.loginInputEmail}>
                     <TextInput
-                        style={styles.loginTextInputEmail}
+                        style={[styles.loginTextInputEmail, isDarkTheme ? darkLogin.textInput : lightLogin.textInput]}
                         value={email}
                         onChangeText={setEmail}
                         placeholder="Email"
+                        placeholderTextColor={isDarkTheme ? darkLogin.textInput.color : lightLogin.textInput}
                     ></TextInput>
                 </View>
 
@@ -70,11 +72,12 @@ function Login(props) {
                         style={styles.loginTextInputPassword}
                         value={password}
                         onChangeText={setPassword}
-                        placeholder="Mật khẩu"
+                        placeholder={currentLanguage === "vi" ? "Mật khẩu" : "Password"}
                         secureTextEntry={true}
+                        placeholderTextColor={isDarkTheme ? darkLogin.textInput.color : lightLogin.textInput}
                     ></TextInput>
 
-                    <Text style={styles.loginTextForgot}>Quên mật khẩu?</Text>
+                    <Text style={styles.loginTextForgot}>{currentLanguage === "vi" ? "Quên mật khẩu?" : "Forgot Password?"}</Text>
                 </View>
 
                 <TouchableOpacity
@@ -83,32 +86,32 @@ function Login(props) {
                         handleLogin();
                     }}
                 >
-                    <EntypoIcon name="login" size={25} color="#fff" />
-                    <Text style={styles.loginButtonlogin}> Đăng nhập</Text>
+                    <Icon name="login" size={25} color="#fff" />
+                    <Text style={styles.loginButtonlogin}>{currentLanguage === "vi" ? " Đăng nhập" : " Login"}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.loginButtonViewGoogle}>
-                    <EntypoIcon
+                    <Icon
                         name="google--with-circle"
                         size={35}
                         color="#ED5A4F"
                     />
                     <Text style={styles.loginButtonGoogle}>
                         {" "}
-                        Đăng nhập với Google
+                        {currentLanguage === "vi" ? "Đăng nhập với Google" : "Login with Google"}
                     </Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.loginButtonViewFb}>
-                    <EntypoIcon name="facebook" size={33} color="#0571E6" />
+                    <Icon name="facebook" size={33} color="#0571E6" />
                     <Text style={styles.loginButtonFb}>
                         {" "}
-                        Đăng nhập với Facebook
+                        {currentLanguage === "vi" ? "Đăng nhập với Facebook" : "Login with Facebook"}
                     </Text>
-                </TouchableOpacity>
+                </TouchableOpacity> 
 
                 <View style={styles.loginViewNoEmail}>
                     <Text style={styles.loginTextNoEmail}>
-                        Chưa có tài khoản?
+                    {currentLanguage === "vi" ? "Chưa có tài khoản" : "Don't have an account?"}
                     </Text>
                 </View>
                 <TouchableOpacity
@@ -118,7 +121,7 @@ function Login(props) {
                     }}
                 >
                     <AntDesignIcon name="adduser" size={30} color={colors.primary} />
-                    <Text style={styles.loginButtonGoogle}> Đăng ký tài khoản</Text>
+                    <Text style={styles.loginButtonGoogle}>{currentLanguage === "vi" ? " Đăng ký tài khoản" : " Register"}</Text>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>

@@ -17,7 +17,7 @@ export const lightSetting = StyleSheet.create({
         alignItems: 'center',
         marginLeft: 16,
         marginRight: 16,
-        marginTop: 16,
+        // marginTop: 16,
     },
     loginButton: {
         // color: colors.black,
@@ -53,7 +53,10 @@ export const lightSetting = StyleSheet.create({
     setIco: {
         flexDirection: 'row',
         paddingVertical: 10,
+        justifyContent: 'space-between',
         alignContent: 'center',
+        alignItems: 'center',
+        height: 45,
         marginVertical: 3,
         marginHorizontal: 16,
         borderRadius: 7,

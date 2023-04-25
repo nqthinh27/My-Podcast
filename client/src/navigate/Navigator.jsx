@@ -1,3 +1,4 @@
+import { StatusBar } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Home from "../screens/Home";
@@ -6,11 +7,14 @@ import Following from "../screens/Following";
 import Post from "../screens/Post";
 import Setting from "../screens/Setting";
 import UIScreen from "./UIScreen";
-import PlayerScreen from "../screens/PlayerScreen";
+import PlayerScreen from "../screens/Player/PlayerScreen";
 import Login from "../screens/Login";
 import MyProfile from "../screens/MyProfile";
+import OtherProfile from "../screens/OtherProfile";
 import Register from "../screens/Register/Register";
 import RegisterOTP from "../screens/Register/RegisterOTP";
+import { useSelector } from "react-redux";
+import colors from "../constants/colors";
 
 const Stack = createNativeStackNavigator();
 export default function Navigator(props) {
@@ -27,6 +31,7 @@ export default function Navigator(props) {
             <Stack.Screen name={"Register"} component={Register}/>
             <Stack.Screen name={"RegisterOTP"} component={RegisterOTP}/>
             <Stack.Screen name={"MyProfile"} component={MyProfile}/>
+            <Stack.Screen name={"OtherProfile"} component={OtherProfile}/>
         </Stack.Navigator>
     </NavigationContainer>
 }

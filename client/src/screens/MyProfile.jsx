@@ -8,7 +8,7 @@ import {
     TouchableOpacity,
     SafeAreaView,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import colors from "../constants/colors";
 import Icon from "react-native-vector-icons/Entypo";
 import GlobalStyles from "../components/GlobalStyles";
@@ -16,23 +16,45 @@ import ProfileInfo from "../components/ProfileInfo";
 import { MyPopularData } from "../../dummyData";
 import ProfilePodcast from "../components/ProfilePodcast";
 import { MyNewReLeaseData } from "../../dummyData";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { device } from "../constants/device";
+import { useNavigation } from "@react-navigation/native";
+import { getMyFollowers, getMyFollowing, getMyUserAllPosts, getMyUserTopPosts } from "../redux/actions/authApi";
+import { timeDiff } from "../ultis/helper";
+import { darkProfile, lightProfile } from "../constants/darkLight/themProfile";
 
 function MyProfile(props) {
-    //navigation
-    const { navigation, route } = props;
-    // //function of navigate
-    const { navigate, goBack } = navigation;
+    const dispatch = useDispatch();
+    const { navigate, goBack } = useNavigation();
     const user = useSelector((state) => state.auth.login.currentUser);
-    const {fullName, userName, avatar, moblie, address, story, website, posts, following, followers } = user;
-
-    function updatePosts() {
-        setPosts(posts + 1)
-    }
-
+    const { fullName, userName, avatar, moblie, address, story, website, posts, following, followers } = user;
+    useEffect(() => {
+        if (user) {
+            getMyUserTopPosts(user._id, dispatch);
+            getMyUserAllPosts(user._id, dispatch);
+            getMyFollowers(user._id, dispatch);
+            getMyFollowing(user._id, dispatch);
+        }
+    }, [dispatch])
+    const topPosts = useSelector((state) => state.auth.topPosts.data);
+    const allPosts = useSelector((state) => state.auth.allPosts.data);
+    const followingList = useSelector((state) => state.auth.following.data);
+    const followersList = useSelector((state) => state.auth.followers.data);
+    const currentLanguage = useSelector(
+        (state) => state.language.currentLanguage
+    );
+    const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
+    
     return (
-        <SafeAreaView style={[styles.myprofile, GlobalStyles.droidSafeArea]}>
+        <SafeAreaView
+            style={[
+                styles.myprofile,
+                GlobalStyles.droidSafeArea,
+                isDarkTheme
+                    ? darkProfile.profileContainer
+                    : lightProfile.profileContainer,
+            ]}
+        >
             <ScrollView>
                 <View style={styles.myprofileHeader}>
                     <Icon
@@ -41,8 +63,16 @@ function MyProfile(props) {
                         onPress={() => {
                             goBack();
                         }}
+                        color={isDarkTheme ? "white" : "black"}
                     />
-                    <Text style={styles.myprofileTextHeader}>
+                    <Text
+                        style={[
+                            styles.myprofileTextHeader,
+                            isDarkTheme
+                                ? darkProfile.profileText
+                                : lightProfile.profileText,
+                        ]}
+                    >
                         Trang cá nhân
                     </Text>
                     <Text> </Text>
@@ -62,63 +92,109 @@ function MyProfile(props) {
                         posts={posts}
                     ></ProfileInfo>
 
-                    <TouchableOpacity style={styles.myprofileEditProfile}>
+                    <TouchableOpacity
+                        style={
+                            isDarkTheme
+                                ? darkProfile.myprofileEditProfile
+                                : lightProfile.myprofileEditProfile
+                        }
+                    >
                         <Text style={styles.myprofileButtonEditprofile}>
                             Chỉnh sửa trang cá nhân
                         </Text>
                     </TouchableOpacity>
+                    <View style={{ flexDirection: "row" }}>
+                        <Text
+                            style={[
+                                {
+                                    marginLeft: 16,
+                                    fontSize: 18,
+                                    fontWeight: "bold",
+                                    marginBottom: 10,
+                                },
+                                isDarkTheme
+                                    ? darkProfile.profileText
+                                    : lightProfile.profileText,
+                            ]}
+                        >
+                            Nổi bật
+                        </Text>
+                        <Icon
+                            name={"chevron-right"}
+                            size={18}
+                            style={{ paddingTop: 1 }}
+                            color={isDarkTheme ? "white" : "black"}
+                            onPress={() => {
+                                navigate("UIScreen");
+                            }}
+                        />
+                    </View>
 
-                    <Text
-                        style={{
-                            marginLeft: 16,
-                            fontSize: 18,
-                            fontWeight: "bold",
-                            marginBottom: 10,
-                        }}
-                    >
-                        Nổi bật
-                    </Text>
                     <View
                         style={{
-                            marginHorizontal: 9,
+                            marginHorizontal: 8,
                             flexDirection: "row",
-                            justifyContent: "space-around",
+                            // justifyContent: "space-around",
                         }}
                         horizontal={true}
                     >
-                        {MyPopularData.map((item, index) => {
+                        {topPosts.map((item, index) => {
                             return (
-                                <TouchableOpacity key={index}>
-                                    <ProfilePodcast item={item} />
+                                <TouchableOpacity key={index}
+                                style={{ marginHorizontal: 8 }}>
+                                    <ProfilePodcast
+                                        image={item.image}
+                                        title={item.title}
+                                        des={item.likes + " Lượt thích"} />
                                 </TouchableOpacity>
                             );
                         })}
                     </View>
 
-                    <Text
-                        style={{
-                            marginLeft: 16,
-                            fontSize: 18,
-                            fontWeight: "bold",
-                            marginBottom: 10,
-                        }}
-                    >
-                        Mới phát hành
-                    </Text>
+                    <View style={{ flexDirection: "row" }}>
+                        <Text
+                            style={[
+                                {
+                                    marginLeft: 16,
+                                    fontSize: 18,
+                                    fontWeight: "bold",
+                                    marginBottom: 10,
+                                },
+                                isDarkTheme
+                                    ? darkProfile.profileText
+                                    : lightProfile.profileText,
+                            ]}
+                        >
+                            Mới phát hành
+                        </Text>
+                        <Icon
+                            name={"chevron-right"}
+                            size={18}
+                            style={{ paddingTop: 1 }}
+                            color={isDarkTheme ? "white" : "black"}
+                            onPress={() => {
+                                navigate("UIScreen");
+                            }}
+                        />
+                    </View>
 
                     <View
                         style={{
-                            marginHorizontal: 9,
+                            marginHorizontal: 8,
                             flexDirection: "row",
-                            justifyContent: "space-around",
+                            // justifyContent: "space-around",
                             flexWrap: "wrap",
                         }}
                         horizontal={true}
                     >
-                        {MyNewReLeaseData.map((item, index) => {
+                        {allPosts.map((item, index) => {
                             return (
-                                <TouchableOpacity key={index}>
-                                    <ProfilePodcast item={item} />
+                                <TouchableOpacity key={index}
+                                style={{ marginHorizontal: 8 }}>
+                                    <ProfilePodcast
+                                        image={item.image}
+                                        title={item.title}
+                                        des={timeDiff(item.createdAt)} />
                                 </TouchableOpacity>
                             );
                         })}

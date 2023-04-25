@@ -25,7 +25,7 @@ export const lightHome = StyleSheet.create({
 
 export const darkHome = StyleSheet.create({
     wrapper: {
-        backgroundColor: colors.dark,
+        backgroundColor: colors.dark_backgr,
         color: "#fff"
     },
     title: {
@@ -64,7 +64,7 @@ export const darkTrendingHome = StyleSheet.create({
         width: device.width-32,
         marginRight: 16,
         borderRadius: 10,
-        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+        backgroundColor: '#272727',
         // flexDirection: 'row',
         // flexWrap: 'wrap',
     },

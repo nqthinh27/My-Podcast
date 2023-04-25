@@ -8,7 +8,7 @@ import {
     TouchableOpacity,
     SafeAreaView,
 } from "react-native";
-import React , { useState }from "react";
+import React, { useEffect, useState } from "react";
 import colors from "../constants/colors";
 import Icon from "react-native-vector-icons/Feather";
 import ProfileInfo from "../components/ProfileInfo";
@@ -16,21 +16,53 @@ import { MyPopularData } from "../../dummyData";
 import ProfilePodcast from "../components/ProfilePodcast";
 import { MyNewReLeaseData } from "../../dummyData";
 import GlobalStyles from "../components/GlobalStyles";
+import { useSelector } from "react-redux";
+import { useNavigation } from "@react-navigation/native";
+import { checkIdInclude, timeDiff } from "../ultis/helper";
+import { getPublicDataAPI, patchDataAPI } from "../ultis/fetchData";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { warningLogin } from "../ultis/warning";
 // import Icon from "react-native-vector-icons/Entypo";
 
-export default function OtherProfile(props) {
-    //navigation
-    // const { navigation, route } = props;
-    // //function of navigate
-    // const { navigate, goback } = navigation;
-
-    const [isFollowed, setIsFollowed] = useState(false);
-    const handlePress = () => {
-        setIsFollowed(!isFollowed);
-      };
-
+export default function OtherProfile() {
+    const { navigate, goBack } = useNavigation();
+    const currentUser = useSelector((state) => state.auth.login.currentUser);
+    const otherUser = useSelector((state) => state.profile.otherUser.data);
+    const allPosts = useSelector((state) => state.profile.allPosts.data);
+    const topPosts = useSelector((state) => state.profile.topPosts.data);
+    const followers = useSelector((state) => state.profile.followers.data);
+    const following = useSelector((state) => state.profile.following.data);
+    const [isFollowed, setIsFollowed] = useState(currentUser ? checkIdInclude(followers, currentUser._id) : false);
+    // info
+    const [token, setToken] = useState("");
+    const [currenFollowers, setCurrenFollowers] = useState(otherUser.followers);
+    const handleFollowOther = () => {
+        if (!currentUser) {
+            warningLogin(navigate, 'Login', 'OtherProfile');
+        } else {
+            if (isFollowed) setCurrenFollowers(prevFollowers => prevFollowers - 1);
+            else setCurrenFollowers(prevFollowers => prevFollowers + 1);
+            setIsFollowed(!isFollowed);
+        }
+    };
+    AsyncStorage.getItem('access_token').then((value) => {
+        setToken(value);
+    });
+    useEffect(() => {
+        if (!isFollowed) {
+            patchDataAPI(`follow/${otherUser._id}/undo`, null, token)
+                .catch((error) => {
+                    console.log('Error while unfollowing user:', error);
+                });
+        } else {
+            patchDataAPI(`follow/${otherUser._id}`, null, token)
+                .catch((error) => {
+                    console.log('Error while following user:', error);
+                });
+        }
+    }, [isFollowed]);
     return (
-        <SafeAreaView style={[styles.otherprofile, GlobalStyles.droidSafeArea]}>
+        <SafeAreaView style={[styles.otherprofile, GlobalStyles.customSafeArea]}>
             <ScrollView showsVerticalScrollIndicator={false}>
                 <View style={styles.otherprofileHeader}>
                     <Icon
@@ -38,17 +70,17 @@ export default function OtherProfile(props) {
                         name={"chevron-left"}
                         size={26}
                         onPress={() => {
-                            navigate("UIScreen");
+                            goBack();
                         }}
                     />
-                    {/* <Text
+                    <Text
                         style={{
-                            fontWeight: "bold",
+                            fontWeight: "500",
                             fontSize: 21,
                         }}
                     >
-                        Trang cá nhân
-                    </Text> */}
+                        @{otherUser.userName}
+                    </Text>
                     <Text> </Text>
                 </View>
 
@@ -58,25 +90,27 @@ export default function OtherProfile(props) {
                             width: "100%",
                             backgroundColor: "red",
                         }}
-                        avt="https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/avatar.jpg?alt=media&token=fc074eb8-e67f-4235-8230-160cae1557b5"
-                        name="Nguyễn Quang Thịnh"
-                        followers={2002}
-                        following={2002}
-                        posts={20}
+                        avt={otherUser.avatar}
+                        name={otherUser.fullName}
+                        followers={currenFollowers}
+                        following={otherUser.following}
+                        posts={otherUser.posts}
                     />
 
                     <View style={styles.otherprofileFollowButton}>
-                        <TouchableOpacity style={styles.otherprofileFollow} onPress={handlePress}>
-                            <View style={{ flexDirection: "row", 
-                        justifyContent: 'center',
-                        alignContent: 'center' }}>
+                        <TouchableOpacity style={styles.otherprofileFollow} onPress={handleFollowOther}>
+                            <View style={{
+                                flexDirection: "row",
+                                justifyContent: 'center',
+                                alignContent: 'center'
+                            }}>
                                 <Text
                                     style={{
                                         fontSize: 16,
                                         fontWeight: "500",
                                     }}
                                 >
-                                     {isFollowed ?  'Đang theo dõi   ' :'Theo dõi  '}
+                                    {isFollowed ? 'Đang theo dõi   ' : 'Theo dõi  '}
                                 </Text>
                                 <Icon
                                     name={isFollowed ? "user-check" : 'user'}
@@ -121,20 +155,24 @@ export default function OtherProfile(props) {
                             flexDirection: "row",
                             justifyContent: "space-around",
                         }}
-                        // horizontal={true}
+                    // horizontal={true}
                     >
                         <ScrollView
                             horizontal={true}
                             showsHorizontalScrollIndicator={false}
                             style={{ marginHorizontal: 16 }}
                         >
-                            {MyPopularData.map((item, index) => {
+                            {topPosts.map((item, index) => {
                                 return (
                                     <TouchableOpacity
                                         key={index}
                                         style={{ marginRight: 16 }}
                                     >
-                                        <ProfilePodcast item={item} />
+                                        <ProfilePodcast
+                                            image={item.image}
+                                            title={item.title}
+                                            des={item.likes + " Lượt thích"}
+                                        />
                                     </TouchableOpacity>
                                 );
                             })}
@@ -164,17 +202,25 @@ export default function OtherProfile(props) {
 
                     <View
                         style={{
-                            marginHorizontal: 9,
+                            marginHorizontal: 8,
                             flexDirection: "row",
-                            justifyContent: "space-around",
+                            // justifyContent: "space-around",
                             flexWrap: "wrap",
                         }}
                         horizontal={true}
                     >
-                        {MyNewReLeaseData.map((item, index) => {
+                        {allPosts.map((item, index) => {
+
                             return (
-                                <TouchableOpacity key={index}>
-                                    <ProfilePodcast item={item} />
+                                <TouchableOpacity
+                                    key={index}
+                                    style={{ marginHorizontal: 8 }}
+                                >
+                                    <ProfilePodcast
+                                        image={item.image}
+                                        title={item.title}
+                                        des={timeDiff(item.createdAt)}
+                                    />
                                 </TouchableOpacity>
                             );
                         })}

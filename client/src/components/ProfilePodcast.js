@@ -1,15 +1,19 @@
 import React from 'react'
 import { View, StyleSheet, Text, Image, Dimensions } from 'react-native'
 import { device } from '../constants/device'
-// import Icon from 'react-native-vector-icons/Feather'
+import { darkProfile, lightProfile } from "../constants/darkLight/themProfile";
+import { useSelector } from "react-redux";
 
-export default function ProfilePodcast({ item }) {
+export default function ProfilePodcast(props) {
+    
+    const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
+ 
     return (
         <View style={styles.wrapper}>
-            <View style={styles.boxShadow}><Image source={{ uri: item.avtUrl }} style={styles.avatar} /></View>
+            <View style={styles.boxShadow}><Image source={{ uri: props.image }} style={styles.avatar} /></View>
             <View style={styles.textSection}>
-                <Text style={styles.title} numberOfLines={2}>{item.title}</Text>
-                <Text style={styles.author} numberOfLines={2}>{item.author}</Text>
+                <Text style={styles.title} numberOfLines={2}>{props.title}</Text>
+                <Text style={styles.author} numberOfLines={2}>{props.des}</Text>
             </View>
             {/* <Icon style={styles.more_btn} name="more-horizontal" size={26} color="#000" /> */}
         </View>

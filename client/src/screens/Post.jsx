@@ -27,10 +27,10 @@ import CheckboxGroup from "react-native-checkbox-group";
 function Post(props) {
     const { navigation, route } = props;
     const { navigate, goback } = navigation;
-    const user = useSelector((state) => state.auth.login.currentUser);
+    const currentUser = useSelector((state) => state.auth.login.currentUser);
     const isFocused = useIsFocused();
     useEffect(() => {
-        if (isFocused && !user) {
+        if (isFocused && !currentUser) {
             // navigate("MyProfile");
             warningLogin(navigate, 'Login', 'Home');
         }
@@ -66,7 +66,7 @@ function Post(props) {
     };
 
     return (
-        <SafeAreaView style={GlobalStyles.customSafeArea}>
+        <SafeAreaView style={[GlobalStyles.customSafeArea, { backgroundColor: '#fff' }]}>
             <View style={styles.postHeader}>
                 <View style={styles.postAvatar}>
                     <Image
@@ -79,15 +79,18 @@ function Post(props) {
                             borderRadius: 100,
                         }}
                     />
-                    <Text
-                        style={{
-                            fontSize: 15,
-                            marginLeft: 7,
-                            fontWeight: "bold",
-                        }}
-                    >
-                        User name
-                    </Text>
+                    <View style={{ flexDirection: 'column' }}>
+                        <Text
+                            style={{
+                                fontSize: 15,
+                                marginLeft: 7,
+                                fontWeight: "bold",
+                            }}
+                        >
+                            {currentUser.fullName}
+                        </Text>
+                        <Text>@{currentUser.userName}</Text>
+                    </View>
                 </View>
 
                 <TouchableOpacity
@@ -115,7 +118,7 @@ function Post(props) {
                         placeholder="Nhập tiêu đề của Podcast"
                         secureTextEntry={false}
                         autoCapitalize="words"
-                        // placeholderTextColor="black"
+                    // placeholderTextColor="black"
                     ></TextInput>
 
                     <TextInput
@@ -142,7 +145,7 @@ function Post(props) {
                                 }}
                             />
                         </View>
-                        
+
                         <View
                             style={{
                                 flexDirection: "row",
@@ -224,25 +227,25 @@ function Post(props) {
                                 </View>
                             </Modal>
                             <Pressable
-                            style={{
-                                borderRadius: 20,
-                                // padding: 10,
-                                elevation: 2,
-                            }}
-                            onPress={() => setModalVisible(true)}
-                        >
-                            <Text
                                 style={{
-                                    color: "black",
-                                    // fontWeight: "bold",
-                                    // textAlign: "center",
-                                    fontSize: 16,
+                                    borderRadius: 20,
+                                    // padding: 10,
+                                    elevation: 2,
                                 }}
+                                onPress={() => setModalVisible(true)}
                             >
-                                Thêm chủ đề Podcast
-                            </Text>
-                        </Pressable>
-                        <Icon
+                                <Text
+                                    style={{
+                                        color: "black",
+                                        // fontWeight: "bold",
+                                        // textAlign: "center",
+                                        fontSize: 16,
+                                    }}
+                                >
+                                    Thêm chủ đề Podcast
+                                </Text>
+                            </Pressable>
+                            <Icon
                                 name={"chevron-small-right"}
                                 size={19}
                                 onPress={() => {
@@ -251,7 +254,7 @@ function Post(props) {
                             />
                         </View>
 
-                        
+
                     </View>
 
                     <View style={styles.postIngredient}>
@@ -351,6 +354,7 @@ function Post(props) {
 const styles = StyleSheet.create({
     postHeader: {
         // flex: 1,
+
         marginHorizontal: 20,
         flexDirection: "row",
         justifyContent: "space-between",

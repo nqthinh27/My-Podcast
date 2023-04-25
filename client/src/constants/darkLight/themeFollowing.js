@@ -19,7 +19,7 @@ export const darkfollowStyles = StyleSheet.create({
 export const lightFollowingItem = StyleSheet.create({
     followingItemWrapper: {
         // backgroundColor: '#EDEDED',
-        height: 630,
+        // height: 630,
         // borderRadius: 10,
         // margin: 11,
         marginVertical: 6,
@@ -32,14 +32,16 @@ export const lightFollowingItem = StyleSheet.create({
         justifyContent: 'space-between',
     },
     followingItemContent: {
-        top: 10,
+        // top: 10,
+        // marginTop: 6
     },
     followingItemImage: {
-        top: 30,
+        // top: 30,
+        marginVertical: 16,
         alignSelf: "center",
     },
     followingItemInteract: {
-        top: 40,
+        // top: 40,
         // marginBottom: 10,
     },
     avatar: {
@@ -62,8 +64,8 @@ export const lightFollowingItem = StyleSheet.create({
         opacity: 0.5,
     },
     title: {
-        top: 4,
-        fontSize: 15,
+        // top: ,
+        fontSize: 17,
         fontWeight: "500",
     },
     descripttion: {
@@ -143,8 +145,8 @@ export const darkFollowingItem = StyleSheet.create({
         opacity: 0.5,
     },
     title: {
-        top: 4,
-        fontSize: 15,
+        // top: 4,
+        fontSize: 17,
         fontWeight: "500",
         color: colors.white
     },

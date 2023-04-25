@@ -8,25 +8,35 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/Fontisto";
 import colors from "../constants/colors";
-import PodcastListLibrary from "../components/PodcastListLibrary";
-import { SafeAreaView } from "react-navigation";
-import GlobalStyles from "../components/GlobalStyles";
+import PodcastListItem from "../components/PodcastListItem";
 import { warningLogin } from "../ultis/warning";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useIsFocused } from "@react-navigation/native";
-import { RecommendData } from "../../dummyData";
 import HeaderUI from "../components/HeaderUI";
+import { getRecommendData } from "../redux/actions/libraryApi";
 
 function Library(props) {
     const { navigation, route } = props;
     const { navigate, goback } = navigation;
+    const dispatch = useDispatch();
+
+    const currentLanguage = useSelector(
+        (state) => state.language.currentLanguage
+    );
+    const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
     const user = useSelector((state) => state.auth.login.currentUser);
     const isFocused = useIsFocused();
+
     useEffect(() => {
         if (isFocused && !user) {
             warningLogin(navigate, "Login", "Home");
         }
     }, [isFocused]);
+    
+    const recommendData = useSelector((state) => state.library.recommend.data);
+    useEffect(() => {
+        getRecommendData(dispatch)
+    }, []);
 
     const [clickSong, setClickSong] = useState(false);
 
@@ -39,20 +49,30 @@ function Library(props) {
     }
 
     return (
-        <SafeAreaView style={GlobalStyles.customSafeArea}>
+        <View>
             <ScrollView>
                 <HeaderUI />
 
-                <View style={styles.libraryContainer}>
+                <View style={[
+                GlobalStyles.customSafeArea,
+                isDarkTheme
+                    ? darkLibrary.libraryContainer
+                    : lightLibrary.libraryContainer,
+            ]}>
                     <Text
-                        style={{
-                            fontSize: 18,
-                            fontWeight: "bold",
-                            paddingLeft: 16,
-                            marginTop: 8,
-                        }}
+                        style={[
+                            {
+                                fontSize: 18,
+                                fontWeight: "bold",
+                                paddingLeft: 16,
+                                marginTop: 8,
+                            },
+                            isDarkTheme
+                                ? darkLibrary.libraryText
+                                : lightLibrary.libraryText,
+                        ]}
                     >
-                        Thư viện
+                        {currentLanguage === "vi" ? "Thư viện" : "Library"}
                     </Text>
                     <View
                         style={{
@@ -60,10 +80,11 @@ function Library(props) {
                             flex: 1,
                             marginHorizontal: 16,
                             justifyContent: "space-around",
+                            
                         }}
                     >
                         <TouchableOpacity
-                            style={styles.libraryButton}
+                            style={[styles.libraryButton, isDarkTheme ? darkLibrary.libraryFunction : lightLibrary.libraryFunction]}
                             onPress={() => {
                                 navigate("Saved");
                             }}
@@ -74,11 +95,20 @@ function Library(props) {
                                 size={20}
                                 color={colors.primary}
                             />
-                            <Text style={styles.libraryIconButton}>Đã lưu</Text>
+                            <Text
+                                style={[
+                                    styles.libraryIconButton,
+                                    isDarkTheme
+                                        ? darkLibrary.libraryText
+                                        : lightLibrary.libraryText,
+                                ]}
+                            >
+                                {currentLanguage === "vi" ? "Đã lưu" : "Saved"}
+                            </Text>
                         </TouchableOpacity>
                         <View style={{ flex: 1 }}></View>
                         <TouchableOpacity
-                            style={styles.libraryButton}
+                            style={[styles.libraryButton, isDarkTheme ? darkLibrary.libraryFunction : lightLibrary.libraryFunction]}
                             onPress={() => {
                                 navigate("Favourite");
                             }}
@@ -89,8 +119,15 @@ function Library(props) {
                                 size={18}
                                 color="#FF0000"
                             />
-                            <Text style={styles.libraryIconButton}>
-                                Yêu thích
+                            <Text style={[
+                                    styles.libraryIconButton,
+                                    isDarkTheme
+                                        ? darkLibrary.libraryText
+                                        : lightLibrary.libraryText,
+                                ]}>
+                                {currentLanguage === "vi"
+                                    ? "Yêu thích"
+                                    : "Favorite"}
                             </Text>
                         </TouchableOpacity>
                     </View>
@@ -104,7 +141,7 @@ function Library(props) {
                         }}
                     >
                         <TouchableOpacity
-                            style={styles.libraryButton}
+                            style={[styles.libraryButton, isDarkTheme ? darkLibrary.libraryFunction : lightLibrary.libraryFunction]}
                             onPress={() => {
                                 navigate("History");
                             }}
@@ -115,13 +152,20 @@ function Library(props) {
                                 size={20}
                                 color="#00EBEB"
                             />
-                            <Text style={styles.libraryIconButton}>
-                                Nghe gần đây
+                            <Text style={[
+                                    styles.libraryIconButton,
+                                    isDarkTheme
+                                        ? darkLibrary.libraryText
+                                        : lightLibrary.libraryText,
+                                ]}>
+                                {currentLanguage === "vi"
+                                    ? "Nghe gần đây"
+                                    : "Recently"}
                             </Text>
                         </TouchableOpacity>
                         <View style={{ flex: 1 }}></View>
                         <TouchableOpacity
-                            style={styles.libraryButton}
+                            style={[styles.libraryButton, isDarkTheme ? darkLibrary.libraryFunction : lightLibrary.libraryFunction]}
                             onPress={() => {
                                 navigate("Playlist");
                             }}
@@ -132,41 +176,55 @@ function Library(props) {
                                 size={18}
                                 color="#2EDC21"
                             />
-                            <Text style={styles.libraryIconButton}>
+                            <Text style={[
+                                    styles.libraryIconButton,
+                                    isDarkTheme
+                                        ? darkLibrary.libraryText
+                                        : lightLibrary.libraryText,
+                                ]}>
                                 Playlist
                             </Text>
                         </TouchableOpacity>
                     </View>
                 </View>
-                <View>
+                <View
+                    style={
+                        isDarkTheme
+                            ? darkLibrary.libraryContainer
+                            : lightLibrary.libraryContainer
+                    }
+                >
                     <Text
-                        style={{
+                        style={[{
                             fontSize: 18,
                             fontWeight: "bold",
                             marginLeft: 16,
                             marginVertical: 10,
-                        }}
+                        }, isDarkTheme
+                        ? darkLibrary.libraryText
+                        : lightLibrary.libraryText,]}
                     >
-                        Có thể bạn sẽ thích
+                        {currentLanguage === "vi"
+                            ? "Có thể bạn sẽ thích"
+                            : "Recommended for you"}
                     </Text>
 
                     <View style={{ marginHorizontal: 16 }}>
-                        {RecommendData.map((item, index) => {
+                        {recommendData.map((item, index) => {
                             return (
                                 <TouchableOpacity
                                     onPress={() => {
-                                        playerNavigate();
                                     }}
                                     key={index}
                                 >
-                                    <PodcastListLibrary item={item} />
+                                    <PodcastListItem item={item} />
                                 </TouchableOpacity>
                             );
                         })}
                     </View>
                 </View>
             </ScrollView>
-        </SafeAreaView>
+        </View>
     );
 }
 
@@ -182,7 +240,6 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         marginVertical: 5,
         borderRadius: 30,
-        backgroundColor: "rgba(0, 0, 0, 0.05)",
         alignItems: "center",
     },
 

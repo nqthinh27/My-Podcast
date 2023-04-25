@@ -6,10 +6,10 @@ import {device} from '../constants/device'
 export default function SlideItem({ item }) {
     return (
         <View style={styles.cardView}>
-            <Image style={styles.image} source={{ uri: item.avtUrl }} />
+            <Image style={styles.image} source={{ uri: item.image }} />
             <View style={styles.textView}>
                 <Text style={styles.itemTitle} numberOfLines={1}> {item.title}</Text>
-                <Text style={styles.itemDescription} numberOfLines={2}>{item.description}</Text>
+                <Text style={styles.itemDescription} numberOfLines={2}>{item.content}</Text>
             </View>
         </View>
     )

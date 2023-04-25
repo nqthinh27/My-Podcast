@@ -98,7 +98,6 @@ const commentController = {
             const comments = await Comments.findOneAndUpdate({ postId: req.params.id }, {
                 $pull: { comment: { _id: req.body.commentId } }
             }, { new: true })
-            console.log(comments);
             if (!comments) return res.status(400).json({ msg: "This post does not exist!" });
             return res.status(200).json({ msg: "Deleted comment!" })
         } catch (err) {
