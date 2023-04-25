@@ -118,12 +118,7 @@ export default function PlayerScreen(props) {
         if (!isMiniPlayer && isPlayScreen) {
             playSound();
             console.log("ductu");
-        } else if (isMiniPlayer && nextPress) {
-            sound.unloadAsync();
-            loadSound(detailPost.audio);
-            console.log("ductu1");
-            dispatch(setNextPress(false));
-        }
+        } 
         // return () => {
         //     if (sound != null) {
         //         sound.unloadAsync();
@@ -221,6 +216,7 @@ export default function PlayerScreen(props) {
             switchToNewSound(nextTrack._id);
             dispatch(setCurrentSound(nextTrack.index));
             dispatch(setPosition(0));
+            dispatch(setIsMiniPlayer(false));
         }
     }
 
@@ -232,6 +228,7 @@ export default function PlayerScreen(props) {
             switchToNewSound(prevTrack._id);
             dispatch(setCurrentSound(prevTrack.index));
             dispatch(setPosition(0));
+            dispatch(setIsMiniPlayer(false));
         }
     }
 

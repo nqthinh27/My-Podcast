@@ -34,11 +34,6 @@ import PlayerScreen from "./Player/PlayerScreen";
 // import PlayerScreen from "./PlayerScreen";
 
 export default function Home(props) {
-    // //navigation
-    // const { navigation, route } = props;
-    // //function of navigate
-    // const { navigate, goback } = navigation;
-
     const navigation = useNavigation();
 
     const dispatch = useDispatch();
@@ -49,6 +44,8 @@ export default function Home(props) {
     const detailPost = useSelector((state) => state.post.detailPost);
     const currentSound = useSelector((state) => state.player.currentSound);
     const isPlayScreen = useSelector((state) => state.player.isPlayScreen);
+    const currentUser = useSelector((state) => state.auth.login.currentUser);
+    const playValue = useSelector((state) => state.player.playValue);
     const [currentIndex, setCurrentIndex] = useState(0);
     const flatListRef = useRef(null);
     const scrollViewRef = useRef(null);
@@ -141,7 +138,7 @@ export default function Home(props) {
     //   }, [dispatch, navigation]);
 
     return (
-        <SafeAreaView style={[
+        <View style={[
             { backgroundColor: isDarkTheme ? darkHome.wrapper.backgroundColor : lightHome.wrapper.backgroundColor },
             GlobalStyles.customSafeArea]}
         >
@@ -360,7 +357,7 @@ export default function Home(props) {
                     })}
                 </ScrollView>
                 {/* ==========================================Tác giả nổi bật==========================================*/}
-                <TouchableOpacity style={lightHome.coverAll}>
+                <TouchableOpacity style={[lightHome.coverAll, { marginTop: 16 }]}>
                     <Text style={isDarkTheme ? darkHome.title : lightHome.title}>Tác giả nổi bật</Text>
                     <Icon
                         name='chevron-right'
@@ -377,7 +374,7 @@ export default function Home(props) {
                         return (
                             <TouchableOpacity
                                 onPress={() => {
-                                    getOtherUser(item._id, dispatch, navigation.navigate)
+                                    getOtherUser(item._id, dispatch, navigation.navigate, currentUser)
                                 }}
                                 key={index}
                             >
@@ -456,7 +453,7 @@ export default function Home(props) {
                 loadSound={loadSound}
                 switchToNewSound={switchToNewSound}
             />}
-        </SafeAreaView>
+        </View>
     );
 }
 

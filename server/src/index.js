@@ -26,7 +26,9 @@ app.use('/save', require('./routes/saveRouter'));
 app.use('/like', require('./routes/likeRouter'));
 app.use('/tag', require('./routes/tagRouter'));
 app.use('/follow', require('./routes/followRouter'));
+app.use('/search', require('./routes/searchRouter'));
 app.use('/home', require('./routes/homeRouter'));
+app.use('/following', require('./routes/followingRouter'));
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

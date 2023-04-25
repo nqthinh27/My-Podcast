@@ -12,6 +12,7 @@ import EntypoIcon from "react-native-vector-icons/Entypo";
 import { useDispatch, useSelector } from "react-redux";
 import GlobalStyles from "../components/GlobalStyles";
 import { loginUser } from '../redux/actions/authApi';
+import { useNavigation } from "@react-navigation/native";
 
 const colors = {
     primary: '#FFA800',
@@ -21,9 +22,7 @@ const colors = {
 function Login(props) {
     const dispatch = useDispatch();
     const loginSuccess = useSelector((state) => state.loginSuccess.isLoginSuccess)
-    const { navigation, route } = props;
-    // //function of navigate
-    const { navigate, goBack } = navigation;
+    const { navigate, goBack } = useNavigation();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -87,7 +86,7 @@ function Login(props) {
                     <Text style={styles.loginButtonlogin}> Đăng nhập</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.loginButtonViewGoogle}>
+                {/* <TouchableOpacity style={styles.loginButtonViewGoogle}>
                     <EntypoIcon
                         name="google--with-circle"
                         size={35}
@@ -104,7 +103,7 @@ function Login(props) {
                         {" "}
                         Đăng nhập với Facebook
                     </Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
 
                 <View style={styles.loginViewNoEmail}>
                     <Text style={styles.loginTextNoEmail}>

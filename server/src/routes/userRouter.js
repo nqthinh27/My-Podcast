@@ -19,4 +19,7 @@ router.put('/:id', authMiddleware, userController.updateUserById);
 // GET USER POST
 router.get('/:id/posts', userController.getUserPost);
 
+// GET USER POST TOP TRENDING
+router.get('/:id/topPosts', userController.getUserTopPost);
+
 module.exports = router;
