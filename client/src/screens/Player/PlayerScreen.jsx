@@ -62,7 +62,7 @@ export default function PlayerScreen(props) {
     const isPlayer = useSelector((state) => state.player.isPlayer);
     const currentSound = useSelector((state) => state.player.currentSound);
     const isPlayScreen = useSelector((state) => state.player.isPlayScreen);
-    const isPlaying = useSelector((state) => state.player.isPlaying);
+    
 
     const nextPress = useSelector((state) => state.player.nextPress);
 
@@ -85,13 +85,13 @@ export default function PlayerScreen(props) {
     }, [navigation]);
 
     // 
-    useEffect(() => {
-        if (isMiniPlayer) {
-            // playSound();
-            // dispatch(setIsMiniPlayer(false));
-            console.log("phát nhạc khi focus trở lại màn hình PlayerScreen");
-        }
-    }, [isMiniPlayer]);
+    // useEffect(() => {
+    //     if (isMiniPlayer) {
+    //         // playSound();
+    //         // dispatch(setIsMiniPlayer(false));
+    //         console.log("phát nhạc khi focus trở lại màn hình PlayerScreen");
+    //     }
+    // }, [isMiniPlayer]);
 
 
     // ấn nút thu nhỏ màn hình

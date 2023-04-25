@@ -4,13 +4,14 @@ import { FollowingData } from "../../dummyData";
 import { lightfollowStyles, darkfollowStyles } from "../constants/darkLight/themeFollowing"
 import { useDispatch, useSelector } from "react-redux";
 import { useIsFocused } from "@react-navigation/native";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { warningLogin } from "../ultis/warning";
 import GlobalStyles from "../components/GlobalStyles";
 import colors from "../constants/colors";
 import { getNewFeed } from "../redux/actions/followingApi";
 import { getOtherUser } from "../redux/actions/profileApi";
 import FollowingHeader from "../components/FollowingHeader";
+import { setIsPlaying, setPosition } from "../redux/slices/playerSlice";
 
 export default function Following(props) {
     const { navigation, route } = props;
@@ -27,10 +28,12 @@ export default function Following(props) {
     useEffect(() => {
         getNewFeed(dispatch, access_token);
     }, []);
+
+
     const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
     const newFeed = useSelector((state) => state.following.newFeed.data);
     return (
-        <View style={[{backgroundColor: isDarkTheme ? colors.dark : colors.white} ,GlobalStyles.customSafeArea]}>
+        <View style={[{ backgroundColor: isDarkTheme ? colors.dark : colors.white }, GlobalStyles.customSafeArea]}>
             <ScrollView>
                 <HeaderUI />
                 <View style={isDarkTheme ? darkfollowStyles.contentWrapper : lightfollowStyles.contentWrapper}>
@@ -50,7 +53,6 @@ export default function Following(props) {
                                             />
                                         </TouchableOpacity>
                                         <FollowingItem
-
                                             title={item.title}
                                             likes={item.likes}
                                             views={item.views}

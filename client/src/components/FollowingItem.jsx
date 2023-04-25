@@ -5,15 +5,20 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useDispatch, useSelector } from 'react-redux';
 import colors from '../constants/colors'
 import { lightFollowingItem, darkFollowingItem } from '../constants/darkLight/themeFollowing'
-import GlobalStyles from './GlobalStyles';
+// import GlobalStyles from './GlobalStyles';
 import { useNavigation } from '@react-navigation/native';
-import { getOtherFollowers, getOtherFollowing, getOtherUser, getOtherUserAllPosts, getOtherUserTopPosts } from '../redux/actions/profileApi';
-import { getPublicDataAPI } from '../ultis/fetchData';
-import { BASE_URL } from '../ultis/config';
-import axios from 'axios';
-import { getOtherUserSuccess } from '../redux/slices/profileSlice';
+// import { getOtherFollowers, getOtherFollowing, getOtherUser, getOtherUserAllPosts, getOtherUserTopPosts } from '../redux/actions/profileApi';
+// import { getPublicDataAPI } from '../ultis/fetchData';
+// import { BASE_URL } from '../ultis/config';
+// import axios from 'axios';
+// import { getOtherUserSuccess } from '../redux/slices/profileSlice';
+import { device } from '../constants/device';
+import { setIsPlaying } from '../redux/slices/playerSlice';
+import { Audio } from "expo-av";
+
 
 export default function FollowingItem(props) {
+
     const dispatch = useDispatch;
     const navigation = useNavigation();
     const [heart, setHeart] = useState(true);
@@ -23,6 +28,108 @@ export default function FollowingItem(props) {
     const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
     const otherUser = useSelector((state) => state.profile.otherUser.data);
     const currentUser = useSelector((state) => state.auth.login.currentUser);
+    const isPlaying = useSelector((state) => state.player.isPlaying);
+
+    // useEffect(() => {
+    //     if (isPlaying) {
+    //         loadSound(props.audio);
+    //         console.log("phát nhạc ở theo dõi");
+    //     }
+    //     // return () => {
+    //     //     if (sound != null) {
+    //     //         sound.unloadAsync();
+    //     //         // setSound(null);
+    //     //     }
+    //     // };
+    // }, [props.audio]);
+    const [sound, setSound] = useState(null);
+
+    async function loadSound(uri) {
+        try {
+            await Audio.setAudioModeAsync({
+                staysActiveInBackground: true,
+                interruptionModeAndroid: 1,
+                shouldDuckAndroid: true,
+                interruptionModeIOS: 1,
+                playsInSilentModeIOS: true,
+            });
+            const { sound } = await Audio.Sound.createAsync(
+                { uri },
+                {
+                    shouldPlay: true,
+                    // isLooping: true,
+                    // positionMillis: position,
+                },
+                // onPlaybackStatusUpdate
+            );
+            setSound(sound);
+            dispatch(setIsPlaying(true));
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    useEffect(() => {
+        if (isPlaying) {
+            loadSound(props.audio);
+            // dispatch(setIsPlaying(true));
+            console.log("phát nhạc ở theo dõi");
+        } 
+        // return () => {
+        //     if (sound != null) {
+        //         sound.unloadAsync();
+        //         // setSound(null);
+        //     }
+        // };
+    }, []);
+
+
+    // function onPlaybackStatusUpdate(status) {
+    //     if (status.isPlaying) {
+    //         dispatch(setPosition(status.positionMillis));
+    //         dispatch(setDuration(status.durationMillis));
+    //     }
+    // }
+
+    async function resumeSound(uri) {
+        if (sound != null) {
+            const status = await sound.getStatusAsync();
+            if (!status.isLoaded) {
+                await sound.loadAsync(
+                    { uri },
+                    { shouldPlay: true }
+                );
+            }
+            await sound.playAsync();
+            dispatch(setIsPlaying(true));
+            console.log("dừng: " + playValue);
+        }
+    }
+
+    // function onPlaybackStatusUpdate(status) {
+    //     if (status.isPlaying) {
+    //         dispatch(setPosition(status.positionMillis));
+    //         dispatch(setDuration(status.durationMillis));
+    //     }
+    // }
+
+    async function pauseSound() {
+        if (sound != null) {
+            await sound.pauseAsync();
+            dispatch(setIsPlaying(false));
+        }
+    }
+
+    useEffect(() => {
+        if (sound != null) {
+            if (isPlaying) {
+                resumeSound(props.audio);
+            } else {
+                pauseSound();
+            }
+        }
+    }, [isPlaying]);
+
     const handleHeart = () => {
         setHeart(!heart);
     }
@@ -36,13 +143,22 @@ export default function FollowingItem(props) {
     };
 
     // const user = null;
-
     useEffect(() => {
-        // const user = axios.get(`${BASE_URL}/user/${props.owner._id}`);
-        // const user = getPublicDataAPI(`/user/${props.owner._id}`);
-        // console.log("id: ", props.owner._id);
-        // console.log("user: ", user);
-    }, [])
+        return sound
+            ? () => {
+                sound.unloadAsync();
+                console.log("sound đang");
+            }
+            : undefined;
+    }, [sound]);
+
+
+    // useEffect(() => {
+    //     // const user = axios.get(`${BASE_URL}/user/${props.owner._id}`);
+    //     // const user = getPublicDataAPI(`/user/${props.owner._id}`);
+    //     // console.log("id: ", props.owner._id);
+    //     // console.log("user: ", user);
+    // }, [])
 
     return (
         <View>
@@ -71,7 +187,7 @@ export default function FollowingItem(props) {
                 {/* <Icon style={lightFollowingItem.more_btn} name="more-horizontal" size={26} color="#000" /> */}
                 <View style={lightFollowingItem.followingItemContent}>
                     <View style={{}}>
-                        <Text style={[isDarkTheme ? darkFollowingItem.title : lightFollowingItem.title, {marginBottom: 3}]}>{props.title}</Text>
+                        <Text style={[isDarkTheme ? darkFollowingItem.title : lightFollowingItem.title, { marginBottom: 3 }]}>{props.title}</Text>
                         <Text style={isDarkTheme ? darkFollowingItem.descripttion : lightFollowingItem.descripttion}>{props.content}</Text>
                     </View>
                 </View>
@@ -85,7 +201,7 @@ export default function FollowingItem(props) {
                 </View>
                 <View style={lightFollowingItem.followingItemInteract}>
                     <View style={lightFollowingItem.interact}>
-                        <View style={[lightFollowingItem.interactIcon, {alignItems: "center"}]}>
+                        <View style={[lightFollowingItem.interactIcon, { alignItems: "center" }]}>
                             <TouchableOpacity onPress={handleHeart}>
                                 {(heart) && <Icon
                                     name="cards-heart-outline"
@@ -115,7 +231,7 @@ export default function FollowingItem(props) {
                                 <Text style={{ color: isDarkTheme ? colors.white : colors.black }}>{props.comments} Bình luận</Text>
                             </View>
                         </View>
-                        <View style={[lightFollowingItem.interactIcon, {alignItems: "center"}]}>
+                        <View style={[lightFollowingItem.interactIcon, { alignItems: "center" }]}>
                             <TouchableOpacity>
                                 <Icon
                                     name="headphones"
@@ -144,20 +260,27 @@ export default function FollowingItem(props) {
                         />
                     </View>
                     <View style={lightFollowingItem.interactPlayTime}>
-                        <TouchableOpacity onPress={handlePlay}>
-                            {(play) && <Icon
-                                name="play"
-                                style={{ opacity: 1 }}
-                                size={25}
-                                color={isDarkTheme ? colors.white : colors.black}
-                            />}
-                            {(!play) && <Icon
-                                name="stop"
-                                style={{ opacity: 1 }}
-                                size={25}
-                                color={isDarkTheme ? colors.white : colors.black}
-                            />}
-                        </TouchableOpacity>
+                        {isPlaying ? (
+                            <TouchableOpacity onPress={() => pauseSound()}>
+                                <Image
+                                    style={{ width: device.width / 12, height: device.width / 12 }}
+                                    source={{
+                                        uri:
+                                            "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fpause.png?alt=media&token=ae6b74e7-ac06-40a8-a1a7-09d3380e2863",
+                                    }}
+                                />
+                            </TouchableOpacity>
+                        ) : (
+                            <TouchableOpacity onPress={() => resumeSound(props.audio)}>
+                                <Image
+                                    style={{ width: device.width / 12, height: device.width / 12 }}
+                                    source={{
+                                        uri:
+                                            "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Tu%2FGroup%2066.png?alt=media&token=5fb2d1e2-48a0-43bb-9773-ce3424e388f4",
+                                    }}
+                                />
+                            </TouchableOpacity>
+                        )}
                         {/* ------------ Thời gian bài hát --------------- */}
                         <View style={lightFollowingItem.progressLevelDur}>
                             <Text style={lightFollowingItem.progressLabelText}>00:00 / 02:22 </Text>

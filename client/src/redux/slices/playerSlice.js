@@ -11,7 +11,7 @@ const playerSlice = createSlice({
         isMiniPlayer: false,
         isPlayer: false,  // kiểm tra xem bài hát có đang dừng không
         isPlayScreen: false,
-        isPlaying: false, // kiểm tra xem có phải ấn nut back android
+        isPlaying: false, // kiểm tra dưng phát màn theo dõi
         nextPress: false,
         prevPress: false,
     },
