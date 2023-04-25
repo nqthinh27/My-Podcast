@@ -5,6 +5,7 @@ import {
     TouchableOpacity,
     ScrollView,
     StyleSheet,
+    SafeAreaView,
 } from "react-native";
 import Icon from "react-native-vector-icons/Fontisto";
 import colors from "../constants/colors";
@@ -14,6 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useIsFocused } from "@react-navigation/native";
 import HeaderUI from "../components/HeaderUI";
 import { getRecommendData } from "../redux/actions/libraryApi";
+import GlobalStyles from "../components/GlobalStyles";
 
 function Library(props) {
     const { navigation, route } = props;
@@ -26,7 +28,7 @@ function Library(props) {
             warningLogin(navigate, "Login", "Home");
         }
     }, [isFocused]);
-    
+
     const recommendData = useSelector((state) => state.library.recommend.data);
     useEffect(() => {
         getRecommendData(dispatch)
@@ -43,7 +45,7 @@ function Library(props) {
     }
 
     return (
-        <View>
+        <SafeAreaView style={[GlobalStyles.customSafeArea, { backgroundColor: '#fff' }]}>
             <ScrollView>
                 <HeaderUI />
 
@@ -169,7 +171,7 @@ function Library(props) {
                     </View>
                 </View>
             </ScrollView>
-        </View>
+        </SafeAreaView>
     );
 }
 

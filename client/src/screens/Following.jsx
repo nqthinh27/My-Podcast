@@ -30,7 +30,7 @@ export default function Following(props) {
     const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
     const newFeed = useSelector((state) => state.following.newFeed.data);
     return (
-        <View style={{ backgroundColor: isDarkTheme ? colors.dark : colors.white }}>
+        <SafeAreaView style={[GlobalStyles.customSafeArea, { backgroundColor: isDarkTheme ? colors.dark : colors.white }]}>
             <ScrollView>
                 <HeaderUI />
                 <View style={isDarkTheme ? darkfollowStyles.contentWrapper : lightfollowStyles.contentWrapper}>
@@ -67,7 +67,7 @@ export default function Following(props) {
                     </View>
                 </View>
             </ScrollView>
-        </View>
+        </SafeAreaView>
     )
 }
 
