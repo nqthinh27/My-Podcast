@@ -95,7 +95,7 @@ export default function HeaderUI(props) {
 
 
     return (
-        <SafeAreaView style={GlobalStyles.customSafeArea}>
+        <View>
             <View style={lightHeader.header}>
                 <TouchableOpacity
                     onPress={() => {
@@ -229,6 +229,6 @@ export default function HeaderUI(props) {
                     />
                 </TouchableOpacity>
             </View>
-        </SafeAreaView>
+        </View>
     );
 }

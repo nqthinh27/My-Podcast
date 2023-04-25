@@ -90,7 +90,7 @@ export default function Home(props) {
     //   }, [dispatch, navigation]);
 
     return (
-        <View style={{ backgroundColor: isDarkTheme ? darkHome.wrapper.backgroundColor : lightHome.wrapper.backgroundColor }}>
+        <SafeAreaView style={[GlobalStyles.customSafeArea, { backgroundColor: isDarkTheme ? darkHome.wrapper.backgroundColor : lightHome.wrapper.backgroundColor }]}>
             {/* <NavigationEvents onDidFocus={()=> this.setState({})} /> */}
             <ScrollView>
                 {/* ==========================================HEADER========================================== */}
@@ -322,7 +322,7 @@ export default function Home(props) {
                 tittle="Tuổi trẻ, tinh yêu và sự nghiệp"
                 author="Tun Phạm"
             />}
-        </View>
+        </SafeAreaView>
     );
 }
 
