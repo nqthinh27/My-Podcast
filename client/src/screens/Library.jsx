@@ -5,6 +5,7 @@ import {
     TouchableOpacity,
     ScrollView,
     StyleSheet,
+    SafeAreaView,
 } from "react-native";
 import Icon from "react-native-vector-icons/Fontisto";
 import colors from "../constants/colors";
@@ -44,133 +45,132 @@ function Library(props) {
     }
 
     return (
-
-        <ScrollView style={GlobalStyles.customSafeArea}>
-            <HeaderUI />
-
-            <View style={styles.libraryContainer}>
-                <Text
-                    style={{
-                        fontSize: 18,
-                        fontWeight: "bold",
-                        paddingLeft: 16,
-                        marginTop: 8,
-                    }}
-                >
-                    Thư viện
-                </Text>
-                <View
-                    style={{
-                        flexDirection: "row",
-                        flex: 1,
-                        marginHorizontal: 16,
-                        justifyContent: "space-around",
-                    }}
-                >
-                    <TouchableOpacity
-                        style={styles.libraryButton}
-                        onPress={() => {
-                            navigate("Saved");
+        <SafeAreaView style={[GlobalStyles.customSafeArea, { backgroundColor: '#fff' }]}>
+            <ScrollView>
+                <HeaderUI />
+                <View style={styles.libraryContainer}>
+                    <Text
+                        style={{
+                            fontSize: 18,
+                            fontWeight: "bold",
+                            paddingLeft: 16,
+                            marginTop: 8,
                         }}
                     >
-                        <Icon
-                            name="bookmark-alt"
-                            style={{ paddingStart: 15 }}
-                            size={20}
-                            color={colors.primary}
-                        />
-                        <Text style={styles.libraryIconButton}>Đã lưu</Text>
-                    </TouchableOpacity>
-                    <View style={{ flex: 1 }}></View>
-                    <TouchableOpacity
-                        style={styles.libraryButton}
-                        onPress={() => {
-                            navigate("Favourite");
+                        Thư viện
+                    </Text>
+                    <View
+                        style={{
+                            flexDirection: "row",
+                            flex: 1,
+                            marginHorizontal: 16,
+                            justifyContent: "space-around",
                         }}
                     >
-                        <Icon
-                            name="heart"
-                            style={{ paddingStart: 15 }}
-                            size={18}
-                            color="#FF0000"
-                        />
-                        <Text style={styles.libraryIconButton}>
-                            Yêu thích
-                        </Text>
-                    </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.libraryButton}
+                            onPress={() => {
+                                navigate("Saved");
+                            }}
+                        >
+                            <Icon
+                                name="bookmark-alt"
+                                style={{ paddingStart: 15 }}
+                                size={20}
+                                color={colors.primary}
+                            />
+                            <Text style={styles.libraryIconButton}>Đã lưu</Text>
+                        </TouchableOpacity>
+                        <View style={{ flex: 1 }}></View>
+                        <TouchableOpacity
+                            style={styles.libraryButton}
+                            onPress={() => {
+                                navigate("Favourite");
+                            }}
+                        >
+                            <Icon
+                                name="heart"
+                                style={{ paddingStart: 15 }}
+                                size={18}
+                                color="#FF0000"
+                            />
+                            <Text style={styles.libraryIconButton}>
+                                Yêu thích
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View
+                        style={{
+                            flexDirection: "row",
+                            flex: 1,
+                            marginLeft: 16,
+                            justifyContent: "space-around",
+                            marginRight: 16,
+                        }}
+                    >
+                        <TouchableOpacity
+                            style={styles.libraryButton}
+                            onPress={() => {
+                                navigate("History");
+                            }}
+                        >
+                            <Icon
+                                name="history"
+                                style={{ paddingStart: 15 }}
+                                size={20}
+                                color="#00EBEB"
+                            />
+                            <Text style={styles.libraryIconButton}>
+                                Nghe gần đây
+                            </Text>
+                        </TouchableOpacity>
+                        <View style={{ flex: 1 }}></View>
+                        <TouchableOpacity
+                            style={styles.libraryButton}
+                            onPress={() => {
+                                navigate("Playlist");
+                            }}
+                        >
+                            <Icon
+                                name="play-list"
+                                style={{ paddingStart: 15 }}
+                                size={18}
+                                color="#2EDC21"
+                            />
+                            <Text style={styles.libraryIconButton}>
+                                Playlist
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
-                <View
-                    style={{
-                        flexDirection: "row",
-                        flex: 1,
-                        marginLeft: 16,
-                        justifyContent: "space-around",
-                        marginRight: 16,
-                    }}
-                >
-                    <TouchableOpacity
-                        style={styles.libraryButton}
-                        onPress={() => {
-                            navigate("History");
+                <View>
+                    <Text
+                        style={{
+                            fontSize: 18,
+                            fontWeight: "bold",
+                            marginLeft: 16,
+                            marginVertical: 10,
                         }}
                     >
-                        <Icon
-                            name="history"
-                            style={{ paddingStart: 15 }}
-                            size={20}
-                            color="#00EBEB"
-                        />
-                        <Text style={styles.libraryIconButton}>
-                            Nghe gần đây
-                        </Text>
-                    </TouchableOpacity>
-                    <View style={{ flex: 1 }}></View>
-                    <TouchableOpacity
-                        style={styles.libraryButton}
-                        onPress={() => {
-                            navigate("Playlist");
-                        }}
-                    >
-                        <Icon
-                            name="play-list"
-                            style={{ paddingStart: 15 }}
-                            size={18}
-                            color="#2EDC21"
-                        />
-                        <Text style={styles.libraryIconButton}>
-                            Playlist
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-            <View>
-                <Text
-                    style={{
-                        fontSize: 18,
-                        fontWeight: "bold",
-                        marginLeft: 16,
-                        marginVertical: 10,
-                    }}
-                >
-                    Có thể bạn sẽ thích
-                </Text>
+                        Có thể bạn sẽ thích
+                    </Text>
 
-                <View style={{ marginHorizontal: 16 }}>
-                    {recommendData.map((item, index) => {
-                        return (
-                            <TouchableOpacity
-                                onPress={() => {
-                                }}
-                                key={index}
-                            >
-                                <PodcastListItem item={item} />
-                            </TouchableOpacity>
-                        );
-                    })}
+                    <View style={{ marginHorizontal: 16 }}>
+                        {recommendData.map((item, index) => {
+                            return (
+                                <TouchableOpacity
+                                    onPress={() => {
+                                    }}
+                                    key={index}
+                                >
+                                    <PodcastListItem item={item} />
+                                </TouchableOpacity>
+                            );
+                        })}
+                    </View>
                 </View>
-            </View>
-        </ScrollView>
-
+            </ScrollView>
+        </SafeAreaView>
     );
 }
 

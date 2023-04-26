@@ -15,6 +15,7 @@ import { useNavigation } from '@react-navigation/native';
 import { device } from '../constants/device';
 import { setIsPlaying } from '../redux/slices/playerSlice';
 import { Audio } from "expo-av";
+import { setSoundCurrent } from '../redux/slices/followingSlice';
 
 
 export default function FollowingItem(props) {
@@ -29,7 +30,8 @@ export default function FollowingItem(props) {
     const otherUser = useSelector((state) => state.profile.otherUser.data);
     const currentUser = useSelector((state) => state.auth.login.currentUser);
     const isPlaying = useSelector((state) => state.player.isPlaying);
-
+    // const soundCurrent = useSelector((state) => state.following.soundCurrent);
+    const [soundCurrent, setSoundCurrent] = useState(0);
     // useEffect(() => {
     //     if (isPlaying) {
     //         loadSound(props.audio);
@@ -42,93 +44,97 @@ export default function FollowingItem(props) {
     //     //     }
     //     // };
     // }, [props.audio]);
-    const [sound, setSound] = useState(null);
+    // const [sound, setSound] = useState(null);
 
-    async function loadSound(uri) {
-        try {
-            await Audio.setAudioModeAsync({
-                staysActiveInBackground: true,
-                interruptionModeAndroid: 1,
-                shouldDuckAndroid: true,
-                interruptionModeIOS: 1,
-                playsInSilentModeIOS: true,
-            });
-            const { sound } = await Audio.Sound.createAsync(
-                { uri },
-                {
-                    shouldPlay: true,
-                    // isLooping: true,
-                    // positionMillis: position,
-                },
-                // onPlaybackStatusUpdate
-            );
-            setSound(sound);
-            dispatch(setIsPlaying(true));
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
-    useEffect(() => {
-        if (isPlaying) {
-            loadSound(props.audio);
-            // dispatch(setIsPlaying(true));
-            console.log("phát nhạc ở theo dõi");
-        } 
-        // return () => {
-        //     if (sound != null) {
-        //         sound.unloadAsync();
-        //         // setSound(null);
-        //     }
-        // };
-    }, []);
+    // console.log("index: " + props.index + " sound: " + props.audio);
 
 
-    // function onPlaybackStatusUpdate(status) {
-    //     if (status.isPlaying) {
-    //         dispatch(setPosition(status.positionMillis));
-    //         dispatch(setDuration(status.durationMillis));
+    // async function loadSound(uri) {
+    //     try {
+    //         await Audio.setAudioModeAsync({
+    //             staysActiveInBackground: true,
+    //             interruptionModeAndroid: 1,
+    //             shouldDuckAndroid: true,
+    //             interruptionModeIOS: 1,
+    //             playsInSilentModeIOS: true,
+    //         });
+    //         const { sound } = await Audio.Sound.createAsync(
+    //             { uri },
+    //             {
+    //                 shouldPlay: true,
+    //                 // isLooping: true,
+    //                 // positionMillis: position,
+    //             },
+    //             // onPlaybackStatusUpdate
+    //         );
+    //         setSound(sound);
+    //         dispatch(setIsPlaying(true));
+    //     } catch (error) {
+    //         console.log(error);
     //     }
     // }
 
-    async function resumeSound(uri) {
-        if (sound != null) {
-            const status = await sound.getStatusAsync();
-            if (!status.isLoaded) {
-                await sound.loadAsync(
-                    { uri },
-                    { shouldPlay: true }
-                );
-            }
-            await sound.playAsync();
-            dispatch(setIsPlaying(true));
-            console.log("dừng: " + playValue);
-        }
-    }
+    // useEffect(() => {
+    //     if (isPlaying) {
+    //         loadSound(props.audio);
+    //         // dispatch(setIsPlaying(true));
+    //         console.log("phát nhạc ở theo dõi");
+    //     }
+    //     // return () => {
+    //     //     if (sound != null) {
+    //     //         sound.unloadAsync();
+    //     //         // setSound(null);
+    //     //     }
+    //     // };
+    // }, [props.audio]);
 
-    // function onPlaybackStatusUpdate(status) {
-    //     if (status.isPlaying) {
-    //         dispatch(setPosition(status.positionMillis));
-    //         dispatch(setDuration(status.durationMillis));
+
+    // // function onPlaybackStatusUpdate(status) {
+    // //     if (status.isPlaying) {
+    // //         dispatch(setPosition(status.positionMillis));
+    // //         dispatch(setDuration(status.durationMillis));
+    // //     }
+    // // }
+
+    // async function resumeSound(uri, id) {
+    //     if (sound != null && soundCurrent == id) {
+    //         const status = await sound.getStatusAsync();
+    //         if (!status.isLoaded) {
+    //             await sound.loadAsync(
+    //                 { uri },
+    //                 { shouldPlay: true }
+    //             );
+    //         }
+    //         await sound.playAsync();
+    //         dispatch(setIsPlaying(true));
+    //         // console.log("dừng: " + playValue);
     //     }
     // }
 
-    async function pauseSound() {
-        if (sound != null) {
-            await sound.pauseAsync();
-            dispatch(setIsPlaying(false));
-        }
-    }
+    // // function onPlaybackStatusUpdate(status) {
+    // //     if (status.isPlaying) {
+    // //         dispatch(setPosition(status.positionMillis));
+    // //         dispatch(setDuration(status.durationMillis));
+    // //     }
+    // // }
 
-    useEffect(() => {
-        if (sound != null) {
-            if (isPlaying) {
-                resumeSound(props.audio);
-            } else {
-                pauseSound();
-            }
-        }
-    }, [isPlaying]);
+    // async function pauseSound() {
+    //     if (sound != null) {
+    //         await sound.pauseAsync();
+    //         dispatch(setIsPlaying(false));
+    //     }
+    // }
+
+    // useEffect(() => {
+    //     console.log("tag");
+    //     if (sound != null) {
+    //         if (isPlaying) {
+    //             resumeSound(props.audio, soundCurrent);
+    //         } else {
+    //             pauseSound();
+    //         }
+    //     }
+    // }, [isPlaying]);
 
     const handleHeart = () => {
         setHeart(!heart);
@@ -143,14 +149,14 @@ export default function FollowingItem(props) {
     };
 
     // const user = null;
-    useEffect(() => {
-        return sound
-            ? () => {
-                sound.unloadAsync();
-                console.log("sound đang");
-            }
-            : undefined;
-    }, [sound]);
+    // useEffect(() => {
+    //     return sound
+    //         ? () => {
+    //             sound.unloadAsync();
+    //             console.log("sound đang");
+    //         }
+    //         : undefined;
+    // }, [sound]);
 
 
     // useEffect(() => {
@@ -259,7 +265,7 @@ export default function FollowingItem(props) {
                             color={colors.primary}
                         />
                     </View>
-                    <View style={lightFollowingItem.interactPlayTime}>
+                    {/* <View style={lightFollowingItem.interactPlayTime}>
                         {isPlaying ? (
                             <TouchableOpacity onPress={() => pauseSound()}>
                                 <Image
@@ -271,7 +277,10 @@ export default function FollowingItem(props) {
                                 />
                             </TouchableOpacity>
                         ) : (
-                            <TouchableOpacity onPress={() => resumeSound(props.audio)}>
+                            <TouchableOpacity onPress={() => {
+                                resumeSound(props.audio, props.index);
+                                setSoundCurrent(props.index);
+                            }}>
                                 <Image
                                     style={{ width: device.width / 12, height: device.width / 12 }}
                                     source={{
@@ -281,7 +290,7 @@ export default function FollowingItem(props) {
                                 />
                             </TouchableOpacity>
                         )}
-                        {/* ------------ Thời gian bài hát --------------- */}
+                        
                         <View style={lightFollowingItem.progressLevelDur}>
                             <Text style={lightFollowingItem.progressLabelText}>00:00 / 02:22 </Text>
                         </View>
@@ -311,12 +320,12 @@ export default function FollowingItem(props) {
                                 color={isDarkTheme ? colors.white : colors.black}
                             />}
                         </TouchableOpacity>
-                    </View>
+                    </View> */}
                 </View>
             </View>
-            <View
+            {/* <View
                 style={{ borderBottomWidth: 0.2, borderColor: colors.black, marginBottom: 25, marginTop: 9, marginHorizontal: 16 }}
-            />
+            /> */}
         </View>
     )
 }

@@ -8,6 +8,11 @@ const followingSlice = createSlice({
             isFetching: false,
             error: false,
         },
+        soundFollower: null,
+        soundCurrent: 0,
+        playStatus: {},
+        position: 0,
+        duration: 0,
     },
     reducers: {
         // Action for fetching newFeed
@@ -25,6 +30,21 @@ const followingSlice = createSlice({
             state.newFeed.error = true;
             console.log('Data newFeed Failed!');
         },
+        setSoundFollower(state, action) {
+            state.soundFollower = action.payload;
+        },
+        setSoundCurrent(state, action) {
+            state.soundCurrent = action.payload;
+        },
+        setPlayStatus(state, action) {
+            state.playStatus = action.payload;
+        },
+        setPosition(state, action) {
+            state.position = action.payload;
+        },
+        setDuration(state, action) {
+            state.duration = action.payload;
+        },
     },
 
 });
@@ -32,6 +52,11 @@ export const {
     getNewFeedSuccess,
     getNewFeedStart,
     getNewFeedFailed,
+    setSoundFollower,
+    setSoundCurrent,
+    setPlayStatus,
+    setPosition,
+    setDuration
 } = followingSlice.actions;
 
 export default followingSlice.reducer;
