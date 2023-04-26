@@ -1,5 +1,6 @@
 import React from "react";
 import { Text, View, Image, StyleSheet } from "react-native";
+import { formatNum } from "../ultis/helper";
 
 function PodcastListItem({ item }) {
     return (
@@ -36,7 +37,7 @@ function PodcastListItem({ item }) {
                 </Text>
 
                 <Text style={{}}>{item.owner.fullName}</Text>
-                <Text style={{}}>{item.views} Lượt nghe | {item.likes} Lượt yêu thích</Text>
+                <Text style={{}}>{formatNum(item.views)} Lượt nghe | {formatNum(item.likes)} Lượt yêu thích</Text>
             </View>
         </View>
     );

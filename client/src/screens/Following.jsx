@@ -8,27 +8,30 @@ import { useEffect } from "react";
 import { warningLogin } from "../ultis/warning";
 import GlobalStyles from "../components/GlobalStyles";
 import colors from "../constants/colors";
-import { getNewFeed } from "../redux/actions/followingApi";
+import { getLikedListData, getNewFeed } from "../redux/actions/followingApi";
 import { getOtherUser } from "../redux/actions/profileApi";
 import FollowingHeader from "../components/FollowingHeader";
 
 export default function Following(props) {
     const { navigation, route } = props;
     const { navigate, goback } = navigation;
-    const user = useSelector((state) => state.auth.login.currentUser);
+    const currentUser = useSelector((state) => state.auth.login.currentUser);
     const access_token = useSelector((state) => state.auth.login.access_token);
     const dispatch = useDispatch();
     const isFocused = useIsFocused();
     useEffect(() => {
-        if (isFocused && !user) {
+        if (isFocused && !currentUser) {
             warningLogin(navigate, 'Login', 'Home');
         }
     }, [isFocused]);
     useEffect(() => {
         getNewFeed(dispatch, access_token);
-    }, []);
+        getLikedListData(dispatch, access_token);
+    }, [currentUser]);
     const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
     const newFeed = useSelector((state) => state.following.newFeed.data);
+    if (!currentUser) return (<View></View>);
+
     return (
         <SafeAreaView style={[GlobalStyles.customSafeArea, { backgroundColor: isDarkTheme ? colors.dark : colors.white }]}>
             <ScrollView>
@@ -41,7 +44,7 @@ export default function Following(props) {
                                     <View key={index}>
                                         <TouchableOpacity
                                             onPress={() => {
-                                                getOtherUser(item.owner._id, dispatch, navigation.navigate, user)
+                                                getOtherUser(item.owner._id, dispatch, navigation.navigate, currentUser)
                                             }}
                                         >
                                             <FollowingHeader avatar={item.avatar}
@@ -50,7 +53,7 @@ export default function Following(props) {
                                             />
                                         </TouchableOpacity>
                                         <FollowingItem
-
+                                            _id={item._id}
                                             title={item.title}
                                             likes={item.likes}
                                             views={item.views}
