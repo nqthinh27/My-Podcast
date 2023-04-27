@@ -8,14 +8,14 @@ import {
     SafeAreaView,
 } from "react-native";
 import Icon from "react-native-vector-icons/Fontisto";
-import colors from "../constants/colors";
-import PodcastListItem from "../components/PodcastListItem";
-import { warningLogin } from "../ultis/warning";
+import colors from "../../constants/colors";
+import PodcastListItem from "../../components/PodcastListItem";
+import { warningLogin } from "../../ultis/warning";
 import { useDispatch, useSelector } from "react-redux";
 import { useIsFocused } from "@react-navigation/native";
-import HeaderUI from "../components/HeaderUI";
-import { getRecommendData } from "../redux/actions/libraryApi";
-import GlobalStyles from "../components/GlobalStyles";
+import HeaderUI from "../../components/HeaderUI";
+import { getRecommendData } from "../../redux/actions/libraryApi";
+import GlobalStyles from "../../components/GlobalStyles";
 
 function Library(props) {
     const { navigation, route } = props;
@@ -23,11 +23,11 @@ function Library(props) {
     const dispatch = useDispatch();
     const user = useSelector((state) => state.auth.login.currentUser);
     const isFocused = useIsFocused();
-    useEffect(() => {
-        if (isFocused && !user) {
-            warningLogin(navigate, "Login", "Home");
-        }
-    }, [isFocused]);
+    // useEffect(() => {
+    //     if (isFocused && !user) {
+    //         warningLogin(navigate, "Login", "Home");
+    //     }
+    // }, [isFocused]);
 
     const recommendData = useSelector((state) => state.library.recommend.data);
     useEffect(() => {
@@ -52,7 +52,7 @@ function Library(props) {
                 <View style={styles.libraryContainer}>
                     <Text
                         style={{
-                            fontSize: 18,
+                            fontSize: 21,
                             fontWeight: "bold",
                             paddingLeft: 16,
                             marginTop: 8,
@@ -71,7 +71,7 @@ function Library(props) {
                         <TouchableOpacity
                             style={styles.libraryButton}
                             onPress={() => {
-                                navigate("Saved");
+                                warningLogin(navigate, "Login");
                             }}
                         >
                             <Icon
@@ -86,7 +86,8 @@ function Library(props) {
                         <TouchableOpacity
                             style={styles.libraryButton}
                             onPress={() => {
-                                navigate("Favourite");
+                                if (!user) warningLogin(navigate, "Login");
+                                else navigate('Liked');
                             }}
                         >
                             <Icon
@@ -112,7 +113,7 @@ function Library(props) {
                         <TouchableOpacity
                             style={styles.libraryButton}
                             onPress={() => {
-                                navigate("History");
+                                warningLogin(navigate, "Login");
                             }}
                         >
                             <Icon
@@ -129,7 +130,7 @@ function Library(props) {
                         <TouchableOpacity
                             style={styles.libraryButton}
                             onPress={() => {
-                                navigate("Playlist");
+                                warningLogin(navigate, "Login");
                             }}
                         >
                             <Icon
@@ -147,13 +148,13 @@ function Library(props) {
                 <View>
                     <Text
                         style={{
-                            fontSize: 18,
+                            fontSize: 21,
                             fontWeight: "bold",
                             marginLeft: 16,
                             marginVertical: 10,
                         }}
                     >
-                        Có thể bạn sẽ thích
+                        Mọi người cũng nghe
                     </Text>
 
                     <View style={{ marginHorizontal: 16 }}>

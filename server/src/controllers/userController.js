@@ -58,7 +58,7 @@ const userController = {
                 select: '_id title image likes views createdAt',
                 options: {
                     skip,
-                    limit: parseInt(limit),
+                    // limit: parseInt(limit),
                     sort: { createdAt: -1 }
                 },
             });

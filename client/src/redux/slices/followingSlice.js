@@ -25,8 +25,7 @@ const followingSlice = createSlice({
             state.newFeed.error = true;
             console.log('Data newFeed Failed!');
         },
-    },
-
+    }
 });
 export const {
     getNewFeedSuccess,

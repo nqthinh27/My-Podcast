@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { BASE_URL } from '../../ultis/config';
 import { getNewFeedFailed, getNewFeedStart, getNewFeedSuccess } from '../slices/followingSlice';
+import { postDataAPI } from '../../ultis/fetchData';
 
 export const getNewFeed = async (dispatch, access_token) => {
     dispatch(getNewFeedStart());

@@ -18,7 +18,7 @@ import { MyNewReLeaseData } from "../../dummyData";
 import GlobalStyles from "../components/GlobalStyles";
 import { useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
-import { checkIdInclude, timeDiff } from "../ultis/helper";
+import { checkIdInclude, formatNum, timeDiff } from "../ultis/helper";
 import { getPublicDataAPI, patchDataAPI } from "../ultis/fetchData";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { warningLogin } from "../ultis/warning";
@@ -171,7 +171,7 @@ export default function OtherProfile() {
                                         <ProfilePodcast
                                             image={item.image}
                                             title={item.title}
-                                            des={item.likes + " Lượt thích"}
+                                            des={formatNum(item.views) + " Lượt nghe"}
                                         />
                                     </TouchableOpacity>
                                 );
@@ -210,7 +210,7 @@ export default function OtherProfile() {
                         horizontal={true}
                     >
                         {allPosts.map((item, index) => {
-
+                            console.log("Bài đăng   " + index + item);
                             return (
                                 <TouchableOpacity
                                     key={index}
