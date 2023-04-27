@@ -289,33 +289,6 @@ export default function Home(props) {
                         );
                     })}
                 </ScrollView>
-                {/* ==========================================Cuộc sống hằng ngày==========================================*/}
-                <TouchableOpacity style={lightHome.coverAll}>
-                    <Text style={isDarkTheme ? darkHome.title : lightHome.title}>Cuộc sống hằng ngày</Text>
-                    <Icon
-                        name='chevron-right'
-                        style={{ opacity: 1, marginLeft: 8 }}
-                        size={16} color={isDarkTheme ? darkHome.wrapper.color : lightHome.wrapper.color}
-                    />
-                </TouchableOpacity>
-                <ScrollView
-                    style={{ marginLeft: 16, marginBottom: 16 }}
-                    horizontal={true}
-                    showsHorizontalScrollIndicator={false}
-                >
-                    {RecommendData.map((item, index) => {
-                        return (
-                            <TouchableOpacity
-                                onPress={() => {
-                                    playerNavigate();
-                                }}
-                                key={index}
-                            >
-                                <ReleasedPodcast item={item} />
-                            </TouchableOpacity>
-                        );
-                    })}
-                </ScrollView>
             </ScrollView>
             {isMiniPlayer && <MiniPlayer
                 avtUrl="https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Tu%2FRectangle%2038.png?alt=media&token=780197d0-e51a-496c-8ff1-006b24341c50"

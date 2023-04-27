@@ -64,6 +64,8 @@ function Post(props) {
             }
         });
     };
+    
+    if (!currentUser) return (<View></View>);
 
     return (
         <SafeAreaView style={[GlobalStyles.customSafeArea, { backgroundColor: '#fff' }]}>

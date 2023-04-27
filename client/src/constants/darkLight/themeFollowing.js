@@ -54,11 +54,11 @@ export const lightFollowingItem = StyleSheet.create({
     },
 
     name: {
-        fontSize: 13,
-        fontWeight: "700",
+        fontSize: 15,
+        fontWeight: "600",
     },
     date: {
-        fontSize: 11,
+        fontSize: 13,
         color: "#414141",
         paddingVertical: 2,
         opacity: 0.5,
@@ -134,12 +134,12 @@ export const lightFollowingItem = StyleSheet.create({
 
 export const darkFollowingItem = StyleSheet.create({
     name: {
-        fontSize: 13,
-        fontWeight: "700",
+        fontSize: 15,
+        fontWeight: "600",
         color: colors.white
     },
     date: {
-        fontSize: 11,
+        fontSize: 13,
         color: colors.white,
         paddingVertical: 2,
         opacity: 0.5,

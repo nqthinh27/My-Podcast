@@ -20,7 +20,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { device } from "../constants/device";
 import { useNavigation } from "@react-navigation/native";
 import { getMyFollowers, getMyFollowing, getMyUserAllPosts, getMyUserTopPosts } from "../redux/actions/authApi";
-import { timeDiff } from "../ultis/helper";
+import { formatNum, timeDiff } from "../ultis/helper";
 
 function MyProfile(props) {
     const dispatch = useDispatch();
@@ -102,7 +102,7 @@ function MyProfile(props) {
                                     <ProfilePodcast
                                         image={item.image}
                                         title={item.title}
-                                        des={item.likes + " Lượt thích"} />
+                                        des={formatNum(item.views) + " Lượt nghe"} />
                                 </TouchableOpacity>
                             );
                         })}
