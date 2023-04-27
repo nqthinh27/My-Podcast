@@ -5,17 +5,12 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useDispatch, useSelector } from 'react-redux';
 import colors from '../constants/colors'
 import { lightFollowingItem, darkFollowingItem } from '../constants/darkLight/themeFollowing'
-import GlobalStyles from './GlobalStyles';
 import { useNavigation } from '@react-navigation/native';
-import { getOtherFollowers, getOtherFollowing, getOtherUser, getOtherUserAllPosts, getOtherUserTopPosts } from '../redux/actions/profileApi';
-import { getPublicDataAPI, patchDataAPI, postDataAPI } from '../ultis/fetchData';
-import { BASE_URL } from '../ultis/config';
-import axios from 'axios';
-import { getOtherUserSuccess } from '../redux/slices/profileSlice';
+import { patchDataAPI, postDataAPI } from '../ultis/fetchData';
 
 export default function FollowingItem(props) {
-    const userLikedList = useSelector((state) => state.following.likedList.data);
-    const IsLiked =  userLikedList.some(item => item._id == props._id);
+    const userLikedList = useSelector((state) => state.library.likedList.data);
+    const IsLiked = userLikedList.some(item => item._id == props._id);
     const dispatch = useDispatch;
     const navigation = useNavigation();
     const [heart, setHeart] = useState(IsLiked);

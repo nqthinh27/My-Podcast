@@ -14,16 +14,15 @@ import { warningLogin } from "../../ultis/warning";
 import { useDispatch, useSelector } from "react-redux";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import HeaderUI from "../../components/HeaderUI";
-import { getRecommendData } from "../../redux/actions/libraryApi";
+import { getLikedListData, getRecommendData } from "../../redux/actions/libraryApi";
 import GlobalStyles from "../../components/GlobalStyles";
-import { getLikedListData } from "../../redux/actions/followingApi";
 
 function Liked({ item }) {
     const navigation = useNavigation();
     const dispatch = useDispatch();
     const currentUser = useSelector((state) => state.auth.login.currentUser);
     const access_token = useSelector((state) => state.auth.login.access_token);
-    const userLikedList = useSelector((state) => state.following.likedList.data);
+    const userLikedList = useSelector((state) => state.library.likedList.data);
     useEffect(() => {
         getLikedListData(dispatch, access_token)
     }, [currentUser]);

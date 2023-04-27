@@ -1,6 +1,5 @@
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View, SafeAreaView } from "react-native";
+import { ScrollView, StyleSheet, TouchableOpacity, View, SafeAreaView } from "react-native";
 import { HeaderUI, FollowingItem } from "../components";
-import { FollowingData } from "../../dummyData";
 import { lightfollowStyles, darkfollowStyles } from "../constants/darkLight/themeFollowing"
 import { useDispatch, useSelector } from "react-redux";
 import { useIsFocused } from "@react-navigation/native";
@@ -8,9 +7,10 @@ import { useEffect } from "react";
 import { warningLogin } from "../ultis/warning";
 import GlobalStyles from "../components/GlobalStyles";
 import colors from "../constants/colors";
-import { getLikedListData, getNewFeed } from "../redux/actions/followingApi";
+import { getNewFeed } from "../redux/actions/followingApi";
 import { getOtherUser } from "../redux/actions/profileApi";
 import FollowingHeader from "../components/FollowingHeader";
+import { getLikedListData } from "../redux/actions/libraryApi";
 
 export default function Following(props) {
     const { navigation, route } = props;
@@ -25,9 +25,12 @@ export default function Following(props) {
         }
     }, [isFocused]);
     useEffect(() => {
+        if (currentUser) getLikedListData(dispatch, access_token);
         getNewFeed(dispatch, access_token);
-        getLikedListData(dispatch, access_token);
     }, [currentUser]);
+    useEffect(() => {
+        if (currentUser) getLikedListData(dispatch, access_token);
+    }, []);
     const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
     const newFeed = useSelector((state) => state.following.newFeed.data);
     if (!currentUser) return (<View></View>);
