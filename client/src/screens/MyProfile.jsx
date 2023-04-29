@@ -41,7 +41,7 @@ function MyProfile(props) {
     const followersList = useSelector((state) => state.auth.followers.data);
 
     return (
-        <SafeAreaView style={[styles.myprofile, GlobalStyles.droidSafeArea]}>
+        <SafeAreaView style={[styles.myprofile, GlobalStyles.customSafeArea]}>
             <ScrollView>
                 <View style={styles.myprofileHeader}>
                     <Icon

@@ -8,9 +8,14 @@ import { lightFollowingItem, darkFollowingItem } from '../constants/darkLight/th
 import { useNavigation } from '@react-navigation/native';
 import { patchDataAPI, postDataAPI } from '../ultis/fetchData';
 
+import { device } from '../constants/device';
+import { setIsPlaying } from '../redux/slices/playerSlice';
+import { Audio } from "expo-av";
+import { setSoundCurrent } from '../redux/slices/followingSlice';
 export default function FollowingItem(props) {
     const userLikedList = useSelector((state) => state.library.likedList.data);
     const IsLiked = userLikedList.some(item => item._id == props._id);
+
     const dispatch = useDispatch;
     const navigation = useNavigation();
     const [heart, setHeart] = useState(IsLiked);
@@ -29,6 +34,8 @@ export default function FollowingItem(props) {
         } else {
             setCurrentLikes(prevLikes => prevLikes - 1);
         }
+    }
+    const handleHeart = () => {
         setHeart(!heart);
     }
     useEffect(() => {
@@ -50,7 +57,7 @@ export default function FollowingItem(props) {
     const handleVolume = () => {
         setVolume(!volume);
     };
-
+    
     return (
         <View>
             <View style={lightFollowingItem.followingItemWrapper}>
@@ -93,8 +100,8 @@ export default function FollowingItem(props) {
                 <View style={lightFollowingItem.followingItemInteract}>
                     <View style={lightFollowingItem.interact}>
                         <View style={[lightFollowingItem.interactIcon, { alignItems: "center" }]}>
-                            <TouchableOpacity onPress={handleLike}>
-                                {(!heart) && <Icon
+                            <TouchableOpacity onPress={handleHeart}>
+                                {(heart) && <Icon
                                     name="cards-heart-outline"
                                     style={{ opacity: 1 }}
                                     size={23}
@@ -150,22 +157,32 @@ export default function FollowingItem(props) {
                             color={colors.primary}
                         />
                     </View>
-                    <View style={lightFollowingItem.interactPlayTime}>
-                        <TouchableOpacity onPress={handlePlay}>
-                            {(play) && <Icon
-                                name="play"
-                                style={{ opacity: 1 }}
-                                size={25}
-                                color={isDarkTheme ? colors.white : colors.black}
-                            />}
-                            {(!play) && <Icon
-                                name="stop"
-                                style={{ opacity: 1 }}
-                                size={25}
-                                color={isDarkTheme ? colors.white : colors.black}
-                            />}
-                        </TouchableOpacity>
-                        {/* ------------ Thời gian bài hát --------------- */}
+                    {/* <View style={lightFollowingItem.interactPlayTime}>
+                        {isPlaying ? (
+                            <TouchableOpacity onPress={() => pauseSound()}>
+                                <Image
+                                    style={{ width: device.width / 12, height: device.width / 12 }}
+                                    source={{
+                                        uri:
+                                            "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fpause.png?alt=media&token=ae6b74e7-ac06-40a8-a1a7-09d3380e2863",
+                                    }}
+                                />
+                            </TouchableOpacity>
+                        ) : (
+                            <TouchableOpacity onPress={() => {
+                                resumeSound(props.audio, props.index);
+                                setSoundCurrent(props.index);
+                            }}>
+                                <Image
+                                    style={{ width: device.width / 12, height: device.width / 12 }}
+                                    source={{
+                                        uri:
+                                            "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Tu%2FGroup%2066.png?alt=media&token=5fb2d1e2-48a0-43bb-9773-ce3424e388f4",
+                                    }}
+                                />
+                            </TouchableOpacity>
+                        )}
+                        
                         <View style={lightFollowingItem.progressLevelDur}>
                             <Text style={lightFollowingItem.progressLabelText}>00:00 / 02:22 </Text>
                         </View>
@@ -195,12 +212,12 @@ export default function FollowingItem(props) {
                                 color={isDarkTheme ? colors.white : colors.black}
                             />}
                         </TouchableOpacity>
-                    </View>
+                    </View> */}
                 </View>
             </View>
-            <View
+            {/* <View
                 style={{ borderBottomWidth: 0.2, borderColor: colors.black, marginBottom: 25, marginTop: 9, marginHorizontal: 16 }}
-            />
+            /> */}
         </View>
     )
 }
