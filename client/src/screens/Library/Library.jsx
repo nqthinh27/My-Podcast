@@ -48,7 +48,6 @@ function Library(props) {
         <SafeAreaView style={[GlobalStyles.customSafeArea, { backgroundColor: '#fff' }]}>
             <ScrollView>
                 <HeaderUI />
-
                 <View style={styles.libraryContainer}>
                     <Text
                         style={{

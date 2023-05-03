@@ -3,22 +3,24 @@ import { createSlice } from '@reduxjs/toolkit';
 const playerSlice = createSlice({
     name: 'player',
     initialState: {
-        sound: null, 
-        soundUrl: null,
+        dataSound: [], 
+        currentSound: 0,
         playValue: false,  // dừng, phát
         position: 0,
         duration: 0,
         isMiniPlayer: false,
         isPlayer: false,  // kiểm tra xem bài hát có đang dừng không
-        currentTrack: null,
-        isBackButtonPressed: false, // kiểm tra xem có phải ấn nut back android
+        isPlayScreen: false,
+        isPlaying: false, // kiểm tra dưng phát màn theo dõi
+        nextPress: false,
+        prevPress: false,
     },
     reducers: {
-        setSound(state, action) {
-            state.sound = action.payload;
+        setDataSound(state, action) {
+            state.dataSound = action.payload;
         },
-        setSoundUrl(state, action) {
-            state.soundUrl = action.payload;
+        setCurrentSound(state, action) {
+            state.currentSound = action.payload;
         },
         setPlayValue(state, action) {
             state.playValue = action.payload;
@@ -35,25 +37,33 @@ const playerSlice = createSlice({
         setIsPlayer(state, action) {
             state.isPlayer = action.payload;
         },
-        setCurrentTrack(state, action) {
-            state.currentTrack = action.payload;
+        setIsPlayScreen(state, action) {
+            state.isPlayScreen = action.payload;
         },
-        setIsBackButtonPressed(state, action) {
-            state.isBackButtonPressed = action.payload;
-        }
+        setIsPlaying(state, action) {
+            state.isPlaying = action.payload;
+        },
+        setNextPress(state, action) {
+            state.nextPress = action.payload;
+        },
+        setPrevPress(state, action) {
+            state.prevPress = action.payload;
+        },
     },
 });
 
 export const {
-    setSound,
-    setSoundUrl,
+    setDataSound,
+    setCurrentSound,
     setPlayValue,
     setPosition,
     setDuration,
     setIsMiniPlayer,
     setIsPlayer,
-    setCurrentTrack,
-    setIsBackButtonPressed
+    setIsPlayScreen,
+    setIsPlaying,
+    setNextPress,
+    setPrevPress
 } = playerSlice.actions;
 
 export default playerSlice.reducer;
