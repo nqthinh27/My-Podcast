@@ -11,26 +11,29 @@ import {
     Alert,
     Modal,
     Pressable,
+    TouchableWithoutFeedback,
+    Keyboard
 } from "react-native";
 import GlobalStyles from "../components/GlobalStyles";
 import { useEffect, useState, useRef } from "react";
 import { warningLogin } from "../ultis/warning";
 import { useSelector } from "react-redux";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
-import Icon from "react-native-vector-icons/Entypo";
+import EntypoIcon from "react-native-vector-icons/Entypo";
+import FeatherIcon from "react-native-vector-icons/Feather";
 import colors from "../constants/colors";
-import DocumentPicker from "react-native-document-picker";
-// import { ImagePicker } from "react-native-image-picker";
-import { xorBy } from "lodash";
 import CheckboxGroup from "react-native-checkbox-group";
+import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import firebase from '../../config';
-import { getPublicDataAPI } from "../ultis/fetchData";
-// Tạo tham chiếu đến Firebase Storage
+import { getPublicDataAPI, postDataAPI } from "../ultis/fetchData";
+import { device } from "../constants/device";
+import Loading from "../components/Loading";
 
 function Post(props) {
     const navigation = useNavigation();
     const currentUser = useSelector((state) => state.auth.login.currentUser);
+    const access_token = useSelector((state) => state.auth.login.access_token);
     const isFocused = useIsFocused();
     useEffect(() => {
         if (isFocused && !currentUser) {
@@ -38,9 +41,28 @@ function Post(props) {
             warningLogin(navigation.navigate, 'Login', 'Home');
         }
     }, [isFocused]);
+    // handle title, content
+    const [title, setTitle] = useState('');
+    const [content, setContent] = useState('');
+    const [keyboardOpen, setKeyboardOpen] = useState(false);
+    const handlePressOutside = () => {
+        if (keyboardOpen) {
+            Keyboard.dismiss();
+            setKeyboardOpen(false);
+        }
+    };
+
+    const handleKeyboardDidShow = () => {
+        setKeyboardOpen(true);
+    };
+
+    const handleKeyboardDidHide = () => {
+        console.log('hide');
+        setKeyboardOpen(false);
+    };
     // Handle pick image
     const [image, setImage] = useState(null);
-    const [uploading, setUploading] = useState(false);
+    const [uploadingImage, setUploadingImage] = useState(false);
     const pickImage = async () => {
         try {
             let result = await ImagePicker.launchImageLibraryAsync({
@@ -50,44 +72,71 @@ function Post(props) {
                 quality: 1,
             });
             const source = { uri: result.assets[0].uri };
-            console.log((source));
             setImage(source);
         } catch (err) {
             console.log(err);
         }
     }
-    const uploadImage = async () => {
-        setUploading(true);
+    const uploadImage = async (name) => {
+        setUploadingImage(true);
         const response = await fetch(image.uri);
         const blob = await response.blob();
         const extension = image.uri.substring(image.uri.lastIndexOf('.') + 1);
-        const filename = 'test.' + extension;
-        var ref = firebase.storage().ref().child(filename).put(blob);
+        const filename = name + '.' + extension;
+        // const filename = 'test.' + extension;
+        const ref = firebase.storage().ref().child('post/image/' + filename);
         try {
-            await ref;
-        } catch (e) {
-            console.log(e);
+            const snapshot = await ref.put(blob);
+            const imageUrl = await snapshot.ref.getDownloadURL();
+            setUploadingImage(false);
+            // alert('Photo uploaded!!');
+            setImage(null);
+            return imageUrl;
+        } catch (error) {
+            console.log(error);
+            setUploadingImage(false);
+            alert('Error uploading Photo');
+            return null;
         }
-        setUploading(false);
-        alert('Photo uploaded...!!');
-        setImage(null);
     }
     // handle pick audio
     const [audio, setAudio] = useState(null);
+    const [uploadingAudio, setUploadingAudio] = useState(false);
     const pickAudio = async () => {
         try {
-            const result = await DocumentPicker.pick({
-                type: [DocumentPicker.types.audio],
+            const result = await DocumentPicker.getDocumentAsync({
+                type: 'audio/*',
             });
-            const source = { uri: result.assets[0].uri };
-            console.log((source));
             setAudio(result);
         } catch (err) {
             if (DocumentPicker.isCancel(err)) {
                 // User cancelled the picker
             } else {
-                // Error!
+                // Error
+                console.log(err);
             }
+        }
+    };
+    const uploadAudio = async (name) => {
+        if (!audio) return;
+        setUploadingAudio(true);
+        const response = await fetch(audio.uri);
+        const blob = await response.blob();
+        const extension = audio.uri.substring(audio.uri.lastIndexOf('.') + 1);
+        const filename = name + '.' + extension;
+        const ref = firebase.storage().ref().child('post/audio/' + filename);
+        try {
+            const snapshot = await ref.put(blob);
+            const audioUrl = await snapshot.ref.getDownloadURL();
+            setUploadingAudio(false);
+            // alert('Audio uploaded!');
+            setAudio(null);
+            return audioUrl;
+        } catch (error) {
+            console.log(error);
+            setUploadingAudio(false);
+            alert('Error uploading audio');
+            return null;
         }
     };
     // handle topic
@@ -101,23 +150,26 @@ function Post(props) {
     useEffect(() => {
         fetchTopicsData();
     }, []);
-    const [song, setSong] = useState(null);
-
-    const handleSongPicker = async () => {
-        try {
-            const result = await DocumentPicker.pick({
-                type: [DocumentPicker.types.audio],
-            });
-            setSong(result);
-        } catch (err) {
-            if (DocumentPicker.isCancel(err)) {
-                // User cancelled the picker
-            } else {
-                // Error
-                console.log(err);
-            }
-        }
-    };
+    // handle post
+    const [isLoading, setIsLoading] = useState(false);
+    const handlePost = async () => {
+        setIsLoading(true);
+        const imageUrl = await uploadImage(title);
+        const audioUrl = await uploadAudio(title);
+        const newPost = {
+            title: title,
+            content: content,
+            image: imageUrl,
+            audio: audioUrl,
+            tag: topicSelected,
+        };
+        setTopicSelected([]);
+        setContent('');
+        setTitle('');
+        const post = await postDataAPI('post', newPost, access_token);
+        setIsLoading(false);
+        alert('Đăng bài thành công');
+    }
 
     if (!currentUser) return (<View></View>);
 
@@ -152,36 +204,63 @@ function Post(props) {
                     </View>
                 </View>
 
-                <TouchableOpacity
-                    style={styles.postHeaderSuccess}
-                    onPress={uploadImage}
-                >
-                    <Text
-                        style={{
-                            fontSize: 16,
-                            color: "#fff",
-                            fontWeight: "500",
-                        }}
+                {(title.length === 0 || topicSelected.length === 0 || image == null || audio == null) ?
+                    <View
+                        style={[styles.postHeaderFailed]}
                     >
-                        Chia sẻ
-                    </Text>
-                </TouchableOpacity>
+                        <Text
+                            style={{
+                                fontSize: 16,
+                                color: "#fff",
+                                fontWeight: "500",
+                            }}
+                        >
+                            Chia sẻ
+                        </Text>
+                    </View>
+                    :
+                    <TouchableOpacity
+                        style={styles.postHeaderSuccess}
+                        onPress={handlePost}
+                    >
+                        <Text
+                            style={{
+                                fontSize: 16,
+                                color: "#fff",
+                                fontWeight: "500",
+                            }}
+                        >
+                            Chia sẻ
+                        </Text>
+                    </TouchableOpacity>}
             </View>
 
             <View style={styles.postContainer}>
                 <View style={styles.postTextQuestion}>
                     <TextInput
-                        style={{ fontSize: 18, marginBottom: 10, fontWeight: '500' }}
+                        value={title}
+                        onChangeText={setTitle}
+                        style={{ fontSize: 18, marginBottom: 10, fontWeight: '500', marginRight: 32 }}
                         placeholder="Nhập tiêu đề của Podcast"
-                        secureTextEntry={false}
-                        autoCapitalize="words"
-                    // placeholderTextColor="black"
                     ></TextInput>
 
-                    <TextInput
-                        style={{ fontSize: 16 }}
-                        placeholder="Nhập dòng trạng thái đăng tải"
-                    ></TextInput>
+                    <TouchableOpacity style={{ flex: 1 }} onPress={handlePressOutside} activeOpacity={1.0}>
+                        <View>
+                            <TextInput
+                                value={content}
+                                onChangeText={setContent}
+                                style={{
+                                    fontSize: 16,
+                                    minHeight: 100,
+                                    marginRight: 32
+                                }}
+                                placeholder="Nhập dòng trạng thái đăng tải"
+                                // autoCapitalize="words"
+                                multiline={true}
+                                onFocus={handleKeyboardDidShow}
+                            />
+                        </View>
+                    </TouchableOpacity>
                 </View>
 
                 <View style={styles.postFooter}>
@@ -229,7 +308,7 @@ function Post(props) {
                                             callback={(selected) => {
                                                 setTopicSelected(selected);
                                             }}
-                                            iconColor={"#00a2dd"}
+                                            iconColor={colors.primary}
                                             iconSize={30}
                                             checkedIcon="ios-checkbox-outline"
                                             uncheckedIcon="ios-square-outline"
@@ -255,7 +334,7 @@ function Post(props) {
                                     </ScrollView>
                                     <Pressable
                                         style={{
-                                            backgroundColor: "#2196F3",
+                                            backgroundColor: colors.primary,
                                             borderRadius: 20,
                                             padding: 10,
                                             elevation: 2,
@@ -270,28 +349,31 @@ function Post(props) {
                                     </Pressable>
                                 </View>
                             </Modal>
-                            <Pressable
+                            {/* <Pressable
                                 style={{
                                     borderRadius: 20,
                                     // padding: 10,
                                     elevation: 2,
                                 }}
+                            > */}
+                            <Text
+                                style={{
+                                    color: "black",
+                                    // fontWeight: "bold",
+                                    // textAlign: "center",
+                                    fontSize: 16,
+                                }}
                             >
-                                <Text
-                                    style={{
-                                        color: "black",
-                                        // fontWeight: "bold",
-                                        // textAlign: "center",
-                                        fontSize: 16,
-                                    }}
-                                >
-                                    Thêm chủ đề Podcast
-                                </Text>
-                            </Pressable>
-                            <Icon
-                                name={"chevron-small-right"}
-                                size={19}
-                            />
+                                Thêm chủ đề Podcast
+                            </Text>
+                            {/* </Pressable> */}
+
+                            {topicSelected.length === 0 ?
+                                <EntypoIcon
+                                    name={"chevron-small-right"}
+                                    size={19} />
+                                :
+                                <FeatherIcon name="check" size={19} color={colors.primary} />}
                         </View>
 
 
@@ -329,16 +411,12 @@ function Post(props) {
                             <Text style={{ color: "black", fontSize: 16 }}>
                                 Thêm ảnh mô tả
                             </Text>
-                            {/* {image && (
-                                <Image
-                                    source={{ uri: image.uri }}
-                                    style={{ width: 200, height: 200 }}
-                                />
-                            )} */}
-                            <Icon
-                                name={"chevron-small-right"}
-                                size={19}
-                            />
+                            {image == null ?
+                                <EntypoIcon
+                                    name={"chevron-small-right"}
+                                    size={19} />
+                                :
+                                <FeatherIcon name="check" size={19} color={colors.primary} />}
                         </View>
                     </TouchableOpacity>
 
@@ -375,14 +453,17 @@ function Post(props) {
                             <Text style={{ color: "black", fontSize: 16 }}>
                                 Thêm tập tin âm thanh
                             </Text>
-                            <Icon
-                                name={"chevron-small-right"}
-                                size={19}
-                            />
+                            {audio == null ?
+                                <EntypoIcon
+                                    name={"chevron-small-right"}
+                                    size={19} />
+                                :
+                                <FeatherIcon name="check" size={19} color={colors.primary} />}
                         </View>
                     </TouchableOpacity>
                 </View>
             </View>
+            {isLoading && < Loading/>}
         </SafeAreaView>
     );
 }
@@ -399,6 +480,13 @@ const styles = StyleSheet.create({
 
     postHeaderSuccess: {
         backgroundColor: colors.primary,
+        padding: 7,
+        borderRadius: 7,
+        justifyContent: "flex-end",
+    },
+
+    postHeaderFailed: {
+        backgroundColor: "#ccc",
         padding: 7,
         borderRadius: 7,
         justifyContent: "flex-end",

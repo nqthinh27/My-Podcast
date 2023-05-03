@@ -128,7 +128,7 @@ export default function HeaderUI(props) {
                     />
                 </View>
                 <Modal visible={searchValue} >
-                    <View>
+                    <SafeAreaView style={GlobalStyles.customSafeArea}>
                         <View style={lightHeader.header}>
                             <Icon style={lightHeader.back}
                                 name={'chevron-left'}
@@ -218,7 +218,7 @@ export default function HeaderUI(props) {
                                 })}
                             </View>
                         </ScrollView>
-                    </View>
+                    </SafeAreaView>
                 </Modal>
                 <TouchableOpacity>
                     <Image

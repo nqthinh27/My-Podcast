@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, TouchableOpacity, View, SafeAreaView } from "react-native";
+import { ScrollView, StyleSheet, TouchableOpacity, View, SafeAreaView, Image, Text } from "react-native";
 import { HeaderUI, FollowingItem } from "../components";
 import { lightfollowStyles, darkfollowStyles, lightFollowingItem } from "../constants/darkLight/themeFollowing"
 import { useDispatch, useSelector } from "react-redux";
