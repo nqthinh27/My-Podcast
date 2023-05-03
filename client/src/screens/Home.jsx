@@ -30,6 +30,7 @@ import { getPost } from "../redux/actions/postApi";
 import { getPostDataSuccess, setDetailPost } from "../redux/slices/postSlice";
 import { Audio } from "expo-av";
 import PlayerScreen from "./Player/PlayerScreen";
+import Loading from "../components/Loading";
 
 // import PlayerScreen from "./PlayerScreen";
 
@@ -106,11 +107,17 @@ export default function Home(props) {
         }
     }
 
+    const [isLoading, setIsLoading] = useState(false);
+    const fetchHomeData = async () => {
+        setIsLoading(true);
+        await fetchSlider(dispatch);
+        await fetchTopTrending(dispatch);
+        await fetchNewRelease(dispatch);
+        await fetchTopAuthor(dispatch);
+        setIsLoading(false);
+    }
     useEffect(() => {
-        dispatch(fetchSlider);
-        dispatch(fetchTopTrending);
-        dispatch(fetchNewRelease);
-        dispatch(fetchTopAuthor);
+        fetchHomeData();
     }, []);
 
     const nextPress = useSelector((state) => state.player.nextPress);
@@ -396,6 +403,7 @@ export default function Home(props) {
                 loadSound={loadSound}
                 switchToNewSound={switchToNewSound}
             />}
+            {isLoading && <Loading/>}
         </SafeAreaView>
     );
 }

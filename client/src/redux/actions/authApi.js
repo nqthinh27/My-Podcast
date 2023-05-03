@@ -15,10 +15,10 @@ export const loginUser = async (user, dispatch, navigate) => {
         dispatch(loginAccount());
         await setAccessToken(res.data.access_token);
         await setRefreshToken(res.data.refresh_token);
-        navigate('UIScreen');
+        return true;
     } catch (err) {
         dispatch(loginFailed());
-        alert('Email hoặc password không đúng. Vui lòng thử lại!')
+        return false;
     }
 }
 

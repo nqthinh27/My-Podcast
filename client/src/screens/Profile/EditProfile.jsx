@@ -7,32 +7,114 @@ import {
     SafeAreaView,
     Image,
     KeyboardAvoidingView,
-    ScrollView
+    ScrollView,
+    Alert
 } from "react-native";
+import GlobalStyles from "../../components/GlobalStyles";
 import { React, useState } from "react";
 import colors from "../../constants/colors";
 import Icon from "react-native-vector-icons/Entypo";
 import RNPickerSelect from "react-native-picker-select";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
+import * as ImagePicker from 'expo-image-picker';
+import firebase from '../../../config';
+import { patchDataAPI, putDataAPI } from "../../ultis/fetchData";
+import Loading from "../../components/Loading";
 
 function EditProfile(props) {
     // navigation
     const navigation = useNavigation();
-    // //function of navigate
     const { navigate, goBack } = navigation;
     const currentUser = useSelector((state) => state.auth.login.currentUser);
-
+    const access_token = useSelector((state) => state.auth.login.access_token);
     const [fullName, setFullName] = useState(currentUser.fullName);
     const [userName, setUserName] = useState(currentUser.userName);
     const [avatar, setAvatar] = useState(null);
-    const [gender, setGender] = useState("");
+    const [gender, setGender] = useState(currentUser.gender);
     const [mobile, setMobile] = useState(currentUser.mobile);
     const [address, setAddress] = useState(currentUser.address);
     const email = currentUser.email
+    const [isLoading, setIsLoading] = useState(false);
+    // handle change avatar
+    // const [image, setImage] = useState(null);
+    const [uploadingAvatar, setUploadingAvatar] = useState(false);
+    const pickAvatar = async () => {
+        try {
+            let result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.All,
+                allowsEditting: true,
+                aspect: [4, 3],
+                quality: 1,
+            });
+            const source = { uri: result.assets[0].uri };
+            setAvatar(source);
+        } catch (err) {
+            console.log(err);
+        }
+    }
+    const uploadAvatar = async (name) => {
+        setUploadingAvatar(true);
+        const response = await fetch(avatar.uri);
+        const blob = await response.blob();
+        const extension = avatar.uri.substring(avatar.uri.lastIndexOf('.') + 1);
+        const filename = name + '.' + extension;
+        // const filename = 'test.' + extension;
+        const ref = firebase.storage().ref().child('avatar/' + filename);
+        try {
+            const snapshot = await ref.put(blob);
+            const avatarUrl = await snapshot.ref.getDownloadURL();
+            setUploadingAvatar(false);
+            // alert('Photo uploaded!!');
+            // setAvatar(null);
+            return avatarUrl;
+        } catch (error) {
+            console.log(error);
+            setUploadingAvatar(false);
+            alert('Error uploading Photo');
+            return null;
+        }
+    }
+
+    const handleSave = async () => {
+        setIsLoading(true);
+        const avatarUrl = await uploadAvatar(userName);
+        const updateUser = {
+            avatar: avatarUrl,
+            fullName: fullName,
+            userName: userName,
+            gender: gender,
+            mobile: mobile,
+            address: address
+        };
+        const res = await putDataAPI(`user/${currentUser._id}`, updateUser, access_token);
+        setIsLoading(false);
+        if (res) Alert.alert(
+            'Thông báo',
+            'Cập nhật thành công',
+            [
+                {
+                    text: 'Đóng',
+                    onPress: () => { }
+                },
+            ],
+            { cancelable: false }
+        );
+        else Alert.alert(
+            'Thông báo',
+            'Đã có lỗi xảy ra, vui lòng thử lại!',
+            [
+                {
+                    text: 'Đóng',
+                    onPress: () => { }
+                },
+            ],
+            { cancelable: false }
+        );
+    }
 
     return (
-        <SafeAreaView style={styles.editprofile}>
+        <SafeAreaView style={[styles.editprofile, GlobalStyles.customSafeArea]}>
             <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
                 <ScrollView>
                     <View style={styles.editprofileHeader}>
@@ -51,22 +133,26 @@ function EditProfile(props) {
                         <TouchableOpacity
                             style={{
                                 backgroundColor: (userName != currentUser.userName
-                                    || fullName!= currentUser.fullName 
+                                    || fullName != currentUser.fullName
                                     // || gender != currentUser.gender
                                     || mobile != currentUser.mobile
-                                    || address != currentUser.address ) ? colors.primary : colors.grey,
+                                    || address != currentUser.address
+                                    || gender != currentUser.gender
+                                    || avatar != null) ? colors.primary : colors.grey,
                                 paddingVertical: 7,
                                 paddingHorizontal: 15,
                                 borderRadius: 7,
                                 justifyContent: "flex-end",
                             }}
-                            onPress={() => {
+                            onPress={
                                 (userName != currentUser.userName
-                                    || fullName!= currentUser.fullName 
+                                    || fullName != currentUser.fullName
                                     // || gender != currentUser.gender
                                     || mobile != currentUser.mobile
-                                    || address != currentUser.address ) ? alert('Sửa thành công') : null
-                            }}
+                                    || address != currentUser.address
+                                    || gender != currentUser.gender
+                                    || avatar != null) ? handleSave : null
+                            }
                         >
                             <Text
                                 style={{
@@ -89,7 +175,7 @@ function EditProfile(props) {
                                 alignSelf: "center",
                             }}
                             source={{
-                                uri: currentUser.avatar,
+                                uri: avatar ? avatar.uri : currentUser.avatar,
                             }}
                         />
 
@@ -102,7 +188,7 @@ function EditProfile(props) {
                                 padding: 10,
                                 borderRadius: 100,
                             }}
-                            onPress={() => console.log("Edit image")}
+                            onPress={pickAvatar}
                         >
                             <Text>Sửa</Text>
                         </TouchableOpacity>
@@ -165,7 +251,7 @@ function EditProfile(props) {
                                 Tên người dùng:
                             </Text>
                         </View>
-                        <View style={[styles.editprofileInput, {flexDirection: 'row', alignItems: 'center'}]}>
+                        <View style={[styles.editprofileInput, { flexDirection: 'row', alignItems: 'center' }]}>
                             <Text>@</Text>
                             <TextInput
                                 style={{
@@ -194,11 +280,15 @@ function EditProfile(props) {
                         </View>
                         <View style={styles.editprofileInput}>
                             <RNPickerSelect
-                                onValueChange={(value) => console.log(value)}
+                                placeholder={{
+                                    label: 'Chọn một mục...',
+                                    value: null,
+                                }}
+                                onValueChange={(value) => setGender(value)}
                                 items={[
-                                    { label: "Nam", value: "Nam" },
-                                    { label: "Nữ", value: "Nữ" },
-                                    { label: "Khác", value: "Khác" },
+                                    { label: "Nam", value: "male" },
+                                    { label: "Nữ", value: "female" },
+                                    { label: "Khác", value: "" },
                                 ]}
                                 style={{
                                     inputIOS: {
@@ -208,6 +298,7 @@ function EditProfile(props) {
                                         fontSize: 17,
                                     },
                                 }}
+                                value={gender}
                             />
                         </View>
 
@@ -259,9 +350,8 @@ function EditProfile(props) {
                         </View>
                     </View>
                 </ScrollView>
-
-
             </KeyboardAvoidingView>
+            {isLoading && <Loading />}
         </SafeAreaView>
     );
 }
