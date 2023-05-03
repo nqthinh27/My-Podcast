@@ -4,6 +4,7 @@ import Navigator from './src/navigate/Navigator';
 import { Provider } from 'react-redux';
 import store from './src/redux/store';
 import { StatusBar } from 'expo-status-bar';
+import Post2 from './src/screens/Post2';
 
 export default function App() {
   return (
@@ -11,5 +12,6 @@ export default function App() {
       <StatusBar style="dark"></StatusBar>
       <Navigator />
     </Provider>
+    // <Post2/>
   );
 }

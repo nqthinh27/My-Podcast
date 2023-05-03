@@ -1,7 +1,19 @@
 export const timeDiff = begin => {
     let startDate = new Date(begin);
     let currentDate = new Date();
-    let timeDiff = Math.abs(currentDate.getTime() - startDate.getTime());
+
+    // Lấy múi giờ hiện tại của Việt Nam
+    let VNTimeDiff = 7; // Ví dụ ở đây sử dụng múi giờ GMT+7 (Việt Nam)
+    let currentUTCHour = currentDate.getUTCHours();
+    let currentHour = (currentUTCHour + VNTimeDiff) % 24;
+
+    // Điều chỉnh thời gian hiện tại theo múi giờ của Việt Nam
+    let localCurrentDate = new Date();
+    localCurrentDate.setUTCHours(currentHour);
+    localCurrentDate.setUTCMinutes(currentDate.getUTCMinutes());
+    localCurrentDate.setUTCSeconds(currentDate.getUTCSeconds());
+
+    let timeDiff = Math.abs(localCurrentDate.getTime() - startDate.getTime());
     if (timeDiff < 3600000) {
         let minutesDiff = Math.floor(timeDiff / (1000 * 60));
         return (minutesDiff + " phút trước");
@@ -58,11 +70,11 @@ export const removeItem = (elements, userId) => {
 export const formatNum = (number) => {
     if (number < 1000) return number;
     if (number < 1000000) {
-        const kNumber = (number/1000).toFixed(1);
+        const kNumber = (number / 1000).toFixed(1);
         return kNumber.endsWith('.0') ? kNumber.slice(0, -2) + 'k' : kNumber + 'k';
     }
     else {
-        const mNumber = (number/1000000).toFixed(1);
+        const mNumber = (number / 1000000).toFixed(1);
         return mNumber.endsWith('.0') ? mNumber.slice(0, -2) + 'M' : mNumber + 'm';
     }
 }

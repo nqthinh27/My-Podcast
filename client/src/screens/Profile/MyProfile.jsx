@@ -9,18 +9,16 @@ import {
     SafeAreaView,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import colors from "../constants/colors";
+// import colors from "../../constants/colors";
 import Icon from "react-native-vector-icons/Entypo";
-import GlobalStyles from "../components/GlobalStyles";
-import ProfileInfo from "../components/ProfileInfo";
-import { MyPopularData } from "../../dummyData";
-import ProfilePodcast from "../components/ProfilePodcast";
-import { MyNewReLeaseData } from "../../dummyData";
+import GlobalStyles from "../../components/GlobalStyles";
+import ProfileInfo from "../../components/ProfileInfo";
+import ProfilePodcast from "../../components/ProfilePodcast";
 import { useDispatch, useSelector } from "react-redux";
-import { device } from "../constants/device";
+// import { device } from "../constants/device";
 import { useNavigation } from "@react-navigation/native";
-import { getMyFollowers, getMyFollowing, getMyUserAllPosts, getMyUserTopPosts } from "../redux/actions/authApi";
-import { formatNum, timeDiff } from "../ultis/helper";
+import { getMyFollowers, getMyFollowing, getMyUserAllPosts, getMyUserTopPosts } from "../../redux/actions/authApi";
+import { formatNum, timeDiff } from "../../ultis/helper";
 
 function MyProfile(props) {
     const dispatch = useDispatch();
@@ -71,7 +69,7 @@ function MyProfile(props) {
                         posts={posts}
                     ></ProfileInfo>
 
-                    <TouchableOpacity style={styles.myprofileEditProfile}>
+                    <TouchableOpacity style={styles.myprofileEditProfile} onPress={()=>navigate('EditProfile')}>
                         <Text style={styles.myprofileButtonEditprofile}>
                             Chỉnh sửa trang cá nhân
                         </Text>

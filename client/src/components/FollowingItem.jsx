@@ -18,37 +18,25 @@ export default function FollowingItem(props) {
 
     const dispatch = useDispatch;
     const navigation = useNavigation();
-    const [heart, setHeart] = useState(IsLiked);
+    const [like, setLike] = useState(IsLiked);
     const [currentLikes, setCurrentLikes] = useState(props.likes)
     const [value, setValue] = useState(0);
     const [play, setPlay] = useState(true);
     const [volume, setVolume] = useState(true);
-    const [mounted, setMounted] = useState(false);
     const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
     const otherUser = useSelector((state) => state.profile.otherUser.data);
     const currentUser = useSelector((state) => state.auth.login.currentUser);
     const access_token = useSelector((state) => state.auth.login.access_token);
-    const handleLike = () => {
-        if (!heart) {
+    const handleLike = async () => {
+        if (!like) {
+            await postDataAPI(`like/${props._id}/add`, null, access_token);
             setCurrentLikes(prevLikes => prevLikes + 1);
         } else {
+            await patchDataAPI(`like/${props._id}/remove`, null, access_token);
             setCurrentLikes(prevLikes => prevLikes - 1);
         }
+        setLike(!like)
     }
-    const handleHeart = () => {
-        setHeart(!heart);
-    }
-    useEffect(() => {
-        if (mounted) {
-            if (!heart) {
-                patchDataAPI(`like/${props._id}/remove`, null, access_token);
-            } else {
-                postDataAPI(`like/${props._id}/add`, null, access_token);
-            }
-        } else {
-            setMounted(true);
-        }
-    }, [heart])
 
     const handlePlay = () => {
         setPlay(!play);
@@ -57,7 +45,7 @@ export default function FollowingItem(props) {
     const handleVolume = () => {
         setVolume(!volume);
     };
-    
+
     return (
         <View>
             <View style={lightFollowingItem.followingItemWrapper}>
@@ -100,14 +88,14 @@ export default function FollowingItem(props) {
                 <View style={lightFollowingItem.followingItemInteract}>
                     <View style={lightFollowingItem.interact}>
                         <View style={[lightFollowingItem.interactIcon, { alignItems: "center" }]}>
-                            <TouchableOpacity onPress={handleHeart}>
-                                {(heart) && <Icon
+                            <TouchableOpacity onPress={handleLike}>
+                                {(!like) && <Icon
                                     name="cards-heart-outline"
                                     style={{ opacity: 1 }}
                                     size={23}
                                     color={isDarkTheme ? colors.white : colors.black}
                                 />}
-                                {(heart) && <Icon
+                                {(like) && <Icon
                                     name="cards-heart"
                                     style={{ opacity: 1 }}
                                     size={23}
