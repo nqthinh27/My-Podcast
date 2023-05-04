@@ -19,25 +19,28 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 import { getMyFollowers, getMyFollowing, getMyUserAllPosts, getMyUserTopPosts } from "../../redux/actions/authApi";
 import { formatNum, timeDiff } from "../../ultis/helper";
+import Loading from "../../components/Loading";
 
 function MyProfile(props) {
     const dispatch = useDispatch();
     const { navigate, goBack } = useNavigation();
-    const user = useSelector((state) => state.auth.login.currentUser);
-    const { fullName, userName, avatar, moblie, address, story, website, posts, following, followers } = user;
+    const currentUser = useSelector((state) => state.auth.login.currentUser);
+    const { fullName, userName, avatar, moblie, address, story, website, posts, following, followers } = currentUser;
+    const [isLoading, setIsLoading] = useState(false);
+    const fetchData = async () => {
+        setIsLoading(true);
+        await getMyUserTopPosts(currentUser._id, dispatch);
+        await getMyUserAllPosts(currentUser._id, dispatch);
+        setIsLoading(false);
+    }
     useEffect(() => {
-        if (user) {
-            getMyUserTopPosts(user._id, dispatch);
-            getMyUserAllPosts(user._id, dispatch);
-            getMyFollowers(user._id, dispatch);
-            getMyFollowing(user._id, dispatch);
+        if (currentUser) {
+            fetchData();
         }
     }, [dispatch])
     const topPosts = useSelector((state) => state.auth.topPosts.data);
     const allPosts = useSelector((state) => state.auth.allPosts.data);
-    const followingList = useSelector((state) => state.auth.following.data);
-    const followersList = useSelector((state) => state.auth.followers.data);
-
+    
     return (
         <SafeAreaView style={[styles.myprofile, GlobalStyles.customSafeArea]}>
             <ScrollView>
@@ -67,6 +70,7 @@ function MyProfile(props) {
                         followers={followers}
                         following={following}
                         posts={posts}
+                        id={currentUser._id}
                     ></ProfileInfo>
 
                     <TouchableOpacity style={styles.myprofileEditProfile} onPress={()=>navigate('EditProfile')}>
@@ -140,6 +144,7 @@ function MyProfile(props) {
                     </View>
                 </View>
             </ScrollView>
+            {isLoading && <Loading/>}
         </SafeAreaView>
     );
 }

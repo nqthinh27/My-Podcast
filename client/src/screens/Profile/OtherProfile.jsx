@@ -90,6 +90,7 @@ export default function OtherProfile() {
                         followers={currenFollowers}
                         following={otherUser.following}
                         posts={otherUser.posts}
+                        id={otherUser._id}
                     />
 
                     <View style={styles.otherprofileFollowButton}>
