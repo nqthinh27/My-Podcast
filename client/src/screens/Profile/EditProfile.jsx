@@ -21,11 +21,13 @@ import * as ImagePicker from 'expo-image-picker';
 import firebase from '../../../config';
 import { patchDataAPI, putDataAPI } from "../../ultis/fetchData";
 import Loading from "../../components/Loading";
+import { updateMyProfile } from "../../redux/actions/authApi";
 
 function EditProfile(props) {
     // navigation
     const navigation = useNavigation();
     const { navigate, goBack } = navigation;
+    const dispatch = useDispatch();
     const currentUser = useSelector((state) => state.auth.login.currentUser);
     const access_token = useSelector((state) => state.auth.login.access_token);
     const [fullName, setFullName] = useState(currentUser.fullName);
@@ -78,8 +80,11 @@ function EditProfile(props) {
 
     const handleSave = async () => {
         setIsLoading(true);
-        const avatarUrl = await uploadAvatar(userName);
-        const updateUser = {
+        var avatarUrl = currentUser.avatar;
+        console.log(avatar);
+        console.log(avatarUrl);
+        if (avatar) avatarUrl = await uploadAvatar(userName);
+        const newUser = {
             avatar: avatarUrl,
             fullName: fullName,
             userName: userName,
@@ -87,7 +92,9 @@ function EditProfile(props) {
             mobile: mobile,
             address: address
         };
-        const res = await putDataAPI(`user/${currentUser._id}`, updateUser, access_token);
+        const res = await putDataAPI(`user/${currentUser._id}`, newUser, access_token);
+        setAvatar(null)
+        updateMyProfile(newUser, dispatch);
         setIsLoading(false);
         if (res) Alert.alert(
             'Thông báo',

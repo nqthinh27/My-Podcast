@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getAllPostsFailed, getAllPostsStart, getAllPostsSuccess, getFollowersFailed, getFollowersStart, getFollowersSuccess, getFollowingFailed, getFollowingStart, getFollowingSuccess, getTopPostsFailed, getTopPostsStart, getTopPostsSuccess, loginFailed, loginStart, loginSuccess, logoutStart, logoutSuccess, setUserAccessToken } from '../slices/authSlice';
+import { getAllPostsFailed, getAllPostsStart, getAllPostsSuccess, getFollowersFailed, getFollowersStart, getFollowersSuccess, getFollowingFailed, getFollowingStart, getFollowingSuccess, getTopPostsFailed, getTopPostsStart, getTopPostsSuccess, loginFailed, loginStart, loginSuccess, logoutStart, logoutSuccess, setUserAccessToken, updateStart, updateUser } from '../slices/authSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState } from "react";
 import { BASE_URL } from '../../ultis/config';
@@ -117,6 +117,6 @@ export const getMyFollowing = async (userId, dispatch) => {
     }
 }
 
-// AsyncStorage.getItem('access_token').then((value) => {
-//     console.log(value);
-// });
+export const updateMyProfile = (newUser, dispatch) => {
+    dispatch(updateUser(newUser));
+}
