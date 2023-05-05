@@ -21,7 +21,7 @@ export const lightHeader = StyleSheet.create({
         alignItems: "center",
         backgroundColor: colors.white,
         borderWidth: 0.7,
-        borderColor: colors.black,
+        borderColor: colors.grey,
         borderRadius: 32,
         marginHorizontal: 8,
     },

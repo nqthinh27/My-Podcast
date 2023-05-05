@@ -6,6 +6,15 @@ const Tags = require('../models/tagModel')
 
 const postController = {
     getAllTag: async (req, res) => {
+        try {
+            const tagObj = await Tags.find();
+            const tag = tagObj.map(item => {
+                return item.tag;
+            })
+            res.json(tag);
+        } catch (err) {
+            return res.status(500).json({ msg: err.message })
+        }
     },
     // FOR USER
     // { tag: "Tâm sự", postIds: [] },

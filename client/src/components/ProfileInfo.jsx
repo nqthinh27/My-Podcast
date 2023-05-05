@@ -1,9 +1,18 @@
 import React from "react";
 import { StyleSheet, Text, View, Image } from "react-native";
 import { device } from "../constants/device";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { useNavigation } from "@react-navigation/native";
 function ProfileInfo(props) {
-    const { avt, name, followers, following, posts } = props;
-
+    const navigation = useNavigation();
+    const { avt, name, followers, following, posts, id } = props;
+    const navigateFollowersDetail = () => {
+        navigation.navigate('FollowDetail', { type: 'followers', id: id })
+    }
+    const navigateFollowingDetail = () => {
+        navigation.navigate('FollowDetail', { type: 'following', id: id })
+    }
+    console.log(id);
     return (
         <View style={styles.profileinfo}>
             <Image
@@ -21,8 +30,8 @@ function ProfileInfo(props) {
                 <View style={styles.profileinfoName}>
                     <Text
                         style={{
-                            fontWeight: "bold",
-                            fontSize: 19,
+                            fontWeight: "600",
+                            fontSize: 20,
                         }}
                     >
                         {name}
@@ -34,14 +43,20 @@ function ProfileInfo(props) {
                         <Text style={styles.textmedium}>{posts}</Text>
                         <Text style={styles.textsmall}>Bài đăng</Text>
                     </View>
-                    <View style={styles.profileinfoFollowerView}>
+                    <TouchableOpacity
+                        style={styles.profileinfoFollowerView}
+                        onPress={navigateFollowersDetail}
+                        activeOpacity={1}>
                         <Text style={styles.textmedium}>{followers}</Text>
                         <Text style={styles.textsmall}>Người theo dõi</Text>
-                    </View>
-                    <View style={styles.profileinfoFollowingView}>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.profileinfoFollowingView}
+                        onPress={navigateFollowingDetail}
+                        activeOpacity={1}>
                         <Text style={styles.textmedium}>{following}</Text>
                         <Text style={styles.textsmall}>Đang theo dõi</Text>
-                    </View>
+                    </TouchableOpacity>
                 </View>
             </View>
         </View>
@@ -50,29 +65,29 @@ function ProfileInfo(props) {
 
 const styles = StyleSheet.create({
     profileinfo: {
-        width: '100%',
+        width: device.width,
         flexDirection: "row",
-        marginHorizontal: 16
+        marginHorizontal: 16,
     },
     profileinfoAvt: {
 
     },
     profileinfoUser: {
-        marginLeft: 10
+        marginLeft: 13,
+        alignSelf: 'center',
     },
 
     profileinfoName: {
         flex: 1,
         justifyContent: "center",
         alignItems: "flex-start",
-        marginTop: 10,
     },
     profileinfoDetails: {
         flex: 1,
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: "space-around",
-        width: 270
+        justifyContent: 'space-between',
+        width: device.width - 16 * 2 - 13 - 75
     },
 
     textsmall: {
@@ -80,7 +95,8 @@ const styles = StyleSheet.create({
     },
 
     textmedium: {
-        fontSize: 15,
+        fontSize: 17,
+        fontWeight: 500
     },
 
     profileinfoPostView: {

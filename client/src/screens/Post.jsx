@@ -11,40 +11,102 @@ import {
     Alert,
     Modal,
     Pressable,
+    TouchableWithoutFeedback,
+    Keyboard
 } from "react-native";
 import GlobalStyles from "../components/GlobalStyles";
 import { useEffect, useState, useRef } from "react";
 import { warningLogin } from "../ultis/warning";
 import { useSelector } from "react-redux";
-import { useIsFocused } from "@react-navigation/native";
-import Icon from "react-native-vector-icons/Entypo";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
+import EntypoIcon from "react-native-vector-icons/Entypo";
+import FeatherIcon from "react-native-vector-icons/Feather";
 import colors from "../constants/colors";
-import DocumentPicker from "react-native-document-picker";
-import { ImagePicker } from "react-native-image-picker";
-import { xorBy } from "lodash";
 import CheckboxGroup from "react-native-checkbox-group";
+import * as DocumentPicker from 'expo-document-picker';
+import * as ImagePicker from 'expo-image-picker';
+import firebase from '../../config';
+import { getPublicDataAPI, postDataAPI } from "../ultis/fetchData";
+import { device } from "../constants/device";
+import Loading from "../components/Loading";
 
 function Post(props) {
-    const { navigation, route } = props;
-    const { navigate, goback } = navigation;
+    const navigation = useNavigation();
     const currentUser = useSelector((state) => state.auth.login.currentUser);
+    const access_token = useSelector((state) => state.auth.login.access_token);
     const isFocused = useIsFocused();
     useEffect(() => {
         if (isFocused && !currentUser) {
-            // navigate("MyProfile");
-            warningLogin(navigate, 'Login', 'Home');
+            warningLogin(navigation.navigate, 'Login', 'Home');
         }
     }, [isFocused]);
-    const [modalVisible, setModalVisible] = useState(false);
+    // handle title, content
+    const [title, setTitle] = useState('');
+    const [content, setContent] = useState('');
+    const [keyboardOpen, setKeyboardOpen] = useState(false);
+    const handlePressOutside = () => {
+        if (keyboardOpen) {
+            Keyboard.dismiss();
+            setKeyboardOpen(false);
+        }
+    };
 
-    const [song, setSong] = useState(null);
+    const handleKeyboardDidShow = () => {
+        setKeyboardOpen(true);
+    };
 
-    const handleSongPicker = async () => {
+    const handleKeyboardDidHide = () => {
+        console.log('hide');
+        setKeyboardOpen(false);
+    };
+    // Handle pick image
+    const [image, setImage] = useState(null);
+    const [uploadingImage, setUploadingImage] = useState(false);
+    const pickImage = async () => {
         try {
-            const result = await DocumentPicker.pick({
-                type: [DocumentPicker.types.audio],
+            let result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.All,
+                allowsEditting: true,
+                aspect: [4, 3],
+                quality: 1,
             });
-            setSong(result);
+            const source = { uri: result.assets[0].uri };
+            setImage(source);
+        } catch (err) {
+            console.log(err);
+        }
+    }
+    const uploadImage = async (name) => {
+        setUploadingImage(true);
+        const response = await fetch(image.uri);
+        const blob = await response.blob();
+        const extension = image.uri.substring(image.uri.lastIndexOf('.') + 1);
+        const filename = name + '.' + extension;
+        // const filename = 'test.' + extension;
+        const ref = firebase.storage().ref().child('post/image/' + filename);
+        try {
+            const snapshot = await ref.put(blob);
+            const imageUrl = await snapshot.ref.getDownloadURL();
+            setUploadingImage(false);
+            // alert('Photo uploaded!!');
+            setImage(null);
+            return imageUrl;
+        } catch (error) {
+            console.log(error);
+            setUploadingImage(false);
+            alert('Error uploading Photo');
+            return null;
+        }
+    }
+    // handle pick audio
+    const [audio, setAudio] = useState(null);
+    const [uploadingAudio, setUploadingAudio] = useState(false);
+    const pickAudio = async () => {
+        try {
+            const result = await DocumentPicker.getDocumentAsync({
+                type: 'audio/*',
+            });
+            setAudio(result);
         } catch (err) {
             if (DocumentPicker.isCancel(err)) {
                 // User cancelled the picker
@@ -54,17 +116,60 @@ function Post(props) {
             }
         }
     };
-
-    const [imageUri, setImageUri] = useState(null);
-
-    const chooseImageHandler = () => {
-        ImagePicker.launchImageLibrary({ mediaType: "photo" }, (response) => {
-            if (response.uri) {
-                setImageUri(response.uri);
-            }
-        });
+    const uploadAudio = async (name) => {
+        if (!audio) return;
+        setUploadingAudio(true);
+        const response = await fetch(audio.uri);
+        const blob = await response.blob();
+        const extension = audio.uri.substring(audio.uri.lastIndexOf('.') + 1);
+        const filename = name + '.' + extension;
+        const ref = firebase.storage().ref().child('post/audio/' + filename);
+        try {
+            const snapshot = await ref.put(blob);
+            const audioUrl = await snapshot.ref.getDownloadURL();
+            setUploadingAudio(false);
+            // alert('Audio uploaded!');
+            setAudio(null);
+            return audioUrl;
+        } catch (error) {
+            console.log(error);
+            setUploadingAudio(false);
+            alert('Error uploading audio');
+            return null;
+        }
     };
-    
+    // handle topic
+    const [modalVisible, setModalVisible] = useState(false);
+    const [topicSelected, setTopicSelected] = useState([]);
+    const [topics, setTopics] = useState([]);
+    const fetchTopicsData = async () => {
+        const topicsResponse = await getPublicDataAPI('tag');
+        setTopics(topicsResponse.data);
+    }
+    useEffect(() => {
+        fetchTopicsData();
+    }, []);
+    // handle post
+    const [isLoading, setIsLoading] = useState(false);
+    const handlePost = async () => {
+        setIsLoading(true);
+        const imageUrl = await uploadImage(title);
+        const audioUrl = await uploadAudio(title);
+        const newPost = {
+            title: title,
+            content: content,
+            image: imageUrl,
+            audio: audioUrl,
+            tag: topicSelected,
+        };
+        setTopicSelected([]);
+        setContent('');
+        setTitle('');
+        const post = await postDataAPI('post', newPost, access_token);
+        setIsLoading(false);
+        alert('Đăng bài thành công');
+    }
+
     if (!currentUser) return (<View></View>);
 
     return (
@@ -73,7 +178,7 @@ function Post(props) {
                 <View style={styles.postAvatar}>
                     <Image
                         source={{
-                            uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/avatar.jpg?alt=media&token=fc074eb8-e67f-4235-8230-160cae1557b5",
+                            uri: currentUser.avatar,
                         }}
                         style={{
                             width: 44,
@@ -84,53 +189,84 @@ function Post(props) {
                     <View style={{ flexDirection: 'column' }}>
                         <Text
                             style={{
-                                fontSize: 15,
-                                marginLeft: 7,
-                                fontWeight: "bold",
+                                fontSize: 17,
+                                marginLeft: 8,
+                                fontWeight: "600",
                             }}
                         >
                             {currentUser.fullName}
                         </Text>
-                        <Text>@{currentUser.userName}</Text>
+                        <Text style={{
+                            fontSize: 15,
+                            marginLeft: 8,
+                        }}>@{currentUser.userName}</Text>
                     </View>
                 </View>
 
-                <TouchableOpacity
-                    style={styles.postHeaderSuccess}
-                    onPress={() => {
-                        // navigate("SuccessP");
-                    }}
-                >
-                    <Text
-                        style={{
-                            fontSize: 16,
-                            color: "#fff",
-                            fontWeight: "500",
-                        }}
+                {(title.length === 0 || topicSelected.length === 0 || image == null || audio == null) ?
+                    <View
+                        style={[styles.postHeaderFailed]}
                     >
-                        Chia sẻ
-                    </Text>
-                </TouchableOpacity>
+                        <Text
+                            style={{
+                                fontSize: 16,
+                                color: "#fff",
+                                fontWeight: "500",
+                            }}
+                        >
+                            Chia sẻ
+                        </Text>
+                    </View>
+                    :
+                    <TouchableOpacity
+                        style={styles.postHeaderSuccess}
+                        onPress={handlePost}
+                    >
+                        <Text
+                            style={{
+                                fontSize: 16,
+                                color: "#fff",
+                                fontWeight: "500",
+                            }}
+                        >
+                            Chia sẻ
+                        </Text>
+                    </TouchableOpacity>}
             </View>
 
             <View style={styles.postContainer}>
                 <View style={styles.postTextQuestion}>
                     <TextInput
-                        style={{ fontSize: 16, marginBottom: 10 }}
+                        value={title}
+                        onChangeText={setTitle}
+                        style={{ fontSize: 18, marginBottom: 10, fontWeight: '500', marginRight: 32 }}
                         placeholder="Nhập tiêu đề của Podcast"
-                        secureTextEntry={false}
-                        autoCapitalize="words"
-                    // placeholderTextColor="black"
                     ></TextInput>
 
-                    <TextInput
-                        style={{ fontSize: 15 }}
-                        placeholder="Nhập dòng trạng thái đăng tải"
-                    ></TextInput>
+                    <TouchableOpacity style={{ flex: 1 }} onPress={handlePressOutside} activeOpacity={1.0}>
+                        <View>
+                            <TextInput
+                                value={content}
+                                onChangeText={setContent}
+                                style={{
+                                    fontSize: 16,
+                                    minHeight: 100,
+                                    marginRight: 32
+                                }}
+                                placeholder="Nhập dòng trạng thái đăng tải"
+                                // autoCapitalize="words"
+                                multiline={true}
+                                onFocus={handleKeyboardDidShow}
+                            />
+                        </View>
+                    </TouchableOpacity>
                 </View>
 
                 <View style={styles.postFooter}>
-                    <View style={styles.postIngredient}>
+                    <TouchableOpacity
+                        style={styles.postIngredient}
+                        onPress={() => setModalVisible(true)}
+                    >
                         <View
                             style={{
                                 // flex: 1.5,
@@ -166,54 +302,38 @@ function Post(props) {
                                 }}
                             >
                                 <View style={styles.modalView}>
-                                    <CheckboxGroup
-                                        callback={(selected) => {
-                                            console.log(selected);
-                                        }}
-                                        iconColor={"#00a2dd"}
-                                        iconSize={30}
-                                        checkedIcon="ios-checkbox-outline"
-                                        uncheckedIcon="ios-square-outline"
-                                        checkboxes={[
-                                            {
-                                                label: "Chủ đề 1 nè", // label for checkbox item
-                                                value: "Chủ đề 1 nè", // selected value for item, if selected, what value should be sent?
-                                                selected: true, // if the item is selected by default or not.
-                                            },
-                                            {
-                                                label: "Chủ đề 2 nè",
-                                                value: "Chủ đề 2 nè",
-                                            },
-                                            {
-                                                label: "Chủ đề 3 nè",
-                                                value: "Chủ đề 3 nè",
-                                            },
-                                            {
-                                                label: "Chủ đề 4 nè",
-                                                value: "Chủ đề 4 nè",
-                                            },
-                                            {
-                                                label: "Chủ đề 5 nè",
-                                                value: "Chủ đề 5 nè",
-                                            },
-                                            {
-                                                label: "Chủ đề 6 nè",
-                                                value: "Chủ đề 6 nè",
-                                            },
-                                        ]}
-                                        labelStyle={{
-                                            color: "#333",
-                                            alignSelf: "center",
-                                            fontSize: 16,
-                                        }}
-                                        rowStyle={{
-                                            flexDirection: "row",
-                                        }}
-                                        rowDirection={"column"}
-                                    />
+                                    <ScrollView>
+                                        <CheckboxGroup
+                                            callback={(selected) => {
+                                                setTopicSelected(selected);
+                                            }}
+                                            iconColor={colors.primary}
+                                            iconSize={30}
+                                            checkedIcon="ios-checkbox-outline"
+                                            uncheckedIcon="ios-square-outline"
+                                            checkboxes={
+                                                topics.map(item => {
+                                                    return {
+                                                        label: item, // label for checkbox item
+                                                        value: item, // selected value for item, if selected, what value should be sent?
+                                                        selected: topicSelected.includes(item),
+                                                    }
+                                                })
+                                            }
+                                            labelStyle={{
+                                                color: "#333",
+                                                alignSelf: "center",
+                                                fontSize: 16,
+                                            }}
+                                            rowStyle={{
+                                                flexDirection: "row",
+                                            }}
+                                            rowDirection={"column"}
+                                        />
+                                    </ScrollView>
                                     <Pressable
                                         style={{
-                                            backgroundColor: "#2196F3",
+                                            backgroundColor: colors.primary,
                                             borderRadius: 20,
                                             padding: 10,
                                             elevation: 2,
@@ -228,38 +348,40 @@ function Post(props) {
                                     </Pressable>
                                 </View>
                             </Modal>
-                            <Pressable
+                            {/* <Pressable
                                 style={{
                                     borderRadius: 20,
                                     // padding: 10,
                                     elevation: 2,
                                 }}
-                                onPress={() => setModalVisible(true)}
-                            >
-                                <Text
-                                    style={{
-                                        color: "black",
-                                        // fontWeight: "bold",
-                                        // textAlign: "center",
-                                        fontSize: 16,
-                                    }}
-                                >
-                                    Thêm chủ đề Podcast
-                                </Text>
-                            </Pressable>
-                            <Icon
-                                name={"chevron-small-right"}
-                                size={19}
-                                onPress={() => {
-                                    navigate("UIScreen");
+                            > */}
+                            <Text
+                                style={{
+                                    color: "black",
+                                    // fontWeight: "bold",
+                                    // textAlign: "center",
+                                    fontSize: 16,
                                 }}
-                            />
+                            >
+                                Thêm chủ đề Podcast
+                            </Text>
+                            {/* </Pressable> */}
+
+                            {topicSelected.length === 0 ?
+                                <EntypoIcon
+                                    name={"chevron-small-right"}
+                                    size={19} />
+                                :
+                                <FeatherIcon name="check" size={19} color={colors.primary} />}
                         </View>
 
 
-                    </View>
+                    </TouchableOpacity>
 
-                    <View style={styles.postIngredient}>
+                    <TouchableOpacity
+                        style={styles.postIngredient}
+                        onPress={pickImage}
+                    >
                         <View
                             style={{
                                 // flex: 1.5,
@@ -285,28 +407,22 @@ function Post(props) {
                                 marginRight: 16,
                             }}
                         >
-                            <TouchableOpacity onPress={chooseImageHandler}>
-                                <Text style={{ color: "black", fontSize: 16 }}>
-                                    Chọn ảnh
-                                </Text>
-                            </TouchableOpacity>
-                            {imageUri && (
-                                <Image
-                                    source={{ uri: imageUri }}
-                                    style={{ width: 200, height: 200 }}
-                                />
-                            )}
-                            <Icon
-                                name={"chevron-small-right"}
-                                size={19}
-                                onPress={() => {
-                                    navigate("UIScreen");
-                                }}
-                            />
+                            <Text style={{ color: "black", fontSize: 16 }}>
+                                Thêm ảnh mô tả
+                            </Text>
+                            {image == null ?
+                                <EntypoIcon
+                                    name={"chevron-small-right"}
+                                    size={19} />
+                                :
+                                <FeatherIcon name="check" size={19} color={colors.primary} />}
                         </View>
-                    </View>
+                    </TouchableOpacity>
 
-                    <View style={styles.postIngredient}>
+                    <TouchableOpacity
+                        style={styles.postIngredient}
+                        onPress={pickAudio}
+                    >
                         <View
                             style={{
                                 // flex: 1.5,
@@ -332,23 +448,21 @@ function Post(props) {
                                 marginRight: 16,
                             }}
                         >
-                            {song && <Text>{song.name}</Text>}
-                            <TouchableOpacity onPress={handleSongPicker}>
-                                <Text style={{ color: "black", fontSize: 16 }}>
-                                    Chọn tập tin
-                                </Text>
-                            </TouchableOpacity>
-                            <Icon
-                                name={"chevron-small-right"}
-                                size={19}
-                                onPress={() => {
-                                    navigate("UIScreen");
-                                }}
-                            />
+                            {/* {song && <Text>{song.name}</Text>} */}
+                            <Text style={{ color: "black", fontSize: 16 }}>
+                                Thêm tập tin âm thanh
+                            </Text>
+                            {audio == null ?
+                                <EntypoIcon
+                                    name={"chevron-small-right"}
+                                    size={19} />
+                                :
+                                <FeatherIcon name="check" size={19} color={colors.primary} />}
                         </View>
-                    </View>
+                    </TouchableOpacity>
                 </View>
             </View>
+            {isLoading && < Loading/>}
         </SafeAreaView>
     );
 }
@@ -365,6 +479,13 @@ const styles = StyleSheet.create({
 
     postHeaderSuccess: {
         backgroundColor: colors.primary,
+        padding: 7,
+        borderRadius: 7,
+        justifyContent: "flex-end",
+    },
+
+    postHeaderFailed: {
+        backgroundColor: "#ccc",
         padding: 7,
         borderRadius: 7,
         justifyContent: "flex-end",
@@ -434,7 +555,8 @@ const styles = StyleSheet.create({
 
     modalView: {
         flex: 1,
-        margin: 20,
+        marginVertical: 50,
+        marginHorizontal: 20,
         backgroundColor: "white",
         borderRadius: 20,
         padding: 16,

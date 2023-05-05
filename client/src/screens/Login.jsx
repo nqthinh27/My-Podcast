@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import GlobalStyles from "../components/GlobalStyles";
 import { loginUser } from '../redux/actions/authApi';
 import { useNavigation } from "@react-navigation/native";
+import Loading from "../components/Loading";
 
 const colors = {
     primary: '#FFA800',
@@ -26,17 +27,20 @@ function Login(props) {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [err, setErr] = useState(false);
+    const [isLoading, setInLoading] = useState(false);
     const [loginwGoogle, setloginwGoogle] = useState(false);
     const [loginwFb, setloginwFb] = useState(false);
 
-    const handleLogin = () => {
-        setErr(!err);
+    const handleLogin = async () => {
+        setInLoading(true)
         newUser = {
             email: email,
             password: password
         }
-        loginUser(newUser, dispatch, navigate);
+        const login = await loginUser(newUser, dispatch);
+        setInLoading(false)
+        if (login) goBack();  
+        else alert('Email hoặc password không đúng. Vui lòng thử lại!');
     }
 
     return (
@@ -120,6 +124,7 @@ function Login(props) {
                     <Text style={styles.loginButtonGoogle}> Đăng ký tài khoản</Text>
                 </TouchableOpacity>
             </View>
+            {isLoading && <Loading/>}
         </SafeAreaView>
     );
 }

@@ -18,11 +18,9 @@ import { useSelector, useDispatch } from "react-redux";
 import { isTokenExpired } from "../ultis/auth";
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { stayLogged } from "../redux/actions/authApi";
-import { warningLogin } from "../ultis/warning";
 import { avatarDefault } from "../constants/app";
 import { searchPosts, searchUsers } from "../redux/actions/searchApi";
 import PodcastListItem from "./PodcastListItem";
-import { RecommendData } from "../../dummyData";
 import UserListItem from "./UserListItem";
 import { ScrollView } from "react-native-gesture-handler";
 import { getOtherUser } from "../redux/actions/profileApi";
@@ -64,8 +62,6 @@ export default function HeaderUI(props) {
     const handleLogin = () => {
         if (currentUser) {
             navigate("MyProfile");
-            // Làm trang profile xong thì bỏ cái alert đi nhé
-            // alert('Bạn đã đăng nhập!');
         } else {
             navigate("Login");
         }
@@ -128,7 +124,7 @@ export default function HeaderUI(props) {
                     />
                 </View>
                 <Modal visible={searchValue} >
-                    <View>
+                    <SafeAreaView style={GlobalStyles.customSafeArea}>
                         <View style={lightHeader.header}>
                             <Icon style={lightHeader.back}
                                 name={'chevron-left'}
@@ -148,7 +144,7 @@ export default function HeaderUI(props) {
                                     // ref={textInputRef}
                                     value={keyword}
                                     placeholder="Tìm kiếm podcast, tác giả, album,..."
-                                    onChangeText={(text) => setKeyword(text)}
+                                    onChangeText={setKeyword}
                                     // underlineColorAndroid="transparent"
                                     onSubmitEditing={handleSearchResult}
                                 />
@@ -184,7 +180,6 @@ export default function HeaderUI(props) {
                                             onPress={() => {
                                                 setSearchValue(false);
                                                 getOtherUser(item._id, dispatch, navigate, currentUser)
-                                                // console.log(currentUser);
                                             }}
                                             key={index}
                                         >
@@ -218,7 +213,7 @@ export default function HeaderUI(props) {
                                 })}
                             </View>
                         </ScrollView>
-                    </View>
+                    </SafeAreaView>
                 </Modal>
                 <TouchableOpacity>
                     <Image

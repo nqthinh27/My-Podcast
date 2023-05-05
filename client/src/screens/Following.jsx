@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, TouchableOpacity, View, SafeAreaView } from "react-native";
+import { ScrollView, StyleSheet, TouchableOpacity, View, SafeAreaView, Image, Text } from "react-native";
 import { HeaderUI, FollowingItem } from "../components";
 import { lightfollowStyles, darkfollowStyles, lightFollowingItem } from "../constants/darkLight/themeFollowing"
 import { useDispatch, useSelector } from "react-redux";
@@ -24,30 +24,37 @@ export default function Following(props) {
     const access_token = useSelector((state) => state.auth.login.access_token);
     const dispatch = useDispatch();
     const isFocused = useIsFocused();
-    // const isPlaying = useSelector((state) => state.player.isPlaying);
     const soundFollower = useSelector((state) => state.following.soundFollower);
     const soundCurrent = useSelector((state) => state.following.soundCurrent);
-    // const [soundCurrent, setSoundCurrent] = useState(null);
-    // const [playStatus, setPlayStatus] = useState({});
     const playStatus = useSelector((state) => state.following.playStatus);
-    // const position = useSelector((state) => state.following.position);
-    // const duration = useSelector((state) => state.following.duration);
     const [duration, setDuration] = useState(null);
-    // const [position, setPosition] = useState(null);
     const [playbackState, setPlaybackState] = useState({});
     const [isPlaying, setIsPlaying] = useState({});
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         if (isFocused && !currentUser) {
             warningLogin(navigate, 'Login', 'Home');
         }
     }, [isFocused]);
+    const fetchNewFeedAfterLogin = async () => {
+        setIsLoading(true);
+        if (currentUser) {
+            await getLikedListData(dispatch, access_token);
+            await getNewFeed(dispatch, access_token);
+        }
+        setIsLoading(false);
+    }
     useEffect(() => {
-        if (currentUser) getLikedListData(dispatch, access_token);
-        getNewFeed(dispatch, access_token);
+        fetchNewFeedAfterLogin();
     }, [currentUser]);
+    const fetchNewFeedIfLogged = async () => {
+        setIsLoading(true);
+        if (currentUser) await getLikedListData(dispatch, access_token);
+        setIsLoading(false);
+    }
     useEffect(() => {
-        if (currentUser) getLikedListData(dispatch, access_token);
+        fetchNewFeedIfLogged();
     }, []);
 
     const [sound, setSound] = useState(null);
@@ -146,7 +153,6 @@ export default function Following(props) {
     }, [playStatus[soundCurrentRef.current]]);
 
 
-    // const user = null;
     useEffect(() => {
         // Nếu đã có âm thanh đang phát, giải phóng nó
         if (soundRef.current && soundRef.current._loaded) {
@@ -279,20 +285,6 @@ export default function Following(props) {
                                                 <View style={followStyles.progressLevelDur}>
                                                     <Text style={followStyles.progressLabelText}>{formatTime(playbackState[item._id]?.position)} / {formatTime(playbackState[item._id]?.duration)} </Text>
                                                 </View>
-                                                {/* <TouchableOpacity onPress={handleVolume}>
-                                                    {(volume) && <Icon
-                                                        name="volume-high"
-                                                        style={{ opacity: 1 }}
-                                                        size={25}
-                                                        color={isDarkTheme ? colors.white : colors.black}
-                                                    />}
-                                                    {(!volume) && <Icon
-                                                        name="volume-off"
-                                                        style={{ opacity: 1 }}
-                                                        size={25}
-                                                        color={isDarkTheme ? colors.white : colors.black}
-                                                    />}
-                                                </TouchableOpacity> */}
                                                 <View>
                                                     <Slider
                                                         style={followStyles.progressBar}
@@ -323,29 +315,20 @@ export default function Following(props) {
 
 const followStyles = StyleSheet.create({
     contentWrapper: {
-        // width: 315,
-        // marginRight: 16,
         marginTop: 10,
-        // borderRadius: 20,
         backgroundColor: "#EDEDED",
     },
 
     contentSection: {
         marginVertical: 6,
-        // marginHorizontal: 12,
     },
 
     progressLevelDur: {
-        // marginTop: 15,
-        // flexDirection: 'row',
-        // alignItems: 'center',
-        // justifyContent: 'space-between',
         margin: 5,
     },
 
     progressLabelText: {
         fontSize: 12,
-        // alignSelf: 'center',
     },
 
     interactPlayTime: {
@@ -353,7 +336,6 @@ const followStyles = StyleSheet.create({
         marginHorizontal: 16,
         flexDirection: 'row',
         alignItems: 'center',
-        // justifyContent: 'space-between',
     },
 
     progressBar: {

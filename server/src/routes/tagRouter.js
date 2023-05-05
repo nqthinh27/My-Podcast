@@ -4,6 +4,6 @@ const authMiddleware = require('../middleware/authMiddleware');
 
 router.post('/', tagController.createTag);
 
-router.get('/', tagController.getPostByTag);
+router.get('/', tagController.getAllTag);
 
 module.exports = router;
