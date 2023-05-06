@@ -19,7 +19,7 @@ import GlobalStyles from "../../components/GlobalStyles";
 import { Audio } from "expo-av";
 import Comment from "../../components/Comment";
 import { useDispatch, useSelector } from "react-redux";
-import { setCurrentSound, setDuration, setIsMiniPlayer, setIsPlayScreen, setIsPlayer, setIsPlaying, setNextPress, setPlayValue, setPosition } from "../../redux/slices/playerSlice";
+import { setCurrentSound, setDuration, setIsMiniPlayer, setIsPlayScreen, setIsPlayer, setIsPlaying, setNextPress, setPlayValue, setPosition, setPrevPress, setSound } from "../../redux/slices/playerSlice";
 import { useNavigation } from "@react-navigation/native";
 import { getPost } from "../../redux/actions/postApi";
 
@@ -31,7 +31,8 @@ export default function PlayerScreen(props) {
     // //function of navigate
     // const { navigate, goback } = navigation;
 
-    const { sound, loadSound, switchToNewSound } = props;
+    // const { loadSound, switchToNewSound } = props;
+    const sound = useSelector((state) => state.player.sound);
 
 
     const [showCommentScrollView, setShowCommentScrollView] = useState(true);
@@ -62,11 +63,49 @@ export default function PlayerScreen(props) {
     const isPlayer = useSelector((state) => state.player.isPlayer);
     const currentSound = useSelector((state) => state.player.currentSound);
     const isPlayScreen = useSelector((state) => state.player.isPlayScreen);
-    
+
 
     const nextPress = useSelector((state) => state.player.nextPress);
+    const prevPress = useSelector((state) => state.player.prevPress);
 
     const dataSound = useSelector((state) => state.player.dataSound);
+    async function loadSound(uri) {
+        try {
+            // if (sound) {
+            //     await sound.unloadAsync();
+            //     sound = null;
+            //   }
+            await Audio.setAudioModeAsync({
+                staysActiveInBackground: true,
+                interruptionModeAndroid: 1,
+                shouldDuckAndroid: true,
+                interruptionModeIOS: 1,
+                playsInSilentModeIOS: true,
+            });
+            const { sound: song } = await Audio.Sound.createAsync(
+                { uri },
+                {
+                    shouldPlay: true,
+                    isLooping: true,
+                    positionMillis: position,
+                },
+                onPlaybackStatusUpdate
+            );
+            dispatch(setSound(song));
+            // dispatch(setPlayValue(true));
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    function onPlaybackStatusUpdate(status) {
+        if (status.isPlaying) {
+            dispatch(setPosition(status.positionMillis));
+            dispatch(setDuration(status.durationMillis));
+        }
+    }
+
+
 
     // console.log("sound: ", detailPost.audio);
     const onBackPress = () => {
@@ -99,32 +138,16 @@ export default function PlayerScreen(props) {
         // sound.unloadAsync();
         dispatch(setIsMiniPlayer(true));
         dispatch(setIsPlayScreen(false));
-        // dispatch(setIsPlaying(true));
+        dispatch(setIsPlaying(true));
         // if (!playValue) dispatch(setIsPlayer(true));
         // navigation.navigate('UIScreen');
     }
 
-    // useEffect(() => {
-    //     if (soundUrl === null) {
-    //         async function loadInitialData() {
-    //             dispatch(setCurrentTrack(songs[0]));
-    //             dispatch(setSoundUrl(songs[0].url));
-    //         }
-    //         console.log("nhập bài hát");
-    //         loadInitialData();
-    //     }
-    // }, []);
     useEffect(() => {
         if (!isMiniPlayer && isPlayScreen) {
             playSound();
             console.log("ductu");
-        } 
-        // return () => {
-        //     if (sound != null) {
-        //         sound.unloadAsync();
-        //         // setSound(null);
-        //     }
-        // };
+        }
     }, [detailPost.audio]);
 
     useEffect(() => {
@@ -136,16 +159,6 @@ export default function PlayerScreen(props) {
             }
         }
     }, [playValue]);
-
-    // const unloadSound = async () => {
-    //     try {
-    //         await sound.unloadAsync();
-    //         // setSound(null);
-    //         setIsPlaying(false);
-    //     } catch (error) {
-    //         console.log('Error unloading audio: ', error);
-    //     }
-    // };
 
     const playSound = async () => {
         if (detailPost !== null && !isMiniPlayer) {
@@ -193,19 +206,19 @@ export default function PlayerScreen(props) {
         return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     };
 
-    // async function switchToNewSound(uri) {
-    //     try {
-    //         if (sound != null) {
-    //             await sound.unloadAsync();
-    //         }
-    //         if (uri) {
-    //             await getPost(uri, dispatch);
-
-    //         }
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // }
+    async function switchToNewSound(uri) {
+        try {
+            if (sound != null) {
+                await sound.unloadAsync();
+                dispatch(setSound(null));
+            }
+            if (uri) {
+                await getPost(uri, dispatch);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     function onNextPress() {
         // console.log("currentNext: " + currentTrack.id)
@@ -233,14 +246,15 @@ export default function PlayerScreen(props) {
     }
 
     // useEffect(() => {
-    //     if (sound != null) {
-    //         if (playValue) {
-    //             resumeSound(detailPost.audio);
-    //         } else {
-    //             pauseSound();
-    //         }
+    //     if (nextPress) {
+    //         onNextPress();
+    //         dispatch(setNextPress(false));
     //     }
-    // }, [playValue]);
+    //     if (prevPress) {
+    //         onPrevPress();
+    //         dispatch(setPrevPress(false));
+    //     }
+    // }, [currentSound]);
 
     async function stopSound() {
         if (sound) {
@@ -557,23 +571,11 @@ export default function PlayerScreen(props) {
                             {/* xem thêm */}
                             {playValue ? (
                                 <TouchableOpacity onPress={() => pauseSound()}>
-                                    <Image
-                                        style={{ width: 30, height: 30 }}
-                                        source={{
-                                            uri:
-                                                "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fpause.png?alt=media&token=ae6b74e7-ac06-40a8-a1a7-09d3380e2863",
-                                        }}
-                                    />
+                                    <Icon name="pause" size={30} />
                                 </TouchableOpacity>
                             ) : (
                                 <TouchableOpacity onPress={() => resumeSound(detailPost.audio)}>
-                                    <Image
-                                        style={{ width: 30, height: 30 }}
-                                        source={{
-                                            uri:
-                                                "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Tu%2FGroup%2066.png?alt=media&token=5fb2d1e2-48a0-43bb-9773-ce3424e388f4",
-                                        }}
-                                    />
+                                    <Icon name="play" size={30} />
                                 </TouchableOpacity>
                             )}
                             <View style={{ flexDirection: 'row' }}>

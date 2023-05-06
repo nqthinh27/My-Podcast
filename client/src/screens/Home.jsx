@@ -21,7 +21,7 @@ import TopTrendingItem from "../components/TopTrendingItem";
 // import { PlaylistData, RecommendData,  } from "../../dummyData";
 import { lightHome, darkHome, lightTrendingHome, darkTrendingHome } from "../constants/darkLight/themeHome"
 import MiniPlayer from "./Player/MiniPlayer";
-import { setIsMiniPlayer, setCurrentSound, setPosition, setDuration, setIsPlayScreen, setDataSound } from "../redux/slices/playerSlice";
+import { setIsMiniPlayer, setCurrentSound, setPosition, setDuration, setIsPlayScreen, setDataSound, setSound } from "../redux/slices/playerSlice";
 import { useNavigation } from "@react-navigation/native";
 import { fetchNewRelease, fetchSlider, fetchTopAuthor, fetchTopTrending } from "../redux/actions/homeApi";
 import TopAuthorItem from "../components/TopAuThorItem";
@@ -51,67 +51,17 @@ export default function Home(props) {
     const scrollViewRef = useRef(null);
     const screenWidth = Math.min(325);
     const position = useSelector((state) => state.player.position);
+    const sound = useSelector((state) => state.player.sound);
 
 
-    const [sound, setSound] = useState(null);
 
-    async function loadSound(uri) {
-        try {
-            // if (sound) {
-            //     await sound.unloadAsync();
-            //     sound = null;
-            //   }
-            await Audio.setAudioModeAsync({
-                staysActiveInBackground: true,
-                interruptionModeAndroid: 1,
-                shouldDuckAndroid: true,
-                interruptionModeIOS: 1,
-                playsInSilentModeIOS: true,
-            });
-            const { sound } = await Audio.Sound.createAsync(
-                { uri },
-                {
-                    shouldPlay: true,
-                    isLooping: true,
-                    positionMillis: position,
-                },
-                onPlaybackStatusUpdate
-            );
-            setSound(sound);
-            // dispatch(setPlayValue(true));
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
-    function onPlaybackStatusUpdate(status) {
-        if (status.isPlaying) {
-            dispatch(setPosition(status.positionMillis));
-            dispatch(setDuration(status.durationMillis));
-        }
-    }
-
-
-    async function switchToNewSound(uri) {
-        try {
-            if (sound != null) {
-                await sound.unloadAsync();
-            }
-            if (uri) {
-                await getPost(uri, dispatch);
-
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    }
 
     useEffect(() => {
         dispatch(fetchSlider);
         dispatch(fetchTopTrending);
         dispatch(fetchNewRelease);
         dispatch(fetchTopAuthor);
-    }, []);
+    }, [SliderData, TopTrendingData, NewReleaseData, TopAuThorData]);
 
     const nextPress = useSelector((state) => state.player.nextPress);
 
@@ -137,13 +87,24 @@ export default function Home(props) {
     //     }
     //   }, [dispatch, navigation]);
 
+    useEffect(() => {
+        if (SliderData && SliderData.length > 0 && !isPlayScreen) {
+            const intervalId = setInterval(() => {
+                const nextIndex = (currentIndex + 1) % SliderData.length;
+                flatListRef.current.scrollToIndex({ index: nextIndex });
+                setCurrentIndex(nextIndex);
+            }, 2000);
+
+            return () => clearInterval(intervalId);
+        }
+    }, [currentIndex, isPlayScreen]);
+
     return (
         <SafeAreaView style={[GlobalStyles.customSafeArea, { backgroundColor: isDarkTheme ? darkHome.wrapper.backgroundColor : lightHome.wrapper.backgroundColor }]}>
             {/* <NavigationEvents onDidFocus={()=> this.setState({})} /> */}
             {!isPlayScreen ? <ScrollView>
                 {/* ==========================================HEADER========================================== */}
                 <HeaderUI />
-
                 {/* ==========================================Slide bar========================================== */}
                 <FlatList
                     ref={flatListRef}
@@ -156,7 +117,7 @@ export default function Home(props) {
                                 onPress={async () => {
                                     if (item.index != currentSound && sound != null) {
                                         // await sound.unloadAsync();
-                                        setSound(null)
+                                        dispatch(setSound(null));
                                         dispatch(setPosition(0));
                                         dispatch(setDuration(0));
                                         // dispatch(setIsPlaying(true));
@@ -209,7 +170,7 @@ export default function Home(props) {
                                             onPress={async () => {
                                                 if (item.index != currentSound) {
                                                     // await sound.unloadAsync();
-                                                    setSound(null)
+                                                    dispatch(setSound(null));
                                                     dispatch(setPosition(0));
                                                     dispatch(setDuration(0));
                                                     dispatch(setIsMiniPlayer(false));
@@ -244,7 +205,7 @@ export default function Home(props) {
                                             onPress={async () => {
                                                 if (item.index != currentSound) {
                                                     // await sound.unloadAsync();
-                                                    setSound(null)
+                                                    dispatch(setSound(null));
                                                     dispatch(setPosition(0));
                                                     dispatch(setDuration(0));
                                                     dispatch(setIsMiniPlayer(false));
@@ -279,7 +240,7 @@ export default function Home(props) {
                                             onPress={async () => {
                                                 if (item.index != currentSound) {
                                                     // await sound.unloadAsync();
-                                                    setSound(null)
+                                                    dispatch(setSound(null));
                                                     dispatch(setPosition(0));
                                                     dispatch(setDuration(0));
                                                     dispatch(setIsMiniPlayer(false));
@@ -329,7 +290,7 @@ export default function Home(props) {
                                 onPress={async () => {
                                     if (item.index != currentSound) {
                                         // await sound.unloadAsync();
-                                        setSound(null)
+                                        dispatch(setSound(null));
                                         dispatch(setPosition(0));
                                         dispatch(setDuration(0));
                                         dispatch(setIsMiniPlayer(false));
@@ -382,42 +343,9 @@ export default function Home(props) {
                 </ScrollView>
             </ScrollView>
                 :
-                <PlayerScreen
-                    sound={sound}
-                    loadSound={loadSound}
-                    switchToNewSound={switchToNewSound}>
-                </PlayerScreen>
+                <PlayerScreen></PlayerScreen>
             }
-            {isMiniPlayer && <MiniPlayer
-                // avtUrl={detailPost.image}
-                // tittle={detailPost.title}
-                // author={detailPost.owner.fullName}
-                sound={sound}
-                loadSound={loadSound}
-                switchToNewSound={switchToNewSound}
-            />}
+            {isMiniPlayer && <MiniPlayer />}
         </SafeAreaView>
     );
 }
-
-const trendingStyles = StyleSheet.create({
-    wrapper: {
-        // margin: 11,
-        marginLeft: 16,
-        flex: 1,
-        // height: 225,
-        // alignItems: 'center'
-    },
-    contentWrapper: {
-        width: 'auto',
-        marginRight: 16,
-        borderRadius: 10,
-        backgroundColor: "#EDEDED",
-        // flexDirection: 'row',
-        // flexWrap: 'wrap',
-    },
-    contentSection: {
-        marginVertical: 6,
-        marginHorizontal: 12
-    },
-});

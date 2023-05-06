@@ -16,6 +16,8 @@ import { useIsFocused } from "@react-navigation/native";
 import HeaderUI from "../../components/HeaderUI";
 import { getRecommendData } from "../../redux/actions/libraryApi";
 import GlobalStyles from "../../components/GlobalStyles";
+import MiniPlayer from "../Player/MiniPlayer";
+import PlayerScreen from "../Player/PlayerScreen";
 
 function Library(props) {
     const { navigation, route } = props;
@@ -23,6 +25,9 @@ function Library(props) {
     const dispatch = useDispatch();
     const user = useSelector((state) => state.auth.login.currentUser);
     const isFocused = useIsFocused();
+    const isMiniPlayer = useSelector((state) => state.player.isMiniPlayer);
+    const isPlayScreen = useSelector((state) => state.player.isPlayScreen);
+
     // useEffect(() => {
     //     if (isFocused && !user) {
     //         warningLogin(navigate, "Login", "Home");
@@ -46,7 +51,7 @@ function Library(props) {
 
     return (
         <SafeAreaView style={[GlobalStyles.customSafeArea, { backgroundColor: '#fff' }]}>
-            <ScrollView>
+            {!isPlayScreen ? <ScrollView>
                 <HeaderUI />
                 <View style={styles.libraryContainer}>
                     <Text
@@ -171,6 +176,22 @@ function Library(props) {
                     </View>
                 </View>
             </ScrollView>
+                :
+                <PlayerScreen
+                    // sound={sound}
+                    // loadSound={loadSound}
+                    // switchToNewSound={switchToNewSound}
+                    >
+                </PlayerScreen>
+            }
+            {isMiniPlayer && <MiniPlayer
+            // avtUrl={detailPost.image}
+            // tittle={detailPost.title}
+            // author={detailPost.owner.fullName}
+            // sound={sound}
+            // loadSound={loadSound}
+            // switchToNewSound={switchToNewSound}
+            />}
         </SafeAreaView>
     );
 }

@@ -20,6 +20,8 @@ import { toggleDarkMode } from "../redux/slices/themeSlice";
 import colors from "../constants/colors";
 import { Button } from "react-native-paper";
 import { avatarDefault } from "../constants/app";
+import MiniPlayer from "./Player/MiniPlayer";
+import PlayerScreen from "./Player/PlayerScreen";
 
 export default function Setting(props) {
     //navigation
@@ -28,6 +30,8 @@ export default function Setting(props) {
     const { navigate, goback } = navigation;
 
     const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
+    const isPlayScreen = useSelector((state) => state.player.isPlayScreen);
+    const isMiniPlayer = useSelector((state) => state.player.isMiniPlayer);
     const user = useSelector((state) => state.auth.login.currentUser);
     const dispatch = useDispatch();
     let avatar = avatarDefault;
@@ -51,7 +55,7 @@ export default function Setting(props) {
     }
     return (
         <SafeAreaView style={[{ backgroundColor: isDarkTheme ? darkSetting.dark.backgroundColor : lightSetting.light.backgroundColor }, GlobalStyles.customSafeArea]}>
-            <ScrollView>
+            {!isPlayScreen ? <ScrollView>
                 {(!user) &&
                     <View style={lightSetting.accountSuccess}>
                         <Image
@@ -189,7 +193,7 @@ export default function Setting(props) {
                         <Switch
                             trackColor={{ false: "#767577", true: "#2196F3" }}
                             thumbColor={"#fff"}
-                            style={{marginRight: 5}}
+                            style={{ marginRight: 5 }}
                             onValueChange={() => dispatch(toggleDarkMode())}
                             value={isDarkTheme}
                         />
@@ -275,6 +279,10 @@ export default function Setting(props) {
                         />
                     </TouchableOpacity></View>
             </ScrollView>
+                :
+                <PlayerScreen></PlayerScreen>
+            }
+            {isMiniPlayer && <MiniPlayer />}
         </SafeAreaView >
 
     )
