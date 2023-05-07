@@ -28,8 +28,8 @@ function PodcastListItem({ item }) {
             >
                 <Text
                     style={{
-                        fontWeight: "600",
-                        fontSize: 16,
+                        fontWeight: "500",
+                        fontSize: 18,
                     }}
                     numberOfLines={1}
                 >
@@ -37,7 +37,7 @@ function PodcastListItem({ item }) {
                 </Text>
 
                 <Text style={{}}>{item.owner.fullName}</Text>
-                <Text style={{}}>{formatNum(item.views)} Lượt nghe | {formatNum(item.likes)} Lượt yêu thích</Text>
+                <Text style={{color: '#414141'}}>{formatNum(item.views)} Lượt nghe | {formatNum(item.likes)} Lượt yêu thích</Text>
             </View>
         </View>
     );

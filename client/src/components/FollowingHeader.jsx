@@ -7,16 +7,25 @@ import colors from '../constants/colors'
 import { lightFollowingItem, darkFollowingItem } from '../constants/darkLight/themeFollowing'
 import { useNavigation } from '@react-navigation/native';
 import { timeDiff2 } from '../ultis/helper';
+import { patchDataAPI, postDataAPI } from '../ultis/fetchData';
 
 export default function FollowingHeader(props) {
     const dispatch = useDispatch;
     const navigation = useNavigation();
-    const [favourite, setFavourite] = useState(true);
+    const userSavedList = useSelector((state) => state.library.savedList.data);
+    const isSaved = userSavedList.some(item => item._id == props._id);
+    const [save, setSave] = useState(isSaved);
     const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
     const otherUser = useSelector((state) => state.profile.otherUser.data);
     const currentUser = useSelector((state) => state.auth.login.currentUser);
-    const handleFavourite = () => {
-        setFavourite(!favourite);
+    const access_token = useSelector((state) => state.auth.login.access_token);
+    const handleSave = async () => {
+        if (!save) {
+            await postDataAPI(`save/${props._id}/add`, null, access_token);
+        } else {
+            await patchDataAPI(`save/${props._id}/remove`, null, access_token);
+        }
+        setSave(!save)
     }
 
     return (
@@ -32,15 +41,15 @@ export default function FollowingHeader(props) {
                     <Text style={isDarkTheme ? darkFollowingItem.date : lightFollowingItem.date} numberOfLines={1}>{timeDiff2(props.createdAt)}</Text>
                 </View>
             </View>
-            <TouchableOpacity style={{ flex: 1 }}></TouchableOpacity>
-            <TouchableOpacity onPress={handleFavourite}>
-                {(!favourite) && <Icon
+            <View style={{ flex: 1 }}></View>
+            <TouchableOpacity onPress={handleSave}>
+                {(!save) && <Icon
                     name="bookmark-outline"
                     style={{ opacity: 1 }}
                     size={28}
                     color={isDarkTheme ? colors.white : colors.black}
                 />}
-                {(favourite) && <Icon
+                {(save) && <Icon
                     name="bookmark"
                     style={{ opacity: 1 }}
                     size={28}
