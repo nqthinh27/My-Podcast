@@ -9,19 +9,17 @@ import {
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
-import { getLikedListData, getRecommendData } from "../../redux/actions/libraryApi";
 import GlobalStyles from "../../components/GlobalStyles";
 import UserListItem from "../../components/UserListItem";
-import { getMyFollowers, getMyFollowing } from "../../redux/actions/authApi";
 import Loading from "../../components/Loading";
 import { getPublicDataAPI } from "../../ultis/fetchData";
-import { BASE_URL } from "../../ultis/config";
-import axios from "axios";
+import { getOtherUser } from "../../redux/actions/profileApi";
 
 function FollowDetail({ route }) {
     const { id, type } = route.params;
     const title = (type == 'followers') ? 'Người theo dõi' : 'Đang theo dõi';
     const navigation = useNavigation();
+    const { navigate, goback } = navigation;
     const dispatch = useDispatch();
     const currentUser = useSelector((state) => state.auth.login.currentUser);
     const access_token = useSelector((state) => state.auth.login.access_token);
@@ -31,14 +29,13 @@ function FollowDetail({ route }) {
         setIsLoading(true);
         var res = null;
         if (type == 'followers') {
-            res = await axios.get(`${BASE_URL}/follow/${id}/followers`);
+            res = await getPublicDataAPI(`follow/${id}/followers`)
             setData(res.data.follower);
         } else {
-            res = await axios.get(`${BASE_URL}/follow/${id}/following`);
+            res = await getPublicDataAPI(`follow/${id}/following`)
             setData(res.data.following);
         }
         setIsLoading(false);
-        return res ? res.data.follower : null;
     }
     useEffect(() => {
         fetchDataUsers();
@@ -61,7 +58,7 @@ function FollowDetail({ route }) {
                     return (
                         <TouchableOpacity
                             onPress={() => {
-                                alert("navigate");
+                                getOtherUser(item._id, dispatch, navigate, currentUser)
                             }}
                             key={index}
                         >

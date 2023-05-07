@@ -27,8 +27,8 @@ function UserListItem({ item }) {
             >
                 <Text
                     style={{
-                        fontWeight: "600",
-                        fontSize: 16,
+                        fontWeight: "500",
+                        fontSize: 18,
                     }}
                     numberOfLines={1}
                 >
@@ -36,7 +36,7 @@ function UserListItem({ item }) {
                 </Text>
 
                 <Text style={{}}>@{item.userName}</Text>
-                <Text style={{}}>{item.followersLength} Người theo dõi | {item.postsLength} Bài đăng</Text>
+                <Text style={{color: '#414141'}}>{item.followersLength} Người theo dõi | {item.postsLength} Bài đăng</Text>
             </View>
         </View>
     );
