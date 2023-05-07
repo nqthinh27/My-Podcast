@@ -10,7 +10,7 @@ import colors from "../constants/colors";
 import { getNewFeed } from "../redux/actions/followingApi";
 import { getOtherUser } from "../redux/actions/profileApi";
 import FollowingHeader from "../components/FollowingHeader";
-import { getLikedListData } from "../redux/actions/libraryApi";
+import { getLikedListData, getSavedListData } from "../redux/actions/libraryApi";
 import { setIsPlaying } from "../redux/slices/playerSlice";
 import { device } from "../constants/device";
 import { setDuration, setPlayStatus, setPosition, setSoundCurrent, setSoundFollower } from "../redux/slices/followingSlice";
@@ -41,6 +41,7 @@ export default function Following(props) {
         setIsLoading(true);
         if (currentUser) {
             await getLikedListData(dispatch, access_token);
+            await getSavedListData(dispatch, access_token);
             await getNewFeed(dispatch, access_token);
         }
         setIsLoading(false);
@@ -48,14 +49,14 @@ export default function Following(props) {
     useEffect(() => {
         fetchNewFeedAfterLogin();
     }, [currentUser]);
-    const fetchNewFeedIfLogged = async () => {
-        setIsLoading(true);
-        if (currentUser) await getLikedListData(dispatch, access_token);
-        setIsLoading(false);
-    }
-    useEffect(() => {
-        fetchNewFeedIfLogged();
-    }, []);
+    // const fetchNewFeedIfLogged = async () => {
+    //     setIsLoading(true);
+    //     if (currentUser) await getLikedListData(dispatch, access_token);
+    //     setIsLoading(false);
+    // }
+    // useEffect(() => {
+    //     fetchNewFeedIfLogged();
+    // }, []);
 
     const [sound, setSound] = useState(null);
 
@@ -236,7 +237,9 @@ export default function Following(props) {
                                             }}
 
                                         >
-                                            <FollowingHeader avatar={item.avatar}
+                                            <FollowingHeader
+                                                _id={item._id}
+                                                avatar={item.avatar}
                                                 owner={item.owner}
                                                 createdAt={item.createdAt}
                                             />

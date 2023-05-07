@@ -23,16 +23,18 @@ function Library(props) {
     const dispatch = useDispatch();
     const user = useSelector((state) => state.auth.login.currentUser);
     const isFocused = useIsFocused();
-    // useEffect(() => {
-    //     if (isFocused && !user) {
-    //         warningLogin(navigate, "Login", "Home");
-    //     }
-    // }, [isFocused]);
-
+    useEffect(() => {
+        if (isFocused && !user) {
+            warningLogin(navigate, "Login", "Home");
+        }
+    }, [isFocused]);
     const recommendData = useSelector((state) => state.library.recommend.data);
     useEffect(() => {
         getRecommendData(dispatch)
     }, []);
+    const handleNavigateLib = (title) => {
+        navigate('LibraryDetail', { title: title })
+    }
 
     const [clickSong, setClickSong] = useState(false);
 
@@ -70,7 +72,8 @@ function Library(props) {
                         <TouchableOpacity
                             style={styles.libraryButton}
                             onPress={() => {
-                                warningLogin(navigate, "Login");
+                                if (!user) warningLogin(navigate, "Login");
+                                else handleNavigateLib('Đanh sách đã lưu');
                             }}
                         >
                             <Icon
@@ -86,7 +89,7 @@ function Library(props) {
                             style={styles.libraryButton}
                             onPress={() => {
                                 if (!user) warningLogin(navigate, "Login");
-                                else navigate('Liked');
+                                else handleNavigateLib('Danh sách đã thích');
                             }}
                         >
                             <Icon
@@ -112,7 +115,8 @@ function Library(props) {
                         <TouchableOpacity
                             style={styles.libraryButton}
                             onPress={() => {
-                                warningLogin(navigate, "Login");
+                                if (!user) warningLogin(navigate, "Login");
+                                else handleNavigateLib('Lịch sử nghe');
                             }}
                         >
                             <Icon
@@ -126,7 +130,7 @@ function Library(props) {
                             </Text>
                         </TouchableOpacity>
                         <View style={{ flex: 1 }}></View>
-                        <TouchableOpacity
+                        {/* <TouchableOpacity
                             style={styles.libraryButton}
                             onPress={() => {
                                 warningLogin(navigate, "Login");
@@ -141,7 +145,7 @@ function Library(props) {
                             <Text style={styles.libraryIconButton}>
                                 Playlist
                             </Text>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                     </View>
                 </View>
                 <View>
