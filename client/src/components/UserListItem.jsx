@@ -1,7 +1,7 @@
 import React from "react";
-import { Text, View, Image, StyleSheet } from "react-native";
+import { Text, View, Image } from "react-native";
 
-function PodcastListLibrary({ item }) {
+function UserListItem({ item }) {
     return (
         <View
             style={{
@@ -14,9 +14,9 @@ function PodcastListLibrary({ item }) {
                     width: 57,
                     height: 57,
                     marginRight: 10,
-                    borderRadius: 8,
+                    borderRadius: 57,
                 }}
-                source={{ uri: item.avtUrl }}
+                source={{ uri: item.avatar }}
             />
             <View
                 style={{
@@ -30,15 +30,16 @@ function PodcastListLibrary({ item }) {
                         fontWeight: "600",
                         fontSize: 16,
                     }}
-                    numberOfLines={2}
+                    numberOfLines={1}
                 >
-                    {item.title}
+                    {item.fullName}
                 </Text>
 
-                <Text style={{}}>{item.author}</Text>
+                <Text style={{}}>@{item.userName}</Text>
+                <Text style={{}}>{item.followersLength} Người theo dõi | {item.postsLength} Bài đăng</Text>
             </View>
         </View>
     );
 }
 
-export default PodcastListLibrary;
+export default UserListItem;

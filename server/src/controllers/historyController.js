@@ -4,7 +4,14 @@ const historyController = {
     getUserHistory: async (req, res) => {
         try {
             const userHistoryId = req.user.history.toString();
-            const userHistory = await Histories.findById(userHistoryId);
+            const userHistory = await Histories.findById(userHistoryId).populate({
+                path: 'history',
+                select: '_id title owner',
+                populate: {
+                    path: 'owner',
+                    select: 'userName fullName avatar'
+                }
+            });
             if (!userHistory) return res.status(400).json({ msg: 'User doest not exist or not logged in' });
             res.status(200).json(userHistory);
         } catch (err) {
@@ -23,9 +30,8 @@ const historyController = {
             if (userHistory.history.includes(req.params.id)) {
                 userHistory.history.pull(req.params.id);
             }
-
             userHistory.history.push({
-                $each: req.params.id,
+                $each: [req.params.id],
                 $position: 0,
             });
             await userHistory.save();

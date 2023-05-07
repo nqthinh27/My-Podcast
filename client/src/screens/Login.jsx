@@ -12,6 +12,8 @@ import EntypoIcon from "react-native-vector-icons/Entypo";
 import { useDispatch, useSelector } from "react-redux";
 import GlobalStyles from "../components/GlobalStyles";
 import { loginUser } from '../redux/actions/authApi';
+import { useNavigation } from "@react-navigation/native";
+import Loading from "../components/Loading";
 
 const colors = {
     primary: '#FFA800',
@@ -21,23 +23,24 @@ const colors = {
 function Login(props) {
     const dispatch = useDispatch();
     const loginSuccess = useSelector((state) => state.loginSuccess.isLoginSuccess)
-    const { navigation, route } = props;
-    // //function of navigate
-    const { navigate, goBack } = navigation;
+    const { navigate, goBack } = useNavigation();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [err, setErr] = useState(false);
+    const [isLoading, setInLoading] = useState(false);
     const [loginwGoogle, setloginwGoogle] = useState(false);
     const [loginwFb, setloginwFb] = useState(false);
 
-    const handleLogin = () => {
-        setErr(!err);
+    const handleLogin = async () => {
+        setInLoading(true)
         newUser = {
             email: email,
             password: password
         }
-        loginUser(newUser, dispatch, navigate);
+        const login = await loginUser(newUser, dispatch);
+        setInLoading(false)
+        if (login) goBack();  
+        else alert('Email hoặc password không đúng. Vui lòng thử lại!');
     }
 
     return (
@@ -87,7 +90,7 @@ function Login(props) {
                     <Text style={styles.loginButtonlogin}> Đăng nhập</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.loginButtonViewGoogle}>
+                {/* <TouchableOpacity style={styles.loginButtonViewGoogle}>
                     <EntypoIcon
                         name="google--with-circle"
                         size={35}
@@ -104,7 +107,7 @@ function Login(props) {
                         {" "}
                         Đăng nhập với Facebook
                     </Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
 
                 <View style={styles.loginViewNoEmail}>
                     <Text style={styles.loginTextNoEmail}>
@@ -121,6 +124,7 @@ function Login(props) {
                     <Text style={styles.loginButtonGoogle}> Đăng ký tài khoản</Text>
                 </TouchableOpacity>
             </View>
+            {isLoading && <Loading/>}
         </SafeAreaView>
     );
 }

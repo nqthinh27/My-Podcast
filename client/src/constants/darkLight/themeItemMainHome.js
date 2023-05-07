@@ -113,6 +113,7 @@ export const lightReleasedPodcast = StyleSheet.create({
         shadowOffset: { width: 0.5, height: 0.5 },
         shadowOpacity: 0.2,
         shadowRadius: 2,
+        // backgroundColor: '#000'
     }
 })
 

@@ -25,18 +25,21 @@ function Register(props) {
     const [repassword, setRepassword] = useState("");
 
     const handleRegister = async () => {
-        if (password === repassword) {
-            const newUser = {
-                fullName: fullName,
-                userName: userName,
-                email: email,
-                password: password
+        try {
+            if (password === repassword) {
+                const newUser = {
+                    fullName: fullName,
+                    userName: userName,
+                    email: email,
+                    password: password
+                }
+                res = await axios.post(`${BASE_URL}/auth/register`, newUser);
+                alert('Đăng ký thành công');
+            } else {
+                alert('Mật khẩu nhập lại không khớp');
             }
-            res = await axios.post(`${BASE_URL}/auth/register`, newUser);
-            alert('Đăng ký thành công');
-            console.log(res.data);
-        } else {
-            alert('Mật khẩu nhập lại không khớp');
+        } catch (err) {
+            alert('Không hợp lệ! Vui lòng kiểm tra lại thông tin');
         }
     }
     return (

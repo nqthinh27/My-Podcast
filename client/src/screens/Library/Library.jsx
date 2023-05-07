@@ -5,29 +5,34 @@ import {
     TouchableOpacity,
     ScrollView,
     StyleSheet,
+    SafeAreaView,
 } from "react-native";
 import Icon from "react-native-vector-icons/Fontisto";
-import colors from "../constants/colors";
-import PodcastListLibrary from "../components/PodcastListLibrary";
-import { SafeAreaView } from "react-navigation";
-import GlobalStyles from "../components/GlobalStyles";
-import { warningLogin } from "../ultis/warning";
-import { useSelector } from "react-redux";
+import colors from "../../constants/colors";
+import PodcastListItem from "../../components/PodcastListItem";
+import { warningLogin } from "../../ultis/warning";
+import { useDispatch, useSelector } from "react-redux";
 import { useIsFocused } from "@react-navigation/native";
-import { RecommendData } from "../../dummyData";
-import HeaderUI from "../components/HeaderUI";
+import HeaderUI from "../../components/HeaderUI";
+import { getRecommendData } from "../../redux/actions/libraryApi";
+import GlobalStyles from "../../components/GlobalStyles";
 
 function Library(props) {
     const { navigation, route } = props;
     const { navigate, goback } = navigation;
+    const dispatch = useDispatch();
     const user = useSelector((state) => state.auth.login.currentUser);
     const isFocused = useIsFocused();
+    // useEffect(() => {
+    //     if (isFocused && !user) {
+    //         warningLogin(navigate, "Login", "Home");
+    //     }
+    // }, [isFocused]);
+
+    const recommendData = useSelector((state) => state.library.recommend.data);
     useEffect(() => {
-        if (isFocused && !user) {
-            // navigate("MyProfile");
-            // warningLogin(navigate, "Login", "Home");
-        }
-    }, [isFocused]);
+        getRecommendData(dispatch)
+    }, []);
 
     const [clickSong, setClickSong] = useState(false);
 
@@ -40,14 +45,13 @@ function Library(props) {
     }
 
     return (
-        <SafeAreaView style={GlobalStyles.customSafeArea}>
+        <SafeAreaView style={[GlobalStyles.customSafeArea, { backgroundColor: '#fff' }]}>
             <ScrollView>
                 <HeaderUI />
-
                 <View style={styles.libraryContainer}>
                     <Text
                         style={{
-                            fontSize: 18,
+                            fontSize: 21,
                             fontWeight: "bold",
                             paddingLeft: 16,
                             marginTop: 8,
@@ -66,7 +70,7 @@ function Library(props) {
                         <TouchableOpacity
                             style={styles.libraryButton}
                             onPress={() => {
-                                navigate("Saved");
+                                warningLogin(navigate, "Login");
                             }}
                         >
                             <Icon
@@ -81,7 +85,8 @@ function Library(props) {
                         <TouchableOpacity
                             style={styles.libraryButton}
                             onPress={() => {
-                                navigate("Favourite");
+                                if (!user) warningLogin(navigate, "Login");
+                                else navigate('Liked');
                             }}
                         >
                             <Icon
@@ -107,7 +112,7 @@ function Library(props) {
                         <TouchableOpacity
                             style={styles.libraryButton}
                             onPress={() => {
-                                navigate("History");
+                                warningLogin(navigate, "Login");
                             }}
                         >
                             <Icon
@@ -124,7 +129,7 @@ function Library(props) {
                         <TouchableOpacity
                             style={styles.libraryButton}
                             onPress={() => {
-                                navigate("Playlist");
+                                warningLogin(navigate, "Login");
                             }}
                         >
                             <Icon
@@ -142,25 +147,24 @@ function Library(props) {
                 <View>
                     <Text
                         style={{
-                            fontSize: 18,
+                            fontSize: 21,
                             fontWeight: "bold",
                             marginLeft: 16,
                             marginVertical: 10,
                         }}
                     >
-                        Có thể bạn sẽ thích
+                        Mọi người cũng nghe
                     </Text>
 
                     <View style={{ marginHorizontal: 16 }}>
-                        {RecommendData.map((item, index) => {
+                        {recommendData.map((item, index) => {
                             return (
                                 <TouchableOpacity
                                     onPress={() => {
-                                        playerNavigate();
                                     }}
                                     key={index}
                                 >
-                                    <PodcastListLibrary item={item} />
+                                    <PodcastListItem item={item} />
                                 </TouchableOpacity>
                             );
                         })}
