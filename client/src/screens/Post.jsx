@@ -37,7 +37,6 @@ function Post(props) {
     const isFocused = useIsFocused();
     useEffect(() => {
         if (isFocused && !currentUser) {
-            // navigate("MyProfile");
             warningLogin(navigation.navigate, 'Login', 'Home');
         }
     }, [isFocused]);

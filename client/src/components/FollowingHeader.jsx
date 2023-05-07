@@ -1,7 +1,7 @@
 import Slider from '@react-native-community/slider';
 import React, { useEffect, useState } from 'react'
 import { View, Text, Image, TextInput, TouchableOpacity } from 'react-native'
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import Icon from "react-native-vector-icons/Ionicons";
 import { useDispatch, useSelector } from 'react-redux';
 import colors from '../constants/colors'
 import { lightFollowingItem, darkFollowingItem } from '../constants/darkLight/themeFollowing'
@@ -36,15 +36,14 @@ export default function FollowingHeader(props) {
             <TouchableOpacity onPress={handleFavourite}>
                 {(!favourite) && <Icon
                     name="bookmark-outline"
-                    borderWidth
                     style={{ opacity: 1 }}
-                    size={33}
+                    size={28}
                     color={isDarkTheme ? colors.white : colors.black}
                 />}
                 {(favourite) && <Icon
                     name="bookmark"
                     style={{ opacity: 1 }}
-                    size={33}
+                    size={28}
                     color={colors.primary}
                 />}
             </TouchableOpacity>

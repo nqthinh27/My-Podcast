@@ -54,6 +54,12 @@ const authSlice = createSlice({
             state.login.access_token = action.payload;
         },
 
+        // UPdate user
+        updateUser: (state, action) => {
+            const user = state.login.currentUser
+            state.login.currentUser = { ...user, ...action.payload };
+        },
+
         // LOGOUT
         logoutStart: (state) => {
             state.logout.isFetching = true;
@@ -70,17 +76,7 @@ const authSlice = createSlice({
             state.logout.error = true;
             console.log('Logout Failed!');
         },
-        // logoutSuccess: (state, action) => {
-        //     state.logout.isFetching = false;
-        //     state.login.currentUser = action.payload;
-        //     state.logout.error = false;
-        //     console.log('Logout Success!');
-        // },
-        // logoutFailed: (state) => {
-        //     state.logout.isFetching = true;
-        //     state.logout.error = true;
-        //     console.log('Logout Failed!');
-        // },
+
 
         // get all post
         getAllPostsStart: (state) => {
@@ -170,6 +166,7 @@ export const {
     getFollowingStart,
     getFollowingSuccess,
     getFollowingFailed,
+    updateUser,
 } = authSlice.actions;
 
 export default authSlice.reducer;
