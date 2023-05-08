@@ -6,7 +6,7 @@ const saveController = {
             const userSavedId = req.user.saved.toString();
             const userSaved = await Saves.findById(userSavedId).populate({
                 path: 'saved',
-                select: '_id title owner',
+                select: '_id title owner image likes views',
                 populate: {
                     path: 'owner',
                     select: 'userName fullName avatar'

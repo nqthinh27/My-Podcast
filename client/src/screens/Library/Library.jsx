@@ -38,10 +38,18 @@ function Library(props) {
     //     }
     // }, [isFocused]);
 
+    useEffect(() => {
+        if (isFocused && !user) {
+            warningLogin(navigate, "Login", "Home");
+        }
+    }, [isFocused]);
     const recommendData = useSelector((state) => state.library.recommend.data);
     useEffect(() => {
         getRecommendData(dispatch)
     }, []);
+    const handleNavigateLib = (title) => {
+        navigate('LibraryDetail', { title: title })
+    }
 
     const [clickSong, setClickSong] = useState(false);
 
@@ -76,7 +84,8 @@ function Library(props) {
                         <TouchableOpacity
                             style={styles.libraryButton}
                             onPress={() => {
-                                warningLogin(navigation, "Login");
+                                if (!user) warningLogin(navigate, "Login");
+                                else handleNavigateLib('Đanh sách đã lưu');
                             }}
                         >
                             <Icon
@@ -91,8 +100,8 @@ function Library(props) {
                         <TouchableOpacity
                             style={styles.libraryButton}
                             onPress={() => {
-                                if (!user) warningLogin(navigation, "Login");
-                                else navigation('Liked');
+                                if (!user) warningLogin(navigate, "Login");
+                                else handleNavigateLib('Danh sách đã thích');
                             }}
                         >
                             <Icon
@@ -118,7 +127,8 @@ function Library(props) {
                         <TouchableOpacity
                             style={styles.libraryButton}
                             onPress={() => {
-                                warningLogin(navigation, "Login");
+                                if (!user) warningLogin(navigate, "Login");
+                                else handleNavigateLib('Lịch sử nghe');
                             }}
                         >
                             <Icon
@@ -132,7 +142,7 @@ function Library(props) {
                             </Text>
                         </TouchableOpacity>
                         <View style={{ flex: 1 }}></View>
-                        <TouchableOpacity
+                        {/* <TouchableOpacity
                             style={styles.libraryButton}
                             onPress={() => {
                                 warningLogin(navigation, "Login");
@@ -147,7 +157,7 @@ function Library(props) {
                             <Text style={styles.libraryIconButton}>
                                 Playlist
                             </Text>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                     </View>
                 </View>
                 <View>

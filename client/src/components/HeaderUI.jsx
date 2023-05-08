@@ -42,7 +42,8 @@ export default function HeaderUI(props) {
         }
     }
     useEffect(() => {
-        if (!currentUser) { fetchUser(); }
+        if (!currentUser)
+            fetchUser();
     }, [])
     let avatar = avatarDefault;
     if (currentUser) {

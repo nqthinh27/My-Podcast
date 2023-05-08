@@ -16,18 +16,39 @@ import { useIsFocused, useNavigation } from "@react-navigation/native";
 import HeaderUI from "../../components/HeaderUI";
 import { getLikedListData, getRecommendData } from "../../redux/actions/libraryApi";
 import GlobalStyles from "../../components/GlobalStyles";
+import Loading from "../../components/Loading";
+import { postDataAPI } from "../../ultis/fetchData";
 
-function Liked({ item }) {
+function LibraryDetail({ route }) {
+    const { title } = route.params;
     const navigation = useNavigation();
     const dispatch = useDispatch();
-    const currentUser = useSelector((state) => state.auth.login.currentUser);
     const access_token = useSelector((state) => state.auth.login.access_token);
-    const userLikedList = useSelector((state) => state.library.likedList.data);
-    useEffect(() => {
-        getLikedListData(dispatch, access_token);
-        console.log("Class Liked");
-    }, [currentUser]);
-
+    const [data, setData] = useState([])
+    const [isLoading, setIsLoading] = useState(false);
+    // const currentUser = useSelector((state) => state.auth.login.currentUser);
+    // const userLikedList = useSelector((state) => state.library.likedList.data);
+    // useEffect(() => {
+    //     getLikedListData(dispatch, access_token)
+    // }, []);
+    const fetchData = async () => {
+        setIsLoading(true);
+        var res = null;
+        if (title == 'Đanh sách đã lưu') {
+            res = await postDataAPI('save', null, access_token);;
+            setData(res.data.saved);
+        } else if (title === 'Danh sách đã thích') {
+            res = await postDataAPI('like', null, access_token);;
+            setData(res.data.liked);
+        } else if (title === 'Lịch sử nghe') {
+            res = await postDataAPI('history', null, access_token);;
+            setData(res.data.history);
+        }
+        setIsLoading(false);
+    }
+    useEffect(()=> {
+        fetchData();
+    }, [dispatch])
     return (
         <SafeAreaView style={[GlobalStyles.customSafeArea, { backgroundColor: '#fff' }]}>
             <ScrollView style={{ marginHorizontal: 16 }}>
@@ -40,13 +61,13 @@ function Liked({ item }) {
                         alignSelf: 'center'
                     }}
                 >
-                    Danh sách đã thích
+                    {title}
                 </Text>
-                {userLikedList.map((item, index) => {
+                {data.map((item, index) => {
                     return (
                         <TouchableOpacity
                             onPress={() => {
-                                // playerNavigate();
+                                alert('Làm tính năng chuyển đến bài này đi!');
                             }}
                             key={index}
                         >
@@ -55,6 +76,7 @@ function Liked({ item }) {
                     );
                 })}
             </ScrollView>
+            {isLoading && <Loading />}
         </SafeAreaView>
     );
 }
@@ -62,4 +84,4 @@ function Liked({ item }) {
 const styles = StyleSheet.create({
 });
 
-export default Liked;
+export default LibraryDetail;

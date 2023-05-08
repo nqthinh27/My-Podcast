@@ -6,7 +6,7 @@ const historyController = {
             const userHistoryId = req.user.history.toString();
             const userHistory = await Histories.findById(userHistoryId).populate({
                 path: 'history',
-                select: '_id title owner',
+                select: '_id title owner image likes views',
                 populate: {
                     path: 'owner',
                     select: 'userName fullName avatar'

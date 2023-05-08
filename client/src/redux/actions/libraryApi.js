@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { BASE_URL } from '../../ultis/config';
-import { getLikedListFailed, getLikedListStart, getLikedListSuccess, getRecommendFailed, getRecommendStart, getRecommendSuccess } from '../slices/librarySlice';
+import { getLikedListFailed, getLikedListStart, getLikedListSuccess, getRecommendFailed, getRecommendStart, getRecommendSuccess, getSavedListFailed, getSavedListStart, getSavedListSuccess } from '../slices/librarySlice';
 import { postDataAPI } from '../../ultis/fetchData';
 
 export const getRecommendData = async (dispatch) => {
@@ -21,6 +21,17 @@ export const getLikedListData = async (dispatch, token) => {
         dispatch(getLikedListSuccess(res.data.liked));
     } catch (err) {
         dispatch(getLikedListFailed())
+        console.log(err.message);
+    }
+};
+
+export const getSavedListData = async (dispatch, token) => {
+    dispatch(getSavedListStart());
+    try {
+        const res = await postDataAPI('save', null, token);
+        dispatch(getSavedListSuccess(res.data.saved));
+    } catch (err) {
+        dispatch(getSavedListFailed())
         console.log(err.message);
     }
 };
