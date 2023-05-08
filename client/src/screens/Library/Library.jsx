@@ -5,15 +5,18 @@ import {
     TouchableOpacity,
     ScrollView,
     StyleSheet,
+    SafeAreaView,
 } from "react-native";
 import Icon from "react-native-vector-icons/Fontisto";
-import colors from "../constants/colors";
-import PodcastListItem from "../components/PodcastListItem";
-import { warningLogin } from "../ultis/warning";
+import colors from "../../constants/colors";
+import PodcastListItem from "../../components/PodcastListItem";
+import { warningLogin } from "../../ultis/warning";
 import { useDispatch, useSelector } from "react-redux";
 import { useIsFocused } from "@react-navigation/native";
-import HeaderUI from "../components/HeaderUI";
-import { getRecommendData } from "../redux/actions/libraryApi";
+import HeaderUI from "../../components/HeaderUI";
+import { getRecommendData } from "../../redux/actions/libraryApi";
+import GlobalStyles from "../../components/GlobalStyles";
+import {darkLibrary, lightLibrary} from "../../constants/darkLight/themeLibrary";
 
 function Library(props) {
     const { navigation, route } = props;
@@ -26,13 +29,12 @@ function Library(props) {
     const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
     const user = useSelector((state) => state.auth.login.currentUser);
     const isFocused = useIsFocused();
+    // useEffect(() => {
+    //     if (isFocused && !user) {
+    //         warningLogin(navigate, "Login", "Home");
+    //     }
+    // }, [isFocused]);
 
-    useEffect(() => {
-        if (isFocused && !user) {
-            warningLogin(navigate, "Login", "Home");
-        }
-    }, [isFocused]);
-    
     const recommendData = useSelector((state) => state.library.recommend.data);
     useEffect(() => {
         getRecommendData(dispatch)
@@ -49,7 +51,7 @@ function Library(props) {
     }
 
     return (
-        <View>
+        <SafeAreaView style={[GlobalStyles.customSafeArea, isDarkTheme ? darkLibrary.libraryContainer : lightLibrary.libraryContainer]}>
             <ScrollView>
                 <HeaderUI />
 
@@ -62,7 +64,7 @@ function Library(props) {
                     <Text
                         style={[
                             {
-                                fontSize: 18,
+                                fontSize: 21,
                                 fontWeight: "bold",
                                 paddingLeft: 16,
                                 marginTop: 8,
@@ -86,12 +88,12 @@ function Library(props) {
                         <TouchableOpacity
                             style={[styles.libraryButton, isDarkTheme ? darkLibrary.libraryFunction : lightLibrary.libraryFunction]}
                             onPress={() => {
-                                navigate("Saved");
+                                warningLogin(navigate, "Login");
                             }}
                         >
                             <Icon
                                 name="bookmark-alt"
-                                style={{ paddingStart: 15 }}
+                                style={{ paddingStart: 22 }}
                                 size={20}
                                 color={colors.primary}
                             />
@@ -110,7 +112,8 @@ function Library(props) {
                         <TouchableOpacity
                             style={[styles.libraryButton, isDarkTheme ? darkLibrary.libraryFunction : lightLibrary.libraryFunction]}
                             onPress={() => {
-                                navigate("Favourite");
+                                if (!user) warningLogin(navigate, "Login");
+                                else navigate('Liked');
                             }}
                         >
                             <Icon
@@ -143,7 +146,7 @@ function Library(props) {
                         <TouchableOpacity
                             style={[styles.libraryButton, isDarkTheme ? darkLibrary.libraryFunction : lightLibrary.libraryFunction]}
                             onPress={() => {
-                                navigate("History");
+                                warningLogin(navigate, "Login");
                             }}
                         >
                             <Icon
@@ -167,7 +170,7 @@ function Library(props) {
                         <TouchableOpacity
                             style={[styles.libraryButton, isDarkTheme ? darkLibrary.libraryFunction : lightLibrary.libraryFunction]}
                             onPress={() => {
-                                navigate("Playlist");
+                                warningLogin(navigate, "Login");
                             }}
                         >
                             <Icon
@@ -196,7 +199,7 @@ function Library(props) {
                 >
                     <Text
                         style={[{
-                            fontSize: 18,
+                            fontSize: 21,
                             fontWeight: "bold",
                             marginLeft: 16,
                             marginVertical: 10,
@@ -204,9 +207,7 @@ function Library(props) {
                         ? darkLibrary.libraryText
                         : lightLibrary.libraryText,]}
                     >
-                        {currentLanguage === "vi"
-                            ? "Có thể bạn sẽ thích"
-                            : "Recommended for you"}
+                    {currentLanguage === "vi" ? "Mọi người cũng nghe" : "Everyone is listening as well"}
                     </Text>
 
                     <View style={{ marginHorizontal: 16 }}>
@@ -224,7 +225,7 @@ function Library(props) {
                     </View>
                 </View>
             </ScrollView>
-        </View>
+        </SafeAreaView>
     );
 }
 

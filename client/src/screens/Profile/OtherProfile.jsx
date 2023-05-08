@@ -9,24 +9,23 @@ import {
     SafeAreaView,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import colors from "../constants/colors";
+import colors from "../../constants/colors";
 import Icon from "react-native-vector-icons/Feather";
-import ProfileInfo from "../components/ProfileInfo";
-import { MyPopularData } from "../../dummyData";
-import ProfilePodcast from "../components/ProfilePodcast";
-import { MyNewReLeaseData } from "../../dummyData";
-import GlobalStyles from "../components/GlobalStyles";
+import ProfileInfo from "../../components/ProfileInfo";
+import ProfilePodcast from "../../components/ProfilePodcast";
+import GlobalStyles from "../../components/GlobalStyles";
 import { useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
-import { checkIdInclude, timeDiff } from "../ultis/helper";
-import { getPublicDataAPI, patchDataAPI } from "../ultis/fetchData";
+import { checkIdInclude, formatNum, timeDiff } from "../../ultis/helper";
+import { getPublicDataAPI, patchDataAPI } from "../../ultis/fetchData";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { warningLogin } from "../ultis/warning";
+import { warningLogin } from "../../ultis/warning";
 // import Icon from "react-native-vector-icons/Entypo";
 
 export default function OtherProfile() {
     const { navigate, goBack } = useNavigation();
     const currentUser = useSelector((state) => state.auth.login.currentUser);
+    const access_token = useSelector((state) => state.auth.login.access_token);
     const otherUser = useSelector((state) => state.profile.otherUser.data);
     const allPosts = useSelector((state) => state.profile.allPosts.data);
     const topPosts = useSelector((state) => state.profile.topPosts.data);
@@ -34,33 +33,29 @@ export default function OtherProfile() {
     const following = useSelector((state) => state.profile.following.data);
     const [isFollowed, setIsFollowed] = useState(currentUser ? checkIdInclude(followers, currentUser._id) : false);
     // info
-    const [token, setToken] = useState("");
     const [currenFollowers, setCurrenFollowers] = useState(otherUser.followers);
-    const handleFollowOther = () => {
+    const handleFollowOther = async () => {
         if (!currentUser) {
             warningLogin(navigate, 'Login', 'OtherProfile');
         } else {
-            if (isFollowed) setCurrenFollowers(prevFollowers => prevFollowers - 1);
-            else setCurrenFollowers(prevFollowers => prevFollowers + 1);
-            setIsFollowed(!isFollowed);
+            if (isFollowed) {
+                await patchDataAPI(`follow/${otherUser._id}/undo`, null, access_token)
+                    .catch((error) => {
+                        console.log('Error while unfollowing user:', error);
+                    });
+                setCurrenFollowers(prevFollowers => prevFollowers - 1);
+            }
+            else {
+                await patchDataAPI(`follow/${otherUser._id}`, null, access_token)
+                    .catch((error) => {
+                        console.log('Error while following user:', error);
+                    });
+            }
+            setCurrenFollowers(prevFollowers => prevFollowers + 1);
         }
-    };
-    AsyncStorage.getItem('access_token').then((value) => {
-        setToken(value);
-    });
-    useEffect(() => {
-        if (!isFollowed) {
-            patchDataAPI(`follow/${otherUser._id}/undo`, null, token)
-                .catch((error) => {
-                    console.log('Error while unfollowing user:', error);
-                });
-        } else {
-            patchDataAPI(`follow/${otherUser._id}`, null, token)
-                .catch((error) => {
-                    console.log('Error while following user:', error);
-                });
-        }
-    }, [isFollowed]);
+        setIsFollowed(!isFollowed);
+    }
+
     return (
         <SafeAreaView style={[styles.otherprofile, GlobalStyles.customSafeArea]}>
             <ScrollView showsVerticalScrollIndicator={false}>
@@ -95,6 +90,7 @@ export default function OtherProfile() {
                         followers={currenFollowers}
                         following={otherUser.following}
                         posts={otherUser.posts}
+                        id={otherUser._id}
                     />
 
                     <View style={styles.otherprofileFollowButton}>
@@ -171,7 +167,7 @@ export default function OtherProfile() {
                                         <ProfilePodcast
                                             image={item.image}
                                             title={item.title}
-                                            des={item.likes + " Lượt thích"}
+                                            des={formatNum(item.views) + " Lượt nghe"}
                                         />
                                     </TouchableOpacity>
                                 );
@@ -210,7 +206,7 @@ export default function OtherProfile() {
                         horizontal={true}
                     >
                         {allPosts.map((item, index) => {
-
+                            console.log("Bài đăng   " + index + item);
                             return (
                                 <TouchableOpacity
                                     key={index}

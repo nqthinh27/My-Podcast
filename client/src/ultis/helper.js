@@ -1,7 +1,19 @@
 export const timeDiff = begin => {
     let startDate = new Date(begin);
     let currentDate = new Date();
-    let timeDiff = Math.abs(currentDate.getTime() - startDate.getTime());
+
+    // Lấy múi giờ hiện tại của Việt Nam
+    let VNTimeDiff = 7; // Ví dụ ở đây sử dụng múi giờ GMT+7 (Việt Nam)
+    let currentUTCHour = currentDate.getUTCHours();
+    let currentHour = (currentUTCHour + VNTimeDiff) % 24;
+
+    // Điều chỉnh thời gian hiện tại theo múi giờ của Việt Nam
+    let localCurrentDate = new Date();
+    localCurrentDate.setUTCHours(currentHour);
+    localCurrentDate.setUTCMinutes(currentDate.getUTCMinutes());
+    localCurrentDate.setUTCSeconds(currentDate.getUTCSeconds());
+
+    let timeDiff = Math.abs(localCurrentDate.getTime() - startDate.getTime());
     if (timeDiff < 3600000) {
         let minutesDiff = Math.floor(timeDiff / (1000 * 60));
         return (minutesDiff + " phút trước");
@@ -20,6 +32,28 @@ export const timeDiff = begin => {
     }
 }
 
+export const timeDiff2 = begin => {
+    let startDate = new Date(begin);
+    let currentDate = new Date();
+    let timeDiff = Math.abs(currentDate.getTime() - startDate.getTime());
+    if (timeDiff < 3600000) {
+        let minutesDiff = Math.floor(timeDiff / (1000 * 60));
+        return (minutesDiff + " phút trước");
+    } else if (timeDiff < 86400000) {
+        let hoursDiff = Math.floor(timeDiff / (1000 * 60 * 60));
+        return (hoursDiff + " giờ trước");
+    } else if (timeDiff < 604800000) {
+        let daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+        return (daysDiff + " ngày trước");
+    } else {
+        const year = startDate.getFullYear();
+        const month = startDate.getMonth();
+        const day = startDate.getDate();
+        const formattedDateString = `${day} tháng ${month}, ${year}`;
+        return (formattedDateString);
+    }
+}
+
 export const checkIdInclude = (elements, userId) => {
     for (let i = 0; i < elements.length; i++) {
         if (elements[i]._id == userId) return true;
@@ -31,4 +65,16 @@ export const removeItem = (elements, userId) => {
     return elements.map(item => {
         return item._id != userId;
     })
+}
+
+export const formatNum = (number) => {
+    if (number < 1000) return number;
+    if (number < 1000000) {
+        const kNumber = (number / 1000).toFixed(1);
+        return kNumber.endsWith('.0') ? kNumber.slice(0, -2) + 'k' : kNumber + 'k';
+    }
+    else {
+        const mNumber = (number / 1000000).toFixed(1);
+        return mNumber.endsWith('.0') ? mNumber.slice(0, -2) + 'M' : mNumber + 'm';
+    }
 }

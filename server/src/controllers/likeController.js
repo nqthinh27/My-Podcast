@@ -7,7 +7,7 @@ const likeController = {
             const userLikedId = req.user.liked.toString();
             const userLiked = await Likes.findById(userLikedId).populate({
                 path: 'liked',
-                select: '_id title owner',
+                select: '_id title owner image likes views',
                 populate: {
                     path: 'owner',
                     select: 'userName fullName avatar'

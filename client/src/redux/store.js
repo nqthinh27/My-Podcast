@@ -7,6 +7,7 @@ import homeReducer from './slices/homeSlice';
 import followingReducer from './slices/followingSlice';
 import libraryReducer from './slices/librarySlice';
 import profileReducer from './slices/profileSlice';
+import postReducer from './slices/postSlice';
 import searchReducer from './slices/searchSlice';
 import languageReducer from './slices/languageSlice';
 
@@ -17,6 +18,8 @@ export default configureStore({
         loginSuccess: loginReducer,
         player: playerReducer,
         home: homeReducer,
+        profile: profileReducer,
+        post: postReducer,
         following: followingReducer,
         library: libraryReducer,
         profile: profileReducer,

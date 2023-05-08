@@ -64,16 +64,25 @@ const followController = {
 
             const user = await Users.findById(req.params.id).populate({
                 path: 'followers',
-                select: 'fullName userName avatar',
+                select: 'fullName userName avatar followers posts',
                 options: {
                     skip,
                     limit: parseInt(limit)
                 }
             });
+            const userTransfer = user.followers.map(item => {
+                return {
+                    _id: item._id,
+                    fullName: item.fullName,
+                    userName: item.userName,
+                    avatar: item.avatar,
+                    followersLength: item.followers.length,
+                    postsLength: item.posts.length}
+            })
             const totalFollower = user.followers.length;
             const totalPages = Math.ceil(totalFollower / limit);
             res.status(200).json({
-                follower: user.followers,
+                follower: userTransfer,
                 currentPage: parseInt(page),
                 totalPages,
                 totalFollower
@@ -92,16 +101,26 @@ const followController = {
 
             const user = await Users.findById(req.params.id).populate({
                 path: 'following',
-                select: 'fullName userName avatar',
+                select: 'fullName userName avatar following posts',
                 options: {
                     skip,
                     limit: parseInt(limit)
                 }
             });
+            const userTransfer = user.following.map(item => {
+                return {
+                    _id: item._id,
+                    fullName: item.fullName,
+                    userName: item.userName,
+                    avatar: item.avatar,
+                    followingLength: item.following.length,
+                    postsLength: item.posts.length
+                }
+            })
             const totalFollowing = user.following.length;
             const totalPages = Math.ceil(totalFollowing / limit);
             res.status(200).json({
-                following: user.following,
+                following: userTransfer,
                 currentPage: parseInt(page),
                 totalPages,
                 totalFollowing
