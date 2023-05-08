@@ -18,15 +18,19 @@ import { getRecommendData } from "../../redux/actions/libraryApi";
 import GlobalStyles from "../../components/GlobalStyles";
 import MiniPlayer from "../Player/MiniPlayer";
 import PlayerScreen from "../Player/PlayerScreen";
+import { useNavigation } from "@react-navigation/native";
 
 function Library(props) {
-    const { navigation, route } = props;
-    const { navigate, goback } = navigation;
+    const navigation = useNavigation();
+
+    // const { navigation, route } = props;
+    // const { navigate, goback } = navigation;
     const dispatch = useDispatch();
     const user = useSelector((state) => state.auth.login.currentUser);
     const isFocused = useIsFocused();
     const isMiniPlayer = useSelector((state) => state.player.isMiniPlayer);
     const isPlayScreen = useSelector((state) => state.player.isPlayScreen);
+    const sound = useSelector((state) => state.player.sound);
 
     // useEffect(() => {
     //     if (isFocused && !user) {
@@ -45,13 +49,10 @@ function Library(props) {
         setClickSong(true);
     }
 
-    function playerNavigate() {
-        navigate("PlayerScreen");
-    }
 
     return (
         <SafeAreaView style={[GlobalStyles.customSafeArea, { backgroundColor: '#fff' }]}>
-            {!isPlayScreen ? <ScrollView>
+            {!isPlayScreen && <ScrollView>
                 <HeaderUI />
                 <View style={styles.libraryContainer}>
                     <Text
@@ -75,7 +76,7 @@ function Library(props) {
                         <TouchableOpacity
                             style={styles.libraryButton}
                             onPress={() => {
-                                warningLogin(navigate, "Login");
+                                warningLogin(navigation, "Login");
                             }}
                         >
                             <Icon
@@ -90,8 +91,8 @@ function Library(props) {
                         <TouchableOpacity
                             style={styles.libraryButton}
                             onPress={() => {
-                                if (!user) warningLogin(navigate, "Login");
-                                else navigate('Liked');
+                                if (!user) warningLogin(navigation, "Login");
+                                else navigation('Liked');
                             }}
                         >
                             <Icon
@@ -117,7 +118,7 @@ function Library(props) {
                         <TouchableOpacity
                             style={styles.libraryButton}
                             onPress={() => {
-                                warningLogin(navigate, "Login");
+                                warningLogin(navigation, "Login");
                             }}
                         >
                             <Icon
@@ -134,7 +135,7 @@ function Library(props) {
                         <TouchableOpacity
                             style={styles.libraryButton}
                             onPress={() => {
-                                warningLogin(navigate, "Login");
+                                warningLogin(navigation, "Login");
                             }}
                         >
                             <Icon
@@ -176,14 +177,9 @@ function Library(props) {
                     </View>
                 </View>
             </ScrollView>
-                :
-                <PlayerScreen
-                    // sound={sound}
-                    // loadSound={loadSound}
-                    // switchToNewSound={switchToNewSound}
-                    >
-                </PlayerScreen>
+
             }
+            {isPlayScreen && sound != null && <PlayerScreen />}
             {isMiniPlayer && <MiniPlayer
             // avtUrl={detailPost.image}
             // tittle={detailPost.title}

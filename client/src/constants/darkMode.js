@@ -103,7 +103,10 @@ export const darkSetting = StyleSheet.create({
     setIco: {
         flexDirection: 'row',
         paddingVertical: 10,
+        justifyContent: 'space-between',
         alignContent: 'center',
+        alignItems: 'center',
+        height: 45,
         marginVertical: 3,
         marginHorizontal: 16,
         borderRadius: 7,

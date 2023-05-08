@@ -30,29 +30,37 @@ export default function Following(props) {
     const isPlayScreen = useSelector((state) => state.player.isPlayScreen);
     const soundFollower = useSelector((state) => state.following.soundFollower);
     const soundCurrent = useSelector((state) => state.following.soundCurrent);
-    // const [soundCurrent, setSoundCurrent] = useState(null);
-    // const [playStatus,dispatch(setPlayStatus] = useState({});
     const playStatus = useSelector((state) => state.following.playStatus);
-    // const position = useSelector((state) => state.following.position);
-    // const duration = useSelector((state) => state.following.duration);
     const [duration, setDuration] = useState(null);
-    // const [position, setPosition] = useState(null);
     const [playbackState, setPlaybackState] = useState({});
     const [isPlaying, setIsPlaying] = useState({});
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         if (isFocused && !currentUser) {
             warningLogin(navigate, 'Login', 'Home');
         }
     }, [isFocused]);
+    const fetchNewFeedAfterLogin = async () => {
+        setIsLoading(true);
+        if (currentUser) {
+            await getLikedListData(dispatch, access_token);
+            await getNewFeed(dispatch, access_token);
+        }
+        setIsLoading(false);
+    }
     useEffect(() => {
-        if (currentUser) getLikedListData(dispatch, access_token);
-        getNewFeed(dispatch, access_token);
-    }, [currentUser]);
-
-    useEffect(() => {
-        if (currentUser) getLikedListData(dispatch, access_token);
+        fetchNewFeedAfterLogin();
     }, []);
+
+    // const fetchNewFeedIfLogged = async () => {
+    //     setIsLoading(true);
+    //     if (currentUser) await getLikedListData(dispatch, access_token);
+    //     setIsLoading(false);
+    // }
+    // useEffect(() => {
+    //     fetchNewFeedIfLogged();
+    // }, []);
 
     // const [sound, setSound] = useState(null);
 
@@ -146,22 +154,22 @@ export default function Following(props) {
 
     // Sử dụng useEffect để tự động phát hoặc dừng phát khi trạng thái playStatus thay đổi
     useEffect(() => {
-        const isCurrentSoundPlaying = playStatus[soundCurrentRef.current];
-        console.log("id bài trước: " + soundCurrent + " - id hiện tại: " + soundCurrentRef.current);
-        // Nếu đã có âm thanh đang phát và bài hát được chọn khác với bài hát hiện tại
-        if (soundCurrentRef.current !== soundCurrent && !isMiniPlayer) {
-            // Dừng bài hát hiện tại nếu đang phát
-            if (isCurrentSoundPlaying) {
-                pauseSound(soundCurrentRef.current);
-                console.log(soundCurrentRef.current + ": Dừng bài cũ khi chuyển bài mới");
-            }
-            
-            // Cập nhật bài hát hiện tại và tiếp tục phát bài hát mới
-            dispatch(setSoundCurrent(soundCurrent));
-            soundCurrentRef.current = soundCurrent;
-            resumeSound(soundCurrent);
-            console.log("id bài hát mới: " + soundCurrent);
-        }
+        // const isCurrentSoundPlaying = playStatus[soundCurrentRef.current];
+        // console.log("id bài trước: " + soundCurrent + " - id hiện tại: " + soundCurrentRef.current);
+        // // Nếu đã có âm thanh đang phát và bài hát được chọn khác với bài hát hiện tại
+        // if (soundCurrentRef.current !== soundCurrent && !isMiniPlayer) {
+        //     // Dừng bài hát hiện tại nếu đang phát
+        //     if (isCurrentSoundPlaying) {
+        //         pauseSound(soundCurrentRef.current);
+        //         console.log(soundCurrentRef.current + ": Dừng bài cũ khi chuyển bài mới");
+        //     }
+
+        //     // Cập nhật bài hát hiện tại và tiếp tục phát bài hát mới
+        //     dispatch(setSoundCurrent(soundCurrent));
+        //     soundCurrentRef.current = soundCurrent;
+        //     resumeSound(soundCurrent);
+        //     console.log("id bài hát mới: " + soundCurrent);
+        // }
         // Nếu bài hát hiện tại đang phát, tiếp tục phát
         if (soundCurrentRef.current === soundCurrent) {
             if (soundRef.current != null) {
@@ -247,7 +255,7 @@ export default function Following(props) {
 
     return (
         <SafeAreaView style={[GlobalStyles.customSafeArea, { backgroundColor: isDarkTheme ? colors.dark : colors.white }]}>
-            {!isPlayScreen ? <ScrollView>
+            {!isPlayScreen && <ScrollView>
                 <HeaderUI />
                 <View style={isDarkTheme ? darkfollowStyles.contentWrapper : lightfollowStyles.contentWrapper}>
                     <View style={followStyles.contentSection}>
@@ -313,20 +321,6 @@ export default function Following(props) {
                                                 <View style={followStyles.progressLevelDur}>
                                                     <Text style={followStyles.progressLabelText}>{formatTime(playbackState[item._id]?.position)} / {formatTime(playbackState[item._id]?.duration)} </Text>
                                                 </View>
-                                                {/* <TouchableOpacity onPress={handleVolume}>
-                                                    {(volume) && <Icon
-                                                        name="volume-high"
-                                                        style={{ opacity: 1 }}
-                                                        size={25}
-                                                        color={isDarkTheme ? colors.white : colors.black}
-                                                    />}
-                                                    {(!volume) && <Icon
-                                                        name="volume-off"
-                                                        style={{ opacity: 1 }}
-                                                        size={25}
-                                                        color={isDarkTheme ? colors.white : colors.black}
-                                                    />}
-                                                </TouchableOpacity> */}
                                                 <View>
                                                     <Slider
                                                         style={followStyles.progressBar}
@@ -351,9 +345,8 @@ export default function Following(props) {
                     </View>
                 </View>
             </ScrollView>
-                :
-                <PlayerScreen></PlayerScreen>
             }
+            {isPlayScreen && sound != null && <PlayerScreen />}  
             {isMiniPlayer && <MiniPlayer />}
         </SafeAreaView>
     )
@@ -361,29 +354,20 @@ export default function Following(props) {
 
 const followStyles = StyleSheet.create({
     contentWrapper: {
-        // width: 315,
-        // marginRight: 16,
         marginTop: 10,
-        // borderRadius: 20,
         backgroundColor: "#EDEDED",
     },
 
     contentSection: {
         marginVertical: 6,
-        // marginHorizontal: 12,
     },
 
     progressLevelDur: {
-        // marginTop: 15,
-        // flexDirection: 'row',
-        // alignItems: 'center',
-        // justifyContent: 'space-between',
         margin: 5,
     },
 
     progressLabelText: {
         fontSize: 12,
-        // alignSelf: 'center',
     },
 
     interactPlayTime: {
@@ -391,7 +375,6 @@ const followStyles = StyleSheet.create({
         marginHorizontal: 16,
         flexDirection: 'row',
         alignItems: 'center',
-        // justifyContent: 'space-between',
     },
 
     progressBar: {

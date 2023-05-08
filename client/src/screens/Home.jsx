@@ -30,6 +30,7 @@ import { getPost } from "../redux/actions/postApi";
 import { getPostDataSuccess, setDetailPost } from "../redux/slices/postSlice";
 import { Audio } from "expo-av";
 import PlayerScreen from "./Player/PlayerScreen";
+import Loading from "../components/Loading";
 
 // import PlayerScreen from "./PlayerScreen";
 
@@ -53,19 +54,24 @@ export default function Home(props) {
     const position = useSelector((state) => state.player.position);
     const sound = useSelector((state) => state.player.sound);
 
-
-
-
+    const [isLoading, setIsLoading] = useState(false);
+    const fetchHomeData = async () => {
+        setIsLoading(true);
+        await fetchSlider(dispatch);
+        await fetchTopTrending(dispatch);
+        await fetchNewRelease(dispatch);
+        await fetchTopAuthor(dispatch);
+        setIsLoading(false);
+    }
     useEffect(() => {
-        dispatch(fetchSlider);
-        dispatch(fetchTopTrending);
-        dispatch(fetchNewRelease);
-        dispatch(fetchTopAuthor);
+        fetchHomeData();
+        console.log("gọi data");
     }, [SliderData, TopTrendingData, NewReleaseData, TopAuThorData]);
 
     const nextPress = useSelector((state) => state.player.nextPress);
 
     useEffect(() => {
+        console.log("gọi sound");
         return sound
             ? () => {
                 sound.unloadAsync();
@@ -86,7 +92,7 @@ export default function Home(props) {
     //       dispatch(setIsMiniPlayer(isMiniPlayerVisible));
     //     }
     //   }, [dispatch, navigation]);
-
+    // console.log("home");
     useEffect(() => {
         if (SliderData && SliderData.length > 0 && !isPlayScreen) {
             const intervalId = setInterval(() => {
@@ -97,12 +103,14 @@ export default function Home(props) {
 
             return () => clearInterval(intervalId);
         }
+        console.log("gọi");
+
     }, [currentIndex, isPlayScreen]);
 
     return (
         <SafeAreaView style={[GlobalStyles.customSafeArea, { backgroundColor: isDarkTheme ? darkHome.wrapper.backgroundColor : lightHome.wrapper.backgroundColor }]}>
             {/* <NavigationEvents onDidFocus={()=> this.setState({})} /> */}
-            {!isPlayScreen ? <ScrollView>
+            {!isPlayScreen && <ScrollView>
                 {/* ==========================================HEADER========================================== */}
                 <HeaderUI />
                 {/* ==========================================Slide bar========================================== */}
@@ -115,7 +123,7 @@ export default function Home(props) {
                         return (
                             <TouchableOpacity
                                 onPress={async () => {
-                                    if (item.index != currentSound && sound != null) {
+                                    if (item.index != currentSound) {
                                         // await sound.unloadAsync();
                                         dispatch(setSound(null));
                                         dispatch(setPosition(0));
@@ -342,10 +350,10 @@ export default function Home(props) {
                     })}
                 </ScrollView>
             </ScrollView>
-                :
-                <PlayerScreen></PlayerScreen>
             }
+            {isPlayScreen && <PlayerScreen />}
             {isMiniPlayer && <MiniPlayer />}
+            {isLoading && <Loading />}
         </SafeAreaView>
     );
 }

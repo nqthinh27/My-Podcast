@@ -55,7 +55,7 @@ export default function Setting(props) {
     }
     return (
         <SafeAreaView style={[{ backgroundColor: isDarkTheme ? darkSetting.dark.backgroundColor : lightSetting.light.backgroundColor }, GlobalStyles.customSafeArea]}>
-            {!isPlayScreen ? <ScrollView>
+            {!isPlayScreen && <ScrollView>
                 {(!user) &&
                     <View style={lightSetting.accountSuccess}>
                         <Image
@@ -279,9 +279,8 @@ export default function Setting(props) {
                         />
                     </TouchableOpacity></View>
             </ScrollView>
-                :
-                <PlayerScreen></PlayerScreen>
             }
+            {isPlayScreen && <PlayerScreen />}
             {isMiniPlayer && <MiniPlayer />}
         </SafeAreaView >
 

@@ -17,7 +17,7 @@ import { device } from "../../constants/device";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentSound, setDuration, setIsMiniPlayer, setIsPlayScreen, setIsPlayer, setIsPlaying, setNextPress, setPlayValue, setPosition, setPrevPress, setSound, setSoundUrl } from "../../redux/slices/playerSlice";
 
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 
 import { Audio } from 'expo-av';
 import EmptyImage from "../../constants/EmptyImage";
@@ -31,6 +31,7 @@ export default function MiniPlayer(props) {
 
     // const [miniPlayerOpacity, setMiniPlayerOpacity] = useState(1);
     const dispatch = useDispatch();
+    const isFocused = useIsFocused();
     // const [sound, setSound] = useState(null);
     const detailPost = useSelector((state) => state.post.detailPost);
     // const soundUrl = useSelector((state) => state.player.soundUrl);
@@ -76,9 +77,10 @@ export default function MiniPlayer(props) {
     }
 
     useEffect(() => {
-        if (!isPlaying) {
+        if (isPlaying) {
             playSound();
             console.log("mini player");
+            dispatch(setIsPlaying(false));
         }
     }, [detailPost.audio]);
 
@@ -97,7 +99,7 @@ export default function MiniPlayer(props) {
     }
 
     useEffect(() => {
-        if (sound != null) {
+        if (sound != null && isFocused) {
             if (playValue) {
                 resumeSound();
             } else {
@@ -157,7 +159,7 @@ export default function MiniPlayer(props) {
             dispatch(setCurrentSound(nextTrack.index));
             dispatch(setPosition(0));
             dispatch(setIsPlayScreen(false));
-            dispatch(setIsPlaying(false));
+            dispatch(setIsPlaying(true));
         }
     }
 
@@ -169,7 +171,7 @@ export default function MiniPlayer(props) {
             dispatch(setCurrentSound(prevTrack.index));
             dispatch(setPosition(0));
             dispatch(setIsPlayScreen(false));
-            dispatch(setIsPlaying(false));
+            dispatch(setIsPlaying(true));
 
         }
     }
@@ -196,10 +198,11 @@ export default function MiniPlayer(props) {
             {
                 useNativeDriver: false,
                 listener: (event, gestureState) => {
-                    if (gestureState.dx > 50) {
-                        // Kéo sang phải hơn 50px thì tắt nhạc
+                    if (gestureState.dx > 30 || gestureState.dx < -30) {
+                        // Kéo sang phải hoặc trái hơn 50px thì tắt nhạc
                         sound.unloadAsync();
-                        dispatch(setIsMiniPlayer(false))
+                        dispatch(setPosition(0));
+                        dispatch(setIsMiniPlayer(false));
                     }
                 },
             }

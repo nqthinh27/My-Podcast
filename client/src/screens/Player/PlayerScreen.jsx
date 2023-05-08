@@ -1,4 +1,4 @@
-import { React, useState, useRef, useEffect } from "react";
+import { React, useState, useRef, useEffect, useCallback } from "react";
 import {
     Text,
     View,
@@ -20,7 +20,7 @@ import { Audio } from "expo-av";
 import Comment from "../../components/Comment";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentSound, setDuration, setIsMiniPlayer, setIsPlayScreen, setIsPlayer, setIsPlaying, setNextPress, setPlayValue, setPosition, setPrevPress, setSound } from "../../redux/slices/playerSlice";
-import { useNavigation } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { getPost } from "../../redux/actions/postApi";
 
 
@@ -31,10 +31,8 @@ export default function PlayerScreen(props) {
     // //function of navigate
     // const { navigate, goback } = navigation;
 
-    // const { loadSound, switchToNewSound } = props;
     const sound = useSelector((state) => state.player.sound);
-
-
+    const isFocused = useIsFocused();
     const [showCommentScrollView, setShowCommentScrollView] = useState(true);
 
     const handleCommentPress = () => {
@@ -104,9 +102,6 @@ export default function PlayerScreen(props) {
             dispatch(setDuration(status.durationMillis));
         }
     }
-
-
-
     // console.log("sound: ", detailPost.audio);
     const onBackPress = () => {
         dispatch(setIsPlayScreen(false))
@@ -123,35 +118,25 @@ export default function PlayerScreen(props) {
         };
     }, [navigation]);
 
-    // 
-    // useEffect(() => {
-    //     if (isMiniPlayer) {
-    //         // playSound();
-    //         // dispatch(setIsMiniPlayer(false));
-    //         console.log("phát nhạc khi focus trở lại màn hình PlayerScreen");
-    //     }
-    // }, [isMiniPlayer]);
-
-
     // ấn nút thu nhỏ màn hình
     function changeMiniPlayer() {
         // sound.unloadAsync();
         dispatch(setIsMiniPlayer(true));
         dispatch(setIsPlayScreen(false));
-        dispatch(setIsPlaying(true));
+        // dispatch(setIsPlaying(true));
         // if (!playValue) dispatch(setIsPlayer(true));
         // navigation.navigate('UIScreen');
     }
 
     useEffect(() => {
-        if (!isMiniPlayer && isPlayScreen) {
+        if (!isMiniPlayer && isPlayScreen && isFocused) {
             playSound();
-            console.log("ductu");
+            console.log("bài hát: " + detailPost.audio);
         }
     }, [detailPost.audio]);
 
     useEffect(() => {
-        if (sound != null) {
+        if (sound != null && isFocused) {
             if (playValue) {
                 resumeSound(detailPost.audio);
             } else {
@@ -161,7 +146,7 @@ export default function PlayerScreen(props) {
     }, [playValue]);
 
     const playSound = async () => {
-        if (detailPost !== null && !isMiniPlayer) {
+        if (detailPost !== null) {
             await loadSound(detailPost.audio);
             console.log("phát đầu tiên");
         }
@@ -189,10 +174,11 @@ export default function PlayerScreen(props) {
         }
     }
 
-    function onSliderValueChange(value) {
+    async function onSliderValueChange(value) {
         if (sound != null) {
-            sound.setPositionAsync(value);
+            await sound.setPositionAsync(value);
             dispatch(setPosition(value));
+            console.log("lặp");
         }
     }
 
@@ -245,34 +231,12 @@ export default function PlayerScreen(props) {
         }
     }
 
-    // useEffect(() => {
-    //     if (nextPress) {
-    //         onNextPress();
-    //         dispatch(setNextPress(false));
-    //     }
-    //     if (prevPress) {
-    //         onPrevPress();
-    //         dispatch(setPrevPress(false));
-    //     }
-    // }, [currentSound]);
-
     async function stopSound() {
         if (sound) {
             await sound.stopAsync();
             setPlayValue(false);
         }
     }
-
-    // useEffect(() => {
-    //     return sound
-    //         ? () => {
-
-    //             sound.unloadAsync();
-    //             console.log("sound đang");
-
-    //         }
-    //         : undefined;
-    // }, [sound]);
 
     const scrollViewRef = useRef(null);
 
