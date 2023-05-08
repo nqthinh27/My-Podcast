@@ -23,7 +23,7 @@ export default configureStore({
         following: followingReducer,
         library: libraryReducer,
         profile: profileReducer,
-        search: searchReducer
+        search: searchReducer,
         language: languageReducer,
     }
 });

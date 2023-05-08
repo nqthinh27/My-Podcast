@@ -8,7 +8,6 @@ import {
     Switch,
     Appearance,
     Image,
-    
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome5";
 import GlobalStyles from "../components/GlobalStyles";
@@ -91,8 +90,8 @@ export default function Setting(props) {
                             <Text
                                 style={
                                     isDarkTheme
-                                        ? darkSetting.textHello
-                                        : lightSetting.textHello
+                                        ? darkSetting.fontText
+                                        : lightSetting.fontText
                                 }
                             >
                                 {currentLanguage === "vi"
@@ -151,7 +150,11 @@ export default function Setting(props) {
                 )}
                 {user && (
                     <View style={lightSetting.accountSuccess}>
-                        <TouchableOpacity onPress={() => { handleLogin() }}>
+                        <TouchableOpacity
+                            onPress={() => {
+                                handleLogin();
+                            }}
+                        >
                             <Image
                                 source={{
                                     uri: avatar,
@@ -163,8 +166,8 @@ export default function Setting(props) {
                             <Text
                                 style={
                                     isDarkTheme
-                                        ? darkSetting.textHello
-                                        : lightSetting.textHello
+                                        ? darkSetting.nameText
+                                        : lightSetting.nameText
                                 }
                             >
                                 {user.fullName}
@@ -172,8 +175,8 @@ export default function Setting(props) {
                             <Text
                                 style={
                                     isDarkTheme
-                                        ? darkSetting.colorText
-                                        : lightSetting.colorText
+                                        ? darkSetting.usernameText
+                                        : lightSetting.usernameText
                                 }
                             >
                                 @{user.userName}

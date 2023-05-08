@@ -156,12 +156,12 @@ export default function HeaderUI(props) {
                         </View>
                         {postsResult.length == 0 && usersResult.length == 0 && !firstSearch &&
                             <Text
-                                style={{
+                                style={[{
                                     fontSize: 20,
                                     fontWeight: "500",
                                     alignSelf: "center",
                                     marginTop: 40
-                                }}
+                                }, isDarkTheme ? darkHeader.text : lightHeader.text]}
                             >
                                 {currentLanguage === "vi" ? "Oops! Không tìm thấy kết quả..." : "Oops! No results found..."}
                             </Text>}

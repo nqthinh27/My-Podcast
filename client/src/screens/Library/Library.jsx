@@ -29,11 +29,11 @@ function Library(props) {
     const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
     const user = useSelector((state) => state.auth.login.currentUser);
     const isFocused = useIsFocused();
-    // useEffect(() => {
-    //     if (isFocused && !user) {
-    //         warningLogin(navigate, "Login", "Home");
-    //     }
-    // }, [isFocused]);
+    useEffect(() => {
+        if (isFocused && !user) {
+            warningLogin(navigate, "Login", "Home");
+        }
+    }, [isFocused]);
 
     const recommendData = useSelector((state) => state.library.recommend.data);
     useEffect(() => {

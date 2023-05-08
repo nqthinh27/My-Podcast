@@ -64,7 +64,7 @@ export const darkTrendingHome = StyleSheet.create({
         width: device.width-32,
         marginRight: 16,
         borderRadius: 10,
-        backgroundColor: '#272727',
+        backgroundColor: colors.dark_grey,
         // flexDirection: 'row',
         // flexWrap: 'wrap',
     },

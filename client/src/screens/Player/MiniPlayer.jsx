@@ -249,8 +249,8 @@ export default function MiniPlayer(props) {
                         <View style={stylesMiniPlayer.miniplayerAvatar}>
                             <Image
                                 style={{
-                                    width: device.width - 340,
-                                    height: device.width - 340,
+                                    width: device.width * 0.15,
+                                    height: device.width * 0.15,
                                     borderRadius: 7,
                                 }}
                                 source={{
@@ -259,36 +259,35 @@ export default function MiniPlayer(props) {
                             />
                         </View>
                         <View style={stylesMiniPlayer.miniplayerTrackDetails}>
-                            <Text style={{ fontWeight: "600", fontSize: 15, }}>{detailPost.title}</Text>
-                            <Text style={{ fontSize: 13 }}>{detailPost.owner.fullName}</Text>
+                            <Text style={{ fontWeight: "600", fontSize: 15, }} numberOfLines={1} ellipsizeMode='tail'>{detailPost.title}</Text>
+                            <Text style={{ fontSize: 13 }} numberOfLines={1} ellipsizeMode='tail'>{detailPost.owner.fullName}</Text>
                         </View>
-                    </TouchableOpacity>
-                    <View style={stylesMiniPlayer.miniplayerControls}>
+                        <View style={stylesMiniPlayer.miniplayerControls}>
                         <TouchableOpacity onPress={() => onPrevPress()}>
                             <Image
-                                style={{ width: device.width - 370, height: device.width - 370 }}
+                                style={{ width: device.width * 0.07, height: device.width * 0.07 }}
                                 source={{
-                                    uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Tu%2Fbxs_skip-next-circle.png?alt=media&token=10b12ffd-b779-4fdf-8376-b1f8baa92256",
+                                    uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_prev_playersc.png?alt=media&token=7926276d-71be-4e3b-8c8d-42fd0ab3d369",
                                 }}
                             />
                         </TouchableOpacity>
                         {playValue ? (
                             <TouchableOpacity onPress={() => pauseSound()}>
                                 <Image
-                                    style={{ width: device.width - 350, height: device.width - 350 }}
+                                    style={{ width: device.width * 0.1, height: device.width * 0.1 }}
                                     source={{
                                         uri:
-                                            "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fpause.png?alt=media&token=ae6b74e7-ac06-40a8-a1a7-09d3380e2863",
+                                            "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_pause_playersc.png?alt=media&token=4c757d52-ce70-456a-aa36-c8c581af7be6",
                                     }}
                                 />
                             </TouchableOpacity>
                         ) : (
                             <TouchableOpacity onPress={() => resumeSound()}>
                                 <Image
-                                    style={{ width: device.width - 350, height: device.width - 350 }}
+                                    style={{ width: device.width * 0.1, height: device.width * 0.1 }}
                                     source={{
                                         uri:
-                                            "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Tu%2FGroup%2066.png?alt=media&token=5fb2d1e2-48a0-43bb-9773-ce3424e388f4",
+                                            "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_play_playersc.png?alt=media&token=916c4f80-4489-41b1-b834-de6f2d5affd8",
                                     }}
                                 />
                             </TouchableOpacity>
@@ -296,13 +295,15 @@ export default function MiniPlayer(props) {
 
                         <TouchableOpacity onPress={() => onNextPress()}>
                             <Image
-                                style={{ width: device.width - 370, height: device.width - 370 }}
+                                style={{ width: device.width *0.06, height: device.width *0.06 }}
                                 source={{
-                                    uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Tu%2Ffluent_next-32-regular.png?alt=media&token=db668d13-33de-4f5b-99bd-c5723dd21f13",
+                                    uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_next_playersc.png?alt=media&token=2bb45ceb-8cab-4f30-b01c-cc799d55756d",
                                 }}
                             />
                         </TouchableOpacity>
                     </View>
+                    </TouchableOpacity>
+                    
                 </View>
                 <Slider
                     style={stylesMiniPlayer.progressBar}
@@ -324,14 +325,15 @@ export default function MiniPlayer(props) {
 const stylesMiniPlayer = StyleSheet.create({
     miniplayer: {
         // height: device.height / 10,
-        flexDirection: "row"
+        flexDirection: "row",
+        flex: 1
     },
     miniplayerBackground: {
         // flexDirection: "row",
         backgroundColor: "#fff",
         paddingVertical: 10,
         width: "100%",
-        display: 'flex',
+        // display: 'flex',
     },
 
     miniplayerAvatar: {
@@ -339,13 +341,16 @@ const stylesMiniPlayer = StyleSheet.create({
         justifyContent: "flex-start",
         marginHorizontal: 16,
         alignSelf: "center",
+        
     },
 
     miniplayerTrackDetails: {
         // flex: 4,
-        justifyContent: "space-between",
+        justifyContent: "center",
         // marginLeft: 10,
         alignItems: "flex-start",
+        width: '45%',
+
     },
 
     miniplayerControls: {
@@ -354,6 +359,7 @@ const stylesMiniPlayer = StyleSheet.create({
         alignItems: "center",
         justifyContent: "space-evenly",
         // marginRight: 16,
+        // width: '35%',
     },
 
     progressBar: {

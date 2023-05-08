@@ -42,6 +42,11 @@ export const lightHeader = StyleSheet.create({
         height: 26,
         width: 26,
     },
+    background : {
+    },
+    text : {
+        color: colors.black
+    }
 });
 
 export const darkHeader = StyleSheet.create({
@@ -62,7 +67,7 @@ export const darkHeader = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: '#272727',
+        backgroundColor: colors.dark_grey,
         borderColor: colors.black,
         borderRadius: 32,
         borderWidth: 1,
@@ -85,4 +90,10 @@ export const darkHeader = StyleSheet.create({
         height: 26,
         width: 26,
     },
+    background : {
+        backgroundColor: colors.dark_grey,
+    },
+    text : {
+        color: '#fff'
+    }
 });
