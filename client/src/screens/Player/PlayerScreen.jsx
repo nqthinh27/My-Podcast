@@ -244,7 +244,7 @@ export default function PlayerScreen(props) {
     const scrollViewRef = useRef(null);
 
     const handleNextPress = () => {
-        scrollViewRef.current.scrollTo({ y: device.height - 83, animated: true });
+        scrollViewRef.current.scrollTo({ y: device.height + 90, animated: true });
     };
 
     return (
@@ -443,7 +443,7 @@ export default function PlayerScreen(props) {
                         <Icon
                             name={"chevron-down"}
                             size={20}
-                            color={isDarkTheme ? "white" : "black"}
+                            color="white"
                             />
                     </TouchableOpacity>
                 </View>
@@ -607,7 +607,7 @@ export default function PlayerScreen(props) {
                         </View>
 
                         {showCommentScrollView && (
-                            <ScrollView style={{ height: 550 }}>
+                            <ScrollView style={{ height: device.height * 0.6 }}>
                                 <View>
                                     <Text
                                         style={[{
