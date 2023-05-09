@@ -35,7 +35,7 @@ export const lightHeader = StyleSheet.create({
         marginRight: 12,
         padding: 0,
         flex: 1,
-        color: "#A0A0A0",
+        color: colors.black,
     },
 
     bell: {
@@ -83,7 +83,8 @@ export const darkHeader = StyleSheet.create({
         marginRight: 12,
         padding: 0,
         flex: 1,
-        color: '#EAEAEA'
+        color: colors.dark_sub
+
     },
 
     bell: {

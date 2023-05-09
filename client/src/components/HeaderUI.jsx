@@ -145,7 +145,7 @@ export default function HeaderUI(props) {
                                 />
                                 <TextInput
                                     autoFocus={true}
-                                    style={lightHeader.input}
+                                    style={isDarkTheme ? darkHeader.input : lightHeader.input}
                                     // ref={textInputRef}
                                     value={keyword}
                                     placeholder={currentLanguage === "vi" ? "Tìm kiếm podcast, tác giả, album,..." : "Search for podcasts, authors, albums,..."}
