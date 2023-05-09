@@ -60,7 +60,10 @@ export default function PlayerScreen(props) {
     const isPlayer = useSelector((state) => state.player.isPlayer);
     const currentSound = useSelector((state) => state.player.currentSound);
     const isPlayScreen = useSelector((state) => state.player.isPlayScreen);
-
+    const currentLanguage = useSelector(
+        (state) => state.language.currentLanguage
+    );
+    const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
 
     const nextPress = useSelector((state) => state.player.nextPress);
     const prevPress = useSelector((state) => state.player.prevPress);
