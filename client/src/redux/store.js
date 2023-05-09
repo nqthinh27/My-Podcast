@@ -1,4 +1,4 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
 import authReducer from './slices/authSlice';
 import themeReducer from './slices/themeSlice';
 import loginReducer from './slices/loginSlice';
@@ -10,6 +10,12 @@ import profileReducer from './slices/profileSlice';
 import postReducer from './slices/postSlice';
 import searchReducer from './slices/searchSlice';
 import languageReducer from './slices/languageSlice';
+
+const middleware = [
+    ...getDefaultMiddleware({
+        serializableCheck: false // vô hiệu hóa kiểm tra tuần tự hóa
+    })
+];
 
 export default configureStore({
     reducer: {

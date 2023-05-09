@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Image } from "react-native";
+import { Image, StatusBar } from "react-native";
 import Home from "../screens/Home";
 import Library from "../screens/Library/Library";
 import Following from "../screens/Following";

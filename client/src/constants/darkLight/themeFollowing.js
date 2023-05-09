@@ -5,14 +5,14 @@ import { device } from '../device'
 export const lightfollowStyles = StyleSheet.create({
     contentWrapper: {
         marginTop: 10,
-        // backgroundColor: "#EDEDED",
+        backgroundColor: "#EDEDED",
     },
 });
 
 export const darkfollowStyles = StyleSheet.create({
     contentWrapper: {
         marginTop: 10,
-        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+        backgroundColor: colors.dark_grey,
     },
 });
 

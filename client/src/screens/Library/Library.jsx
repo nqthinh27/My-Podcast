@@ -17,10 +17,15 @@ import HeaderUI from "../../components/HeaderUI";
 import { getRecommendData } from "../../redux/actions/libraryApi";
 import GlobalStyles from "../../components/GlobalStyles";
 import {darkLibrary, lightLibrary} from "../../constants/darkLight/themeLibrary";
+import MiniPlayer from "../Player/MiniPlayer";
+import PlayerScreen from "../Player/PlayerScreen";
+import { useNavigation } from "@react-navigation/native";
 
 function Library(props) {
-    const { navigation, route } = props;
-    const { navigate, goback } = navigation;
+    const navigation = useNavigation();
+
+    // const { navigation, route } = props;
+    // const { navigate, goback } = navigation;
     const dispatch = useDispatch();
 
     const currentLanguage = useSelector(
@@ -29,6 +34,16 @@ function Library(props) {
     const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
     const user = useSelector((state) => state.auth.login.currentUser);
     const isFocused = useIsFocused();
+    const isMiniPlayer = useSelector((state) => state.player.isMiniPlayer);
+    const isPlayScreen = useSelector((state) => state.player.isPlayScreen);
+    const sound = useSelector((state) => state.player.sound);
+
+    useEffect(() => {
+        if (isFocused && !user) {
+            warningLogin(navigate, "Login", "Home");
+        }
+    }, [isFocused]);
+
     useEffect(() => {
         if (isFocused && !user) {
             warningLogin(navigate, "Login", "Home");
@@ -40,19 +55,20 @@ function Library(props) {
         getRecommendData(dispatch)
     }, []);
 
+    const handleNavigateLib = (title) => {
+        navigate('LibraryDetail', { title: title })
+    }
+
     const [clickSong, setClickSong] = useState(false);
 
     function handleClickSong() {
         setClickSong(true);
     }
 
-    function playerNavigate() {
-        navigate("PlayerScreen");
-    }
 
     return (
         <SafeAreaView style={[GlobalStyles.customSafeArea, isDarkTheme ? darkLibrary.libraryContainer : lightLibrary.libraryContainer]}>
-            <ScrollView>
+            {!isPlayScreen && <ScrollView>
                 <HeaderUI />
 
                 <View style={[
@@ -88,7 +104,8 @@ function Library(props) {
                         <TouchableOpacity
                             style={[styles.libraryButton, isDarkTheme ? darkLibrary.libraryFunction : lightLibrary.libraryFunction]}
                             onPress={() => {
-                                warningLogin(navigate, "Login");
+                                 if (!user) warningLogin(navigate, "Login");
+                                else handleNavigateLib('Đanh sách đã lưu');
                             }}
                         >
                             <Icon
@@ -113,7 +130,7 @@ function Library(props) {
                             style={[styles.libraryButton, isDarkTheme ? darkLibrary.libraryFunction : lightLibrary.libraryFunction]}
                             onPress={() => {
                                 if (!user) warningLogin(navigate, "Login");
-                                else navigate('Liked');
+                                else handleNavigateLib('Danh sách đã thích');
                             }}
                         >
                             <Icon
@@ -146,7 +163,8 @@ function Library(props) {
                         <TouchableOpacity
                             style={[styles.libraryButton, isDarkTheme ? darkLibrary.libraryFunction : lightLibrary.libraryFunction]}
                             onPress={() => {
-                                warningLogin(navigate, "Login");
+                                if (!user) warningLogin(navigate, "Login");
+                                else handleNavigateLib('Lịch sử nghe');
                             }}
                         >
                             <Icon
@@ -167,10 +185,10 @@ function Library(props) {
                             </Text>
                         </TouchableOpacity>
                         <View style={{ flex: 1 }}></View>
-                        <TouchableOpacity
+                        {/* <TouchableOpacity
                             style={[styles.libraryButton, isDarkTheme ? darkLibrary.libraryFunction : lightLibrary.libraryFunction]}
                             onPress={() => {
-                                warningLogin(navigate, "Login");
+                                warningLogin(navigation, "Login");
                             }}
                         >
                             <Icon
@@ -187,7 +205,7 @@ function Library(props) {
                                 ]}>
                                 Playlist
                             </Text>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                     </View>
                 </View>
                 <View
@@ -225,6 +243,17 @@ function Library(props) {
                     </View>
                 </View>
             </ScrollView>
+
+            }
+            {isPlayScreen && sound != null && <PlayerScreen />}
+            {isMiniPlayer && <MiniPlayer
+            // avtUrl={detailPost.image}
+            // tittle={detailPost.title}
+            // author={detailPost.owner.fullName}
+            // sound={sound}
+            // loadSound={loadSound}
+            // switchToNewSound={switchToNewSound}
+            />}
         </SafeAreaView>
     );
 }

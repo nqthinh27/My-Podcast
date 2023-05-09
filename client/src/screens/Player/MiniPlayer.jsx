@@ -9,26 +9,29 @@ import {
     SafeAreaView,
     ScrollView,
     PanResponder,
+    Animated,
 } from "react-native";
-import Icon from "react-native-vector-icons/Ionicons";
 import colors from "../../constants/colors";
 import Slider from "@react-native-community/slider";
 import { device } from "../../constants/device";
 import { useDispatch, useSelector } from "react-redux";
-import { setCurrentSound, setDuration, setIsMiniPlayer, setIsPlayScreen, setIsPlayer, setIsPlaying, setNextPress, setPlayValue, setPosition, setSoundUrl } from "../../redux/slices/playerSlice";
+import { setCurrentSound, setDuration, setIsMiniPlayer, setIsPlayScreen, setIsPlayer, setIsPlaying, setNextPress, setPlayValue, setPosition, setPrevPress, setSound, setSoundUrl } from "../../redux/slices/playerSlice";
 
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 
 import { Audio } from 'expo-av';
 import EmptyImage from "../../constants/EmptyImage";
+import { getPost } from "../../redux/actions/postApi";
 
 export default function MiniPlayer(props) {
-    const { sound, loadSound, switchToNewSound } = props
+    // const { switchToNewSound } = props
+    const sound = useSelector((state) => state.player.sound);
 
     const navigation = useNavigation();
 
     // const [miniPlayerOpacity, setMiniPlayerOpacity] = useState(1);
     const dispatch = useDispatch();
+    const isFocused = useIsFocused();
     // const [sound, setSound] = useState(null);
     const detailPost = useSelector((state) => state.post.detailPost);
     // const soundUrl = useSelector((state) => state.player.soundUrl);
@@ -39,63 +42,64 @@ export default function MiniPlayer(props) {
     const isMiniPlayer = useSelector((state) => state.player.isMiniPlayer);
     const currentSound = useSelector((state) => state.player.currentSound);
     const isPlaying = useSelector((state) => state.player.isPlaying);
+    const isPlayScreen = useSelector((state) => state.player.isPlayScreen);
+    const dataSound = useSelector((state) => state.player.dataSound);
 
     const SliderData = useSelector((state) => state.home.slider.data);
 
-    // async function playSound() {
-    //     try {
-    //         await Audio.setAudioModeAsync({
-    //             staysActiveInBackground: true,
-    //             interruptionModeAndroid: 1,
-    //             shouldDuckAndroid: true,
-    //             interruptionModeIOS: 1,
-    //             playsInSilentModeIOS: true,
-    //         });
-    //         const { sound } = await Audio.Sound.createAsync(
-    //             { uri:  soundUrl},
-    //             {
-    //                 shouldPlay: true,
-    //                 isLooping: true,
-    //             },
-    //         );
-    //         setSound(sound);
-    //         dispatch(setPlayValue(true));
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // }
-    // const unloadSound = async () => {
-    //     try {
-    //         await sound.unloadAsync();
-    //         // setSound(null);
-    //         setIsPlaying(false);
-    //     } catch (error) {
-    //         console.log('Error unloading audio: ', error);
-    //     }
-    // };
-
-    // const playSound = async () => {
-    //     if (detailPost !== null) {
-    //         await loadSound(detailPost.audio);
-    //         console.log("phát ở mini");
-    //     }
-    // };
-    // useEffect(() => {
-    //     if (detailPost && !isPlayer) {
-    //         // unloadSound();
-    //         playSound();
-    //         console.log("phát nhạc")
-    //     }
-    //     // return () => {
-    //     //     if (sound != null) {
-    //     //         // sound.stopAsync();
-    //     //         sound.unloadAsync();
-    //     //     }
-    //     // };
-    // }, [detailPost]);
+    async function loadSound(uri) {
+        try {
+            // if (sound) {
+            //     await sound.unloadAsync();
+            //     sound = null;
+            //   }
+            await Audio.setAudioModeAsync({
+                staysActiveInBackground: true,
+                interruptionModeAndroid: 1,
+                shouldDuckAndroid: true,
+                interruptionModeIOS: 1,
+                playsInSilentModeIOS: true,
+            });
+            const { sound: song } = await Audio.Sound.createAsync(
+                { uri },
+                {
+                    shouldPlay: true,
+                    isLooping: true,
+                    positionMillis: position,
+                },
+                onPlaybackStatusUpdate
+            );
+            dispatch(setSound(song));
+            // dispatch(setPlayValue(true));
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     useEffect(() => {
-        if (sound != null) {
+        if (isPlaying) {
+            playSound();
+            console.log("mini player");
+            dispatch(setIsPlaying(false));
+        }
+    }, [detailPost.audio]);
+
+    const playSound = async () => {
+        if (detailPost !== null && !isPlayScreen) {
+            await loadSound(detailPost.audio);
+            console.log("phát đầu tiên mini player");
+        }
+    };
+
+    function onPlaybackStatusUpdate(status) {
+        if (status.isPlaying) {
+            dispatch(setPosition(status.positionMillis));
+            dispatch(setDuration(status.durationMillis));
+        }
+    }
+
+    useEffect(() => {
+        if (sound != null && isFocused) {
             if (playValue) {
                 resumeSound();
             } else {
@@ -104,9 +108,9 @@ export default function MiniPlayer(props) {
         }
     }, [playValue]);
 
-    function onSliderValueChange(value) {
+    async function onSliderValueChange(value) {
         if (sound != null) {
-            sound.setPositionAsync(value);
+            await sound.setPositionAsync(value);
             dispatch(setPosition(value));
         }
     }
@@ -130,68 +134,47 @@ export default function MiniPlayer(props) {
             await sound.playAsync();
             dispatch(setPlayValue(true));
         }
-        // if (isPlayer) {
-        //     playSound();
-        //     dispatch(setPlayValue(true));
-        //     dispatch(setIsPlayer(false));
-        // }
+
+    }
+
+    async function switchToNewSound(uri) {
+        try {
+            if (sound != null) {
+                await sound.unloadAsync();
+                dispatch(setSound(null));
+            }
+            if (uri) {
+                await getPost(uri, dispatch);
+            }
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     function onNextPress() {
-        // console.log("currentNext: " + currentTrack.id)
-        const currentIndex = SliderData.findIndex((item) => item.index === currentSound);
-        const nextTrack = SliderData[currentIndex + 1];
-        console.log("soundnext: " + nextTrack._id);
+        const currentIndex = dataSound.findIndex((item) => item.index === currentSound);
+        const nextTrack = dataSound[currentIndex + 1];
         if (nextTrack) {
             switchToNewSound(nextTrack._id);
             dispatch(setCurrentSound(nextTrack.index));
             dispatch(setPosition(0));
-            dispatch(setNextPress(true))
+            dispatch(setIsPlayScreen(false));
+            dispatch(setIsPlaying(true));
         }
     }
 
     function onPrevPress() {
-        // console.log("currentPrev: " + currentTrack.id)
-        const currentIndex = SliderData.findIndex((item) => item.index === currentSound);
-        const prevTrack = SliderData[currentIndex - 1];
+        const currentIndex = dataSound.findIndex((item) => item.index === currentSound);
+        const prevTrack = dataSound[currentIndex - 1];
         if (prevTrack) {
             switchToNewSound(prevTrack._id);
             dispatch(setCurrentSound(prevTrack.index));
             dispatch(setPosition(0));
-            dispatch(setNextPress(true))
+            dispatch(setIsPlayScreen(false));
+            dispatch(setIsPlaying(true));
+
         }
     }
-
-    // const nextPress = useSelector((state) => state.player.nextPress);
-
-    // useEffect(() => {
-    //     if (nextPress) {
-    //         sound.unloadAsync();
-    //         loadSound(detailPost.audio);
-    //         console.log("ductu1");
-    //         dispatch(setNextPress(false));
-    //     }
-    //     // return () => {
-    //     //     if (sound != null) {
-    //     //         sound.unloadAsync();
-    //     //         // setSound(null);
-    //     //     }
-    //     // };
-    // }, [nextPress]);
-
-    const handleScroll = (event) => {
-        const scrollX = event.nativeEvent.contentOffset.x;
-        const threshold = 100; //ngưỡng tối đa
-
-        if (scrollX > threshold) {
-            // setMiniPlayerOpacity(0);
-            // console.log("đã biến mất");
-        } else {
-            // setMiniPlayerOpacity(1);
-            // console.log("chưa biến mất");
-        }
-    };
-
     // useEffect(() => {
     //     return sound
     //         ? () => {
@@ -201,27 +184,39 @@ export default function MiniPlayer(props) {
     //         : undefined;
     // }, [sound]);
 
-    // const panResponder = useRef(
-    //     PanResponder.create({
-    //         onMoveShouldSetPanResponder: () => true,
-    //         onPanResponderMove: (evt, gestureState) => {
-    //             // Xử lý sự kiện chuyển động
-    //             if (gestureState.dx > 50 || gestureState.dx < -50) {
-    //                 dispatch(setIsMiniPlayer(false));
-    //                 if (sound != null) {
-    //                     sound.unloadAsync();
-    //                 }
-    //                 console.log(sound);
-    //             }
-    //         },
-    //         onPanResponderRelease: (evt, gestureState) => {
-    //             // Xử lý sự kiện khi thả tay
-    //         },
-    //     })
-    // ).current;
+    const [pan] = useState(new Animated.ValueXY());
+    const panResponder = PanResponder.create({
+        onMoveShouldSetPanResponderCapture: () => true,
+        onPanResponderGrant: () => {
+            pan.setOffset({
+                x: pan.x._value,
+                y: pan.y._value,
+            });
+        },
+        onPanResponderMove: Animated.event(
+            [null, { dx: pan.x }],
+            {
+                useNativeDriver: false,
+                listener: (event, gestureState) => {
+                    if (gestureState.dx > 30 || gestureState.dx < -30) {
+                        // Kéo sang phải hoặc trái hơn 50px thì tắt nhạc
+                        sound.unloadAsync();
+                        dispatch(setPosition(0));
+                        dispatch(setIsMiniPlayer(false));
+                    }
+                },
+            }
+        ),
+        onPanResponderRelease: () => {
+            pan.flattenOffset();
+        },
+    });
 
     return (
-        <View>
+        <Animated.View
+            style={[{ transform: [{ translateX: pan.x }] }]}
+            {...panResponder.panHandlers}
+        >
             <ImageBackground
                 source={{
                     uri: detailPost.image,
@@ -244,7 +239,6 @@ export default function MiniPlayer(props) {
                             // };
                             dispatch(setIsPlayScreen(true));
                         }}
-
                     >
                         <View style={stylesMiniPlayer.miniplayerAvatar}>
                             <Image
@@ -313,12 +307,11 @@ export default function MiniPlayer(props) {
                     // minimumTrackTintColor= 'red'
                     maximumTrackTintColor={colors.black}
                     thumbTintColor="black"
-
                     // disabled={true}
                     onValueChange={onSliderValueChange}
                 />
             </ImageBackground >
-        </View >
+        </Animated.View >
     );
 }
 
@@ -334,6 +327,8 @@ const stylesMiniPlayer = StyleSheet.create({
         paddingVertical: 10,
         width: "100%",
         // display: 'flex',
+        // display: 'flex',
+        // height: device.height / 10,
     },
 
     miniplayerAvatar: {
@@ -348,6 +343,7 @@ const stylesMiniPlayer = StyleSheet.create({
         // flex: 4,
         justifyContent: "center",
         // marginLeft: 10,
+        maxWidth: device.width / 2.4,
         alignItems: "flex-start",
         width: '45%',
 
@@ -364,6 +360,7 @@ const stylesMiniPlayer = StyleSheet.create({
 
     progressBar: {
         width: device.width,
+        // height: device.height / 20,
         // flexDirection: "row",
         // alignSelf: "center",
         opacity: 0.6,

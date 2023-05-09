@@ -34,8 +34,8 @@ function PodcastListItem({ item }) {
             >
                 <Text
                     style={[{
-                        fontWeight: "600",
-                        fontSize: 16,
+                        fontWeight: "500",
+                        fontSize: 18,
                     }, isDarkTheme ? darkHeader.text : lightHeader.text]}
                     numberOfLines={1}
                 >
@@ -43,7 +43,7 @@ function PodcastListItem({ item }) {
                 </Text>
 
                 <Text style={isDarkTheme ? darkHeader.text : lightHeader.text}>{item.owner.fullName}</Text>
-                <Text style={isDarkTheme ? darkHeader.text : lightHeader.text}>{formatNum(item.views)}{currentLanguage === "vi" ? " Lượt nghe | " : " Listens | "}{formatNum(item.likes)}{currentLanguage === "vi" ? " Lượt yêu thích" : " Favourites"}</Text>
+                <Text style={isDarkTheme ? darkHeader.text : {color: '#414141'}}>{formatNum(item.views)}{currentLanguage === "vi" ? " Lượt nghe | " : " Listens | "}{formatNum(item.likes)}{currentLanguage === "vi" ? " Lượt yêu thích" : " Favourites"}</Text>
             </View>
         </View>
     );

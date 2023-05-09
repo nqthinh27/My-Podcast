@@ -33,8 +33,8 @@ function UserListItem({ item }) {
             >
                 <Text
                     style={[{
-                        fontWeight: "600",
-                        fontSize: 16,
+                        fontWeight: "500",
+                        fontSize: 18,
                     }, isDarkTheme ? darkHeader.text : lightHeader.text]}
                     numberOfLines={1}
                 >
@@ -42,7 +42,7 @@ function UserListItem({ item }) {
                 </Text>
 
                 <Text style={isDarkTheme ? darkHeader.text : lightHeader.text}>@{item.userName}</Text>
-                <Text style={isDarkTheme ? darkHeader.text : lightHeader.text}>{item.followersLength}{currentLanguage === "vi" ? " Người theo dõi | " : " Followers | "}{item.postsLength}{currentLanguage === "vi" ? " Bài đăng" : " Posts"}</Text>
+                <Text style={isDarkTheme ? darkHeader.text : {color: '#414141'}}>{item.followersLength}{currentLanguage === "vi" ? " Người theo dõi | " : " Followers | "}{item.postsLength}{currentLanguage === "vi" ? " Bài đăng" : " Posts"}</Text>
             </View>
         </View>
     );

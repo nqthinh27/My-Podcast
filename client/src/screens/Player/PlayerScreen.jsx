@@ -1,4 +1,4 @@
-import { React, useState, useRef, useEffect } from "react";
+import { React, useState, useRef, useEffect, useCallback } from "react";
 import {
     Text,
     View,
@@ -19,8 +19,8 @@ import GlobalStyles from "../../components/GlobalStyles";
 import { Audio } from "expo-av";
 import Comment from "../../components/Comment";
 import { useDispatch, useSelector } from "react-redux";
-import { setCurrentSound, setDuration, setIsMiniPlayer, setIsPlayScreen, setIsPlayer, setIsPlaying, setNextPress, setPlayValue, setPosition } from "../../redux/slices/playerSlice";
-import { useNavigation } from "@react-navigation/native";
+import { setCurrentSound, setDuration, setIsMiniPlayer, setIsPlayScreen, setIsPlayer, setIsPlaying, setNextPress, setPlayValue, setPosition, setPrevPress, setSound } from "../../redux/slices/playerSlice";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { getPost } from "../../redux/actions/postApi";
 import { darkProfile, lightProfile } from "../../constants/darkLight/themeProfile";
 
@@ -30,9 +30,8 @@ export default function PlayerScreen(props) {
     // //function of navigate
     // const { navigate, goback } = navigation;
 
-    const { sound, loadSound, switchToNewSound } = props;
-
-
+    const sound = useSelector((state) => state.player.sound);
+    const isFocused = useIsFocused();
     const [showCommentScrollView, setShowCommentScrollView] = useState(true);
 
     const handleCommentPress = () => {
@@ -68,9 +67,44 @@ export default function PlayerScreen(props) {
     
 
     const nextPress = useSelector((state) => state.player.nextPress);
+    const prevPress = useSelector((state) => state.player.prevPress);
 
     const dataSound = useSelector((state) => state.player.dataSound);
+    async function loadSound(uri) {
+        try {
+            // if (sound) {
+            //     await sound.unloadAsync();
+            //     sound = null;
+            //   }
+            await Audio.setAudioModeAsync({
+                staysActiveInBackground: true,
+                interruptionModeAndroid: 1,
+                shouldDuckAndroid: true,
+                interruptionModeIOS: 1,
+                playsInSilentModeIOS: true,
+            });
+            const { sound: song } = await Audio.Sound.createAsync(
+                { uri },
+                {
+                    shouldPlay: true,
+                    isLooping: true,
+                    positionMillis: position,
+                },
+                onPlaybackStatusUpdate
+            );
+            dispatch(setSound(song));
+            // dispatch(setPlayValue(true));
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
+    function onPlaybackStatusUpdate(status) {
+        if (status.isPlaying) {
+            dispatch(setPosition(status.positionMillis));
+            dispatch(setDuration(status.durationMillis));
+        }
+    }
     // console.log("sound: ", detailPost.audio);
     const onBackPress = () => {
         dispatch(setIsPlayScreen(false))
@@ -87,16 +121,6 @@ export default function PlayerScreen(props) {
         };
     }, [navigation]);
 
-    // 
-    // useEffect(() => {
-    //     if (isMiniPlayer) {
-    //         // playSound();
-    //         // dispatch(setIsMiniPlayer(false));
-    //         console.log("phát nhạc khi focus trở lại màn hình PlayerScreen");
-    //     }
-    // }, [isMiniPlayer]);
-
-
     // ấn nút thu nhỏ màn hình
     function changeMiniPlayer() {
         // sound.unloadAsync();
@@ -107,31 +131,15 @@ export default function PlayerScreen(props) {
         // navigation.navigate('UIScreen');
     }
 
-    // useEffect(() => {
-    //     if (soundUrl === null) {
-    //         async function loadInitialData() {
-    //             dispatch(setCurrentTrack(songs[0]));
-    //             dispatch(setSoundUrl(songs[0].url));
-    //         }
-    //         console.log("nhập bài hát");
-    //         loadInitialData();
-    //     }
-    // }, []);
     useEffect(() => {
-        if (!isMiniPlayer && isPlayScreen) {
+        if (!isMiniPlayer && isPlayScreen && isFocused) {
             playSound();
-            console.log("ductu");
-        } 
-        // return () => {
-        //     if (sound != null) {
-        //         sound.unloadAsync();
-        //         // setSound(null);
-        //     }
-        // };
+            console.log("bài hát: " + detailPost.audio);
+        }
     }, [detailPost.audio]);
 
     useEffect(() => {
-        if (sound != null) {
+        if (sound != null && isFocused) {
             if (playValue) {
                 resumeSound(detailPost.audio);
             } else {
@@ -140,18 +148,8 @@ export default function PlayerScreen(props) {
         }
     }, [playValue]);
 
-    // const unloadSound = async () => {
-    //     try {
-    //         await sound.unloadAsync();
-    //         // setSound(null);
-    //         setIsPlaying(false);
-    //     } catch (error) {
-    //         console.log('Error unloading audio: ', error);
-    //     }
-    // };
-
     const playSound = async () => {
-        if (detailPost !== null && !isMiniPlayer) {
+        if (detailPost !== null) {
             await loadSound(detailPost.audio);
             console.log("phát đầu tiên");
         }
@@ -179,10 +177,11 @@ export default function PlayerScreen(props) {
         }
     }
 
-    function onSliderValueChange(value) {
+    async function onSliderValueChange(value) {
         if (sound != null) {
-            sound.setPositionAsync(value);
+            await sound.setPositionAsync(value);
             dispatch(setPosition(value));
+            console.log("lặp");
         }
     }
 
@@ -196,19 +195,19 @@ export default function PlayerScreen(props) {
         return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     };
 
-    // async function switchToNewSound(uri) {
-    //     try {
-    //         if (sound != null) {
-    //             await sound.unloadAsync();
-    //         }
-    //         if (uri) {
-    //             await getPost(uri, dispatch);
-
-    //         }
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // }
+    async function switchToNewSound(uri) {
+        try {
+            if (sound != null) {
+                await sound.unloadAsync();
+                dispatch(setSound(null));
+            }
+            if (uri) {
+                await getPost(uri, dispatch);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     function onNextPress() {
         // console.log("currentNext: " + currentTrack.id)
@@ -235,33 +234,12 @@ export default function PlayerScreen(props) {
         }
     }
 
-    // useEffect(() => {
-    //     if (sound != null) {
-    //         if (playValue) {
-    //             resumeSound(detailPost.audio);
-    //         } else {
-    //             pauseSound();
-    //         }
-    //     }
-    // }, [playValue]);
-
     async function stopSound() {
         if (sound) {
             await sound.stopAsync();
             setPlayValue(false);
         }
     }
-
-    // useEffect(() => {
-    //     return sound
-    //         ? () => {
-
-    //             sound.unloadAsync();
-    //             console.log("sound đang");
-
-    //         }
-    //         : undefined;
-    // }, [sound]);
 
     const scrollViewRef = useRef(null);
 
@@ -567,23 +545,11 @@ export default function PlayerScreen(props) {
                             {/* xem thêm */}
                             {playValue ? (
                                 <TouchableOpacity onPress={() => pauseSound()}>
-                                    <Image
-                                        style={{ width: 30, height: 30 }}
-                                        source={{
-                                            uri:
-                                                "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_pause_playersc.png?alt=media&token=4c757d52-ce70-456a-aa36-c8c581af7be6",
-                                        }}
-                                    />
+                                    <Icon name="pause" size={30} color={isDarkTheme ? "white" : "black"}  />
                                 </TouchableOpacity>
                             ) : (
                                 <TouchableOpacity onPress={() => resumeSound(detailPost.audio)}>
-                                    <Image
-                                        style={{ width: 30, height: 30 }}
-                                        source={{
-                                            uri:
-                                                "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_play_playersc.png?alt=media&token=916c4f80-4489-41b1-b834-de6f2d5affd8",
-                                        }}
-                                    />
+                                    <Icon name="play" size={30} color={isDarkTheme ? "white" : "black"}  />
                                 </TouchableOpacity>
                             )}
                             <View style={{ flexDirection: 'row' , justifyContent: 'center', alignContent: 'center'}}>
