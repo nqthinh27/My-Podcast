@@ -48,7 +48,7 @@ function Library(props) {
         getRecommendData(dispatch)
     }, []);
     const handleNavigateLib = (title) => {
-        navigate('LibraryDetail', { title: title })
+        navigation.navigate('LibraryDetail', { title: title })
     }
 
     const [clickSong, setClickSong] = useState(false);

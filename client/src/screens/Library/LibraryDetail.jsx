@@ -18,6 +18,8 @@ import { getLikedListData, getRecommendData } from "../../redux/actions/libraryA
 import GlobalStyles from "../../components/GlobalStyles";
 import Loading from "../../components/Loading";
 import { postDataAPI } from "../../ultis/fetchData";
+import axios from "axios";
+import { BASE_URL } from "../../ultis/config";
 
 function LibraryDetail({ route }) {
     const { title } = route.params;
@@ -41,7 +43,7 @@ function LibraryDetail({ route }) {
             res = await postDataAPI('like', null, access_token);;
             setData(res.data.liked);
         } else if (title === 'Lịch sử nghe') {
-            res = await postDataAPI('history', null, access_token);;
+            res = await postDataAPI('history', null, access_token);
             setData(res.data.history);
         }
         setIsLoading(false);

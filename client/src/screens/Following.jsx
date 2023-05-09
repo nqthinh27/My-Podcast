@@ -11,7 +11,7 @@ import { getNewFeed } from "../redux/actions/followingApi";
 import { getOtherUser } from "../redux/actions/profileApi";
 import FollowingHeader from "../components/FollowingHeader";
 import { setIsMiniPlayer, setIsPlayScreen, setIsPlaying } from "../redux/slices/playerSlice";
-import { getLikedListData, getSavedListData } from "../redux/actions/libraryApi";
+import { getHistoryListData, getLikedListData, getSavedListData } from "../redux/actions/libraryApi";
 import { device } from "../constants/device";
 import { setDuration, setPlayStatus, setPosition, setSoundCurrent, setSoundFollower } from "../redux/slices/followingSlice";
 import { Audio } from "expo-av";

@@ -10,11 +10,9 @@ import profileReducer from './slices/profileSlice';
 import postReducer from './slices/postSlice';
 import searchReducer from './slices/searchSlice';
 
-const middleware = [
-    ...getDefaultMiddleware({
-        serializableCheck: false // vô hiệu hóa kiểm tra tuần tự hóa
-    })
-];
+const middleware = getDefaultMiddleware({
+    serializableCheck: false,
+});
 
 export default configureStore({
     reducer: {
@@ -30,5 +28,11 @@ export default configureStore({
         profile: profileReducer,
         search: searchReducer
     },
-    middleware
+    middleware,
+    player: {
+        middleware: [
+            ...middleware,
+        ],
+        serializableCheck: false,
+    },
 });

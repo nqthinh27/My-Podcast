@@ -23,8 +23,6 @@ import { setCurrentSound, setDuration, setIsMiniPlayer, setIsPlayScreen, setIsPl
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { getPost } from "../../redux/actions/postApi";
 
-
-
 export default function PlayerScreen(props) {
     // navigation
     // const { navigation, route } = props;
@@ -61,6 +59,7 @@ export default function PlayerScreen(props) {
     const isPlayer = useSelector((state) => state.player.isPlayer);
     const currentSound = useSelector((state) => state.player.currentSound);
     const isPlayScreen = useSelector((state) => state.player.isPlayScreen);
+    const access_token = useSelector((state) => state.auth.login.access_token);
 
 
     const nextPress = useSelector((state) => state.player.nextPress);
@@ -121,6 +120,7 @@ export default function PlayerScreen(props) {
     // ấn nút thu nhỏ màn hình
     function changeMiniPlayer() {
         // sound.unloadAsync();
+        console.log("back");
         dispatch(setIsMiniPlayer(true));
         dispatch(setIsPlayScreen(false));
         // dispatch(setIsPlaying(true));
@@ -149,6 +149,7 @@ export default function PlayerScreen(props) {
         if (detailPost !== null) {
             await loadSound(detailPost.audio);
             console.log("phát đầu tiên");
+            console.log("Views: " + detailPost.views);
         }
     };
 
@@ -175,11 +176,22 @@ export default function PlayerScreen(props) {
     }
 
     async function onSliderValueChange(value) {
-        if (sound != null) {
-            await sound.setPositionAsync(value);
-            dispatch(setPosition(value));
-            console.log("lặp");
+        try {
+            if (sound !== null) {
+                await sound.setPositionAsync(value);
+                dispatch(setPosition(value));
+                console.log("lặp");
+            }
+        } catch (error) {
+            console.log(error);
+            // Hiển thị thông báo lỗi cho người dùng tại đây
         }
+        if (value > duration) {
+            value = duration;
+        } else if (value < 0) {
+            value = 0;
+        }
+
     }
 
 
@@ -199,7 +211,7 @@ export default function PlayerScreen(props) {
                 dispatch(setSound(null));
             }
             if (uri) {
-                await getPost(uri, dispatch);
+                await getPost(uri, dispatch, access_token);
             }
         } catch (error) {
             console.log(error);
@@ -346,7 +358,7 @@ export default function PlayerScreen(props) {
                                     <Image
                                         style={{ width: 28, height: 28 }}
                                         source={{
-                                            uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Tu%2Fbxs_skip-next-circle.png?alt=media&token=10b12ffd-b779-4fdf-8376-b1f8baa92256",
+                                            uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fprev.png?alt=media&token=2002d71f-989c-47de-a1da-93caf349d2e8",
                                         }}
                                     />
                                 </TouchableOpacity>
@@ -366,7 +378,7 @@ export default function PlayerScreen(props) {
                                             style={{ width: 55, height: 55 }}
                                             source={{
                                                 uri:
-                                                    "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Tu%2FGroup%2066.png?alt=media&token=5fb2d1e2-48a0-43bb-9773-ce3424e388f4",
+                                                    "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fplay.png?alt=media&token=332dfb0f-748b-4867-b4b9-bc63c3d0e881",
                                             }}
                                         />
                                     </TouchableOpacity>
@@ -375,7 +387,7 @@ export default function PlayerScreen(props) {
                                     <Image
                                         style={{ width: 28, height: 28 }}
                                         source={{
-                                            uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Tu%2Ffluent_next-32-regular.png?alt=media&token=db668d13-33de-4f5b-99bd-c5723dd21f13",
+                                            uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fnext.png?alt=media&token=808063fd-1278-4e5d-ba5a-46d3e750f1f3",
                                         }}
                                     />
                                 </TouchableOpacity>
