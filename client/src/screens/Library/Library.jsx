@@ -105,7 +105,7 @@ function Library(props) {
                             style={[styles.libraryButton, isDarkTheme ? darkLibrary.libraryFunction : lightLibrary.libraryFunction]}
                             onPress={() => {
                                  if (!user) warningLogin(navigate, "Login");
-                                else handleNavigateLib('Đanh sách đã lưu');
+                                else handleNavigateLib(currentLanguage === "vi" ? "Danh sách đã lưu" : "Saved list");
                             }}
                         >
                             <Icon
@@ -130,7 +130,7 @@ function Library(props) {
                             style={[styles.libraryButton, isDarkTheme ? darkLibrary.libraryFunction : lightLibrary.libraryFunction]}
                             onPress={() => {
                                 if (!user) warningLogin(navigate, "Login");
-                                else handleNavigateLib('Danh sách đã thích');
+                                else handleNavigateLib(currentLanguage === "vi" ? "Danh sách đã thích" : "Liked list");
                             }}
                         >
                             <Icon
@@ -164,7 +164,7 @@ function Library(props) {
                             style={[styles.libraryButton, isDarkTheme ? darkLibrary.libraryFunction : lightLibrary.libraryFunction]}
                             onPress={() => {
                                 if (!user) warningLogin(navigate, "Login");
-                                else handleNavigateLib('Lịch sử nghe');
+                                else handleNavigateLib(currentLanguage === "vi" ? "Lịch sử nghe" : "History");
                             }}
                         >
                             <Icon
