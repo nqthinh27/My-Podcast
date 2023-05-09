@@ -60,11 +60,7 @@ export default function PlayerScreen(props) {
     const isPlayer = useSelector((state) => state.player.isPlayer);
     const currentSound = useSelector((state) => state.player.currentSound);
     const isPlayScreen = useSelector((state) => state.player.isPlayScreen);
-    const currentLanguage = useSelector(
-        (state) => state.language.currentLanguage
-    );
-    const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
-    
+
 
     const nextPress = useSelector((state) => state.player.nextPress);
     const prevPress = useSelector((state) => state.player.prevPress);
@@ -124,6 +120,7 @@ export default function PlayerScreen(props) {
     // ấn nút thu nhỏ màn hình
     function changeMiniPlayer() {
         // sound.unloadAsync();
+        console.log("back");
         dispatch(setIsMiniPlayer(true));
         dispatch(setIsPlayScreen(false));
         // dispatch(setIsPlaying(true));
@@ -152,6 +149,7 @@ export default function PlayerScreen(props) {
         if (detailPost !== null) {
             await loadSound(detailPost.audio);
             console.log("phát đầu tiên");
+            console.log("Views: " + detailPost.views);
         }
     };
 
@@ -178,11 +176,22 @@ export default function PlayerScreen(props) {
     }
 
     async function onSliderValueChange(value) {
-        if (sound != null) {
-            await sound.setPositionAsync(value);
-            dispatch(setPosition(value));
-            console.log("lặp");
+        try {
+            if (sound !== null) {
+                await sound.setPositionAsync(value);
+                dispatch(setPosition(value));
+                console.log("lặp");
+            }
+        } catch (error) {
+            console.log(error);
+            // Hiển thị thông báo lỗi cho người dùng tại đây
         }
+        if (value > duration) {
+            value = duration;
+        } else if (value < 0) {
+            value = 0;
+        }
+
     }
 
 
@@ -202,7 +211,7 @@ export default function PlayerScreen(props) {
                 dispatch(setSound(null));
             }
             if (uri) {
-                await getPost(uri, dispatch);
+                await getPost(uri, dispatch, access_token);
             }
         } catch (error) {
             console.log(error);
@@ -349,7 +358,7 @@ export default function PlayerScreen(props) {
                                     <Image
                                         style={[{ width: 28, height: 28 }, isDarkTheme ? darkProfile.img : lightProfile.img]}
                                         source={{
-                                            uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_prev_playersc.png?alt=media&token=7926276d-71be-4e3b-8c8d-42fd0ab3d369",
+                                            uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Tu%2Fbxs_skip-next-circle.png?alt=media&token=10b12ffd-b779-4fdf-8376-b1f8baa92256",
                                         }}
                                     />
                                 </TouchableOpacity>
@@ -369,7 +378,7 @@ export default function PlayerScreen(props) {
                                             style={{ width: 55, height: 55 }}
                                             source={{
                                                 uri:
-                                                    "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_play_playersc.png?alt=media&token=916c4f80-4489-41b1-b834-de6f2d5affd8",
+                                                    "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Tu%2FGroup%2066.png?alt=media&token=5fb2d1e2-48a0-43bb-9773-ce3424e388f4",
                                             }}
                                         />
                                     </TouchableOpacity>
@@ -378,7 +387,7 @@ export default function PlayerScreen(props) {
                                     <Image
                                         style={[{ width: 22, height: 22 }, , isDarkTheme ? darkProfile.img : lightProfile.img]}
                                         source={{
-                                            uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_next_playersc.png?alt=media&token=2bb45ceb-8cab-4f30-b01c-cc799d55756d",
+                                            uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Tu%2Ffluent_next-32-regular.png?alt=media&token=db668d13-33de-4f5b-99bd-c5723dd21f13",
                                         }}
                                     />
                                 </TouchableOpacity>

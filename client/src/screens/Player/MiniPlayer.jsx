@@ -259,16 +259,16 @@ export default function MiniPlayer(props) {
                         <View style={stylesMiniPlayer.miniplayerControls}>
                         <TouchableOpacity onPress={() => onPrevPress()}>
                             <Image
-                                style={{ width: device.width * 0.07, height: device.width * 0.07 }}
+                                style={{ width: device.width / 16, height: device.width / 16 }}
                                 source={{
-                                    uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_prev_playersc.png?alt=media&token=7926276d-71be-4e3b-8c8d-42fd0ab3d369",
+                                    uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fprev.png?alt=media&token=2002d71f-989c-47de-a1da-93caf349d2e8",
                                 }}
                             />
                         </TouchableOpacity>
                         {playValue ? (
                             <TouchableOpacity onPress={() => pauseSound()}>
                                 <Image
-                                    style={{ width: device.width * 0.1, height: device.width * 0.1 }}
+                                    style={{ width: device.width / 10, height: device.width / 10 }}
                                     source={{
                                         uri:
                                             "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_pause_playersc.png?alt=media&token=4c757d52-ce70-456a-aa36-c8c581af7be6",
@@ -278,10 +278,10 @@ export default function MiniPlayer(props) {
                         ) : (
                             <TouchableOpacity onPress={() => resumeSound()}>
                                 <Image
-                                    style={{ width: device.width * 0.1, height: device.width * 0.1 }}
+                                    style={{ width: device.width / 10, height: device.width / 10 }}
                                     source={{
                                         uri:
-                                            "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_play_playersc.png?alt=media&token=916c4f80-4489-41b1-b834-de6f2d5affd8",
+                                            "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fplay.png?alt=media&token=332dfb0f-748b-4867-b4b9-bc63c3d0e881",
                                     }}
                                 />
                             </TouchableOpacity>
@@ -289,9 +289,9 @@ export default function MiniPlayer(props) {
 
                         <TouchableOpacity onPress={() => onNextPress()}>
                             <Image
-                                style={{ width: device.width *0.06, height: device.width *0.06 }}
+                                style={{ width: device.width / 16, height: device.width / 16 }}
                                 source={{
-                                    uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_next_playersc.png?alt=media&token=2bb45ceb-8cab-4f30-b01c-cc799d55756d",
+                                    uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fnext.png?alt=media&token=808063fd-1278-4e5d-ba5a-46d3e750f1f3",
                                 }}
                             />
                         </TouchableOpacity>

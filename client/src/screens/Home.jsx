@@ -46,6 +46,7 @@ export default function Home(props) {
     const currentSound = useSelector((state) => state.player.currentSound);
     const isPlayScreen = useSelector((state) => state.player.isPlayScreen);
     const currentUser = useSelector((state) => state.auth.login.currentUser);
+    const access_token = useSelector((state) => state.auth.login.access_token);
     const playValue = useSelector((state) => state.player.playValue);
     const [currentIndex, setCurrentIndex] = useState(0);
     const flatListRef = useRef(null);
@@ -121,6 +122,15 @@ export default function Home(props) {
                     horizontal
                     style={isDarkTheme ? darkHome.wrapper : lightHome.wrapper}
                     data={SliderData}
+                    onScrollToIndexFailed={(info) => {
+                        const wait = new Promise(resolve => setTimeout(resolve, 500));
+                        wait.then(() => {
+                            flatListRef.current?.scrollToIndex({
+                                index: info.index,
+                                animated: true,
+                            });
+                        });
+                    }}
                     renderItem={({ item }) => {
                         return (
                             <TouchableOpacity
@@ -134,7 +144,7 @@ export default function Home(props) {
                                         dispatch(setIsMiniPlayer(false));
                                         console.log("home");
                                     }
-                                    await getPost(item._id, dispatch);
+                                    await getPost(item._id, dispatch, access_token);
                                     // if (isMiniPlayer) {
                                     //     setDetailPost(null);
                                     // }
@@ -185,7 +195,7 @@ export default function Home(props) {
                                                     dispatch(setDuration(0));
                                                     dispatch(setIsMiniPlayer(false));
                                                 }
-                                                await getPost(item._id, dispatch);
+                                                await getPost(item._id, dispatch, access_token);
                                                 // if (isMiniPlayer) {
                                                 //     setDetailPost(null);
                                                 // }
@@ -220,7 +230,7 @@ export default function Home(props) {
                                                     dispatch(setDuration(0));
                                                     dispatch(setIsMiniPlayer(false));
                                                 }
-                                                await getPost(item._id, dispatch);
+                                                await getPost(item._id, dispatch, access_token);
                                                 // if (isMiniPlayer) {
                                                 //     setDetailPost(null);
                                                 // }
@@ -255,7 +265,7 @@ export default function Home(props) {
                                                     dispatch(setDuration(0));
                                                     dispatch(setIsMiniPlayer(false));
                                                 }
-                                                await getPost(item._id, dispatch);
+                                                await getPost(item._id, dispatch, access_token);
                                                 // if (isMiniPlayer) {
                                                 //     setDetailPost(null);
                                                 // }
@@ -305,7 +315,7 @@ export default function Home(props) {
                                         dispatch(setDuration(0));
                                         dispatch(setIsMiniPlayer(false));
                                     }
-                                    await getPost(item._id, dispatch);
+                                    await getPost(item._id, dispatch, access_token);
                                     // if (isMiniPlayer) {
                                     //     setDetailPost(null);
                                     // }
