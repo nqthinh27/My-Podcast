@@ -97,6 +97,10 @@ export default function PlayerScreen(props) {
                 interruptionModeIOS: 1,
                 playsInSilentModeIOS: true,
             });
+            if (sound) {
+                await sound.unloadAsync();
+                dispatch(setSound(null));
+            }
             const { sound: song } = await Audio.Sound.createAsync(
                 { uri },
                 {
@@ -315,7 +319,7 @@ export default function PlayerScreen(props) {
                         </TouchableOpacity>
                     </View>
 
-                    <View style={{ flex: 1}}>
+                    <View style={{ flex: 1 }}>
                         <View
                             style={[
                                 { overflow: "hidden" },
