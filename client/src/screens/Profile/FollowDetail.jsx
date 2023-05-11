@@ -14,6 +14,7 @@ import UserListItem from "../../components/UserListItem";
 import Loading from "../../components/Loading";
 import { getPublicDataAPI } from "../../ultis/fetchData";
 import { getOtherUser } from "../../redux/actions/profileApi";
+import { darkProfile, lightProfile } from "../../constants/darkLight/themeProfile";
 
 function FollowDetail({ route }) {
     const { id, type } = route.params;
@@ -25,6 +26,10 @@ function FollowDetail({ route }) {
     const access_token = useSelector((state) => state.auth.login.access_token);
     const [data, setData] = useState([])
     const [isLoading, setIsLoading] = useState(false);
+    const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
+    const currentLanguage = useSelector(
+        (state) => state.language.currentLanguage
+    );
     const fetchDataUsers = async () => {
         setIsLoading(true);
         var res = null;
@@ -41,16 +46,16 @@ function FollowDetail({ route }) {
         fetchDataUsers();
     }, [dispatch]);
     return (
-        <SafeAreaView style={[GlobalStyles.customSafeArea, { backgroundColor: '#fff' }]}>
+        <SafeAreaView style={[GlobalStyles.customSafeArea, isDarkTheme ? darkProfile.profileContainer : lightProfile.profileContainer]}>
             <ScrollView style={{ marginHorizontal: 16 }}>
                 <Text
-                    style={{
+                    style={[{
                         fontSize: 21,
                         fontWeight: "bold",
                         // marginTop: 8,
                         marginBottom: 8,
                         alignSelf: 'center'
-                    }}
+                    }, isDarkTheme ? darkProfile.profileText : lightProfile.profileText]}
                 >
                     {title}
                 </Text>

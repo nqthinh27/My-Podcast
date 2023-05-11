@@ -254,7 +254,7 @@ export default function Following(props) {
     if (!currentUser) return (<View></View>);
 
     return (
-        <SafeAreaView style={[GlobalStyles.customSafeArea, { backgroundColor: isDarkTheme ? colors.dark : colors.white }]}>
+        <SafeAreaView style={[GlobalStyles.customSafeArea, { backgroundColor: isDarkTheme ? colors.dark_backgr : colors.white }]}>
             {!isPlayScreen && <ScrollView>
                 <HeaderUI />
                 <View style={isDarkTheme ? darkfollowStyles.contentWrapper : lightfollowStyles.contentWrapper}>
@@ -361,7 +361,7 @@ const followStyles = StyleSheet.create({
     },
 
     contentSection: {
-        marginVertical: 6,
+        marginVertical: 15,
     },
 
     progressLevelDur: {

@@ -14,11 +14,8 @@ import GlobalStyles from "../components/GlobalStyles";
 import { loginUser } from '../redux/actions/authApi';
 import { useNavigation } from "@react-navigation/native";
 import Loading from "../components/Loading";
-
-const colors = {
-    primary: '#FFA800',
-    inactive: '#888888',
-}
+import colors from "../constants/colors";
+import { lightLogin, darkLogin } from "../constants/darkLight/themeLogin";
 
 function Login(props) {
     const dispatch = useDispatch();
@@ -31,6 +28,10 @@ function Login(props) {
     const [loginwGoogle, setloginwGoogle] = useState(false);
     const [loginwFb, setloginwFb] = useState(false);
 
+    const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
+    const currentLanguage = useSelector(
+        (state) => state.language.currentLanguage
+    );
     const handleLogin = async () => {
         setInLoading(true)
         newUser = {
@@ -44,7 +45,7 @@ function Login(props) {
     }
 
     return (
-        <SafeAreaView style={[GlobalStyles.customSafeArea, {backgroundColor: "#fff"}]}>
+        <SafeAreaView style={[GlobalStyles.customSafeArea, isDarkTheme ? darkLogin.background : lightLogin.background]}>
             <View style={styles.loginHeader}>
                 <EntypoIcon
                     name={"chevron-left"}
@@ -53,31 +54,34 @@ function Login(props) {
                     onPress={() => {
                         goBack();
                     }}
+                    color={isDarkTheme ? darkLogin.text.color : lightLogin.text.color}
                 />
-                <Text style={styles.loginTextHeader}>Đăng nhập</Text>
+                <Text style={[styles.loginTextHeader, isDarkTheme ? darkLogin.text: lightLogin.text]}>{currentLanguage === "vi" ? " Đăng nhập    " : " Login     "}</Text>
                 <Text> </Text>
             </View>
 
-            <View style={styles.loginContainer}>
+            <View style={[styles.loginContainer, isDarkTheme ? darkLogin.background : lightLogin.background]}>
                 <View style={styles.loginInputEmail}>
                     <TextInput
-                        style={styles.loginTextInputEmail}
+                        style={[styles.loginTextInputEmail, isDarkTheme ? darkLogin.text: lightLogin.text]}
                         value={email}
                         onChangeText={setEmail}
                         placeholder="Email"
+                        placeholderTextColor={isDarkTheme ? darkLogin.textInput.color : lightLogin.textInput.color}
                     ></TextInput>
                 </View>
 
                 <View style={styles.loginInputPassword}>
                     <TextInput
-                        style={styles.loginTextInputPassword}
+                        style={[styles.loginTextInputPassword, isDarkTheme ? darkLogin.text: lightLogin.text]}
                         value={password}
                         onChangeText={setPassword}
-                        placeholder="Mật khẩu"
+                        placeholder={currentLanguage === "vi" ? "Mật khẩu" :  "Password"}
                         secureTextEntry={true}
+                        placeholderTextColor={isDarkTheme ? darkLogin.textInput.color : lightLogin.textInput.color}
                     ></TextInput>
 
-                    <Text style={styles.loginTextForgot}>Quên mật khẩu?</Text>
+                    <Text style={styles.loginTextForgot}>{currentLanguage === "vi" ? "Quên mật khẩu?" : " Forgot Password?"}</Text>
                 </View>
 
                 <TouchableOpacity
@@ -87,7 +91,7 @@ function Login(props) {
                     }}
                 >
                     <EntypoIcon name="login" size={25} color="#fff" />
-                    <Text style={styles.loginButtonlogin}> Đăng nhập</Text>
+                    <Text style={styles.loginButtonlogin}>{currentLanguage === "vi" ? " Đăng nhập" : " Login"}</Text>
                 </TouchableOpacity>
 
                 {/* <TouchableOpacity style={styles.loginButtonViewGoogle}>
@@ -111,7 +115,7 @@ function Login(props) {
 
                 <View style={styles.loginViewNoEmail}>
                     <Text style={styles.loginTextNoEmail}>
-                        Chưa có tài khoản?
+                    {currentLanguage === "vi" ? "Chưa có tài khoản?" :  "No account yet?"}
                     </Text>
                 </View>
                 <TouchableOpacity
@@ -121,7 +125,7 @@ function Login(props) {
                     }}
                 >
                     <AntDesignIcon name="adduser" size={30} color={colors.primary} />
-                    <Text style={styles.loginButtonGoogle}> Đăng ký tài khoản</Text>
+                    <Text style={styles.loginButtonGoogle}>{currentLanguage === "vi" ? " Đăng ký tài khoản" :  " Register"}</Text>
                 </TouchableOpacity>
             </View>
             {isLoading && <Loading/>}

@@ -1,7 +1,13 @@
 import React from "react";
 import { Text, View, Image } from "react-native";
+import { lightHeader, darkHeader } from '../constants/darkLight/themeHeaderUI'
+import { useSelector } from "react-redux";
 
 function UserListItem({ item }) {
+    const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
+    const currentLanguage = useSelector(
+        (state) => state.language.currentLanguage
+    );
     return (
         <View
             style={{
@@ -26,17 +32,17 @@ function UserListItem({ item }) {
                 }}
             >
                 <Text
-                    style={{
+                    style={[{
                         fontWeight: "500",
                         fontSize: 18,
-                    }}
+                    }, isDarkTheme ? darkHeader.text : lightHeader.text]}
                     numberOfLines={1}
                 >
                     {item.fullName}
                 </Text>
 
-                <Text style={{}}>@{item.userName}</Text>
-                <Text style={{color: '#414141'}}>{item.followersLength} Người theo dõi | {item.postsLength} Bài đăng</Text>
+                <Text style={isDarkTheme ? darkHeader.text : lightHeader.text}>@{item.userName}</Text>
+                <Text style={isDarkTheme ? darkHeader.text : {color: '#414141'}}>{item.followersLength}{currentLanguage === "vi" ? " Người theo dõi | " : " Followers | "}{item.postsLength}{currentLanguage === "vi" ? " Bài đăng" : " Posts"}</Text>
             </View>
         </View>
     );

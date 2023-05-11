@@ -20,7 +20,7 @@ import { checkIdInclude, formatNum, timeDiff } from "../../ultis/helper";
 import { getPublicDataAPI, patchDataAPI } from "../../ultis/fetchData";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { warningLogin } from "../../ultis/warning";
-// import Icon from "react-native-vector-icons/Entypo";
+import { darkProfile, lightProfile } from "../../constants/darkLight/themeProfile";
 
 export default function OtherProfile() {
     const { navigate, goBack } = useNavigation();
@@ -31,6 +31,11 @@ export default function OtherProfile() {
     const topPosts = useSelector((state) => state.profile.topPosts.data);
     const followers = useSelector((state) => state.profile.followers.data);
     const following = useSelector((state) => state.profile.following.data);
+    const currentLanguage = useSelector(
+        (state) => state.language.currentLanguage
+    );
+    const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
+    
     const [isFollowed, setIsFollowed] = useState(currentUser ? checkIdInclude(followers, currentUser._id) : false);
     // info
     const [currenFollowers, setCurrenFollowers] = useState(otherUser.followers);
@@ -56,8 +61,11 @@ export default function OtherProfile() {
         setIsFollowed(!isFollowed);
     }
 
+    const langText = currentLanguage === 'vi' ? ' Theo dõi ' : ' Follow ';
+
+
     return (
-        <SafeAreaView style={[styles.otherprofile, GlobalStyles.customSafeArea]}>
+        <SafeAreaView style={[styles.otherprofile, GlobalStyles.customSafeArea, isDarkTheme? darkProfile.profileContainer : lightProfile.profileContainer]}>
             <ScrollView showsVerticalScrollIndicator={false}>
                 <View style={styles.otherprofileHeader}>
                     <Icon
@@ -67,12 +75,13 @@ export default function OtherProfile() {
                         onPress={() => {
                             goBack();
                         }}
+                        color={isDarkTheme ? "white" : "black"}
                     />
                     <Text
-                        style={{
+                        style={[{
                             fontWeight: "500",
                             fontSize: 21,
-                        }}
+                        }, isDarkTheme ? darkProfile.profileText : lightProfile.profileText]}
                     >
                         @{otherUser.userName}
                     </Text>
@@ -106,7 +115,8 @@ export default function OtherProfile() {
                                         fontWeight: "500",
                                     }}
                                 >
-                                    {isFollowed ? 'Đang theo dõi   ' : 'Theo dõi  '}
+                                    
+                                    {isFollowed ? ` ${currentLanguage === 'vi' ? ' Đang theo dõi ' : ' Following '}` : langText}
                                 </Text>
                                 <Icon
                                     name={isFollowed ? "user-check" : 'user'}
@@ -126,14 +136,14 @@ export default function OtherProfile() {
 
                     <View style={{ flexDirection: "row" }}>
                         <Text
-                            style={{
+                            style={[{
                                 marginLeft: 16,
                                 fontSize: 18,
                                 fontWeight: "bold",
                                 marginBottom: 10,
-                            }}
+                            }, isDarkTheme ? darkProfile.profileText : lightProfile.profileText]}
                         >
-                            Nổi bật
+                            {currentLanguage === "vi" ? "Nổi bật" : "Popular"}
                         </Text>
 
                         <Icon
@@ -141,9 +151,9 @@ export default function OtherProfile() {
                             size={18}
                             style={{ paddingTop: 1 }}
                             onPress={() => {
-                                navigate("UIScreen");
                             }}
-                        />
+                            color={isDarkTheme ? "white" : "black"}
+                            />
                     </View>
                     <View
                         style={{
@@ -176,14 +186,14 @@ export default function OtherProfile() {
                     </View>
                     <View style={{ flexDirection: "row" }}>
                         <Text
-                            style={{
+                            style={[{
                                 marginLeft: 16,
                                 fontSize: 18,
                                 fontWeight: "bold",
                                 marginBottom: 10,
-                            }}
+                            }, isDarkTheme ? darkProfile.profileText : lightProfile.profileText]}
                         >
-                            Mới phát hành
+                            {currentLanguage === "vi" ? "Mới phát hành" : "New release"}
                         </Text>
 
                         <Icon
@@ -191,8 +201,8 @@ export default function OtherProfile() {
                             size={18}
                             style={{ paddingTop: 1 }}
                             onPress={() => {
-                                navigate("UIScreen");
                             }}
+                            color={isDarkTheme ? "white" : "black"}
                         />
                     </View>
 

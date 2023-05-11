@@ -243,8 +243,8 @@ export default function MiniPlayer(props) {
                         <View style={stylesMiniPlayer.miniplayerAvatar}>
                             <Image
                                 style={{
-                                    width: device.width / 7,
-                                    height: device.width / 7,
+                                    width: device.width * 0.15,
+                                    height: device.width * 0.15,
                                     borderRadius: 7,
                                 }}
                                 source={{
@@ -253,11 +253,10 @@ export default function MiniPlayer(props) {
                             />
                         </View>
                         <View style={stylesMiniPlayer.miniplayerTrackDetails}>
-                            <Text style={{ fontWeight: "600", fontSize: 15, }}>{detailPost.title}</Text>
-                            <Text style={{ fontSize: 13 }}>{detailPost.owner.fullName}</Text>
+                            <Text style={{ fontWeight: "600", fontSize: 15, }} numberOfLines={1} ellipsizeMode='tail'>{detailPost.title}</Text>
+                            <Text style={{ fontSize: 13 }} numberOfLines={1} ellipsizeMode='tail'>{detailPost.owner.fullName}</Text>
                         </View>
-                    </TouchableOpacity>
-                    <View style={stylesMiniPlayer.miniplayerControls}>
+                        <View style={stylesMiniPlayer.miniplayerControls}>
                         <TouchableOpacity onPress={() => onPrevPress()}>
                             <Image
                                 style={{ width: device.width / 16, height: device.width / 16 }}
@@ -272,7 +271,7 @@ export default function MiniPlayer(props) {
                                     style={{ width: device.width / 10, height: device.width / 10 }}
                                     source={{
                                         uri:
-                                            "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fpause.png?alt=media&token=ae6b74e7-ac06-40a8-a1a7-09d3380e2863",
+                                            "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_pause_playersc.png?alt=media&token=4c757d52-ce70-456a-aa36-c8c581af7be6",
                                     }}
                                 />
                             </TouchableOpacity>
@@ -297,6 +296,8 @@ export default function MiniPlayer(props) {
                             />
                         </TouchableOpacity>
                     </View>
+                    </TouchableOpacity>
+                    
                 </View>
                 <Slider
                     style={stylesMiniPlayer.progressBar}
@@ -317,15 +318,17 @@ export default function MiniPlayer(props) {
 const stylesMiniPlayer = StyleSheet.create({
     miniplayer: {
         // height: device.height / 10,
-        flexDirection: "row"
+        flexDirection: "row",
+        flex: 1
     },
     miniplayerBackground: {
         // flexDirection: "row",
         backgroundColor: "#fff",
         paddingVertical: 10,
         width: "100%",
-        display: 'flex',
-        height: device.height / 10,
+        // display: 'flex',
+        // display: 'flex',
+        // height: device.height / 10,
     },
 
     miniplayerAvatar: {
@@ -333,14 +336,17 @@ const stylesMiniPlayer = StyleSheet.create({
         justifyContent: "flex-start",
         marginHorizontal: 16,
         alignSelf: "center",
+        
     },
 
     miniplayerTrackDetails: {
         // flex: 4,
-        justifyContent: "space-between",
+        justifyContent: "center",
         // marginLeft: 10,
         maxWidth: device.width / 2.4,
         alignItems: "flex-start",
+        width: '45%',
+
     },
 
     miniplayerControls: {
@@ -349,6 +355,7 @@ const stylesMiniPlayer = StyleSheet.create({
         alignItems: "center",
         justifyContent: "space-evenly",
         // marginRight: 16,
+        // width: '35%',
     },
 
     progressBar: {

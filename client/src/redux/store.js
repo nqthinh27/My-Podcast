@@ -9,6 +9,7 @@ import libraryReducer from './slices/librarySlice';
 import profileReducer from './slices/profileSlice';
 import postReducer from './slices/postSlice';
 import searchReducer from './slices/searchSlice';
+import languageReducer from './slices/languageSlice';
 
 const middleware = getDefaultMiddleware({
     serializableCheck: false,
@@ -26,7 +27,8 @@ export default configureStore({
         following: followingReducer,
         library: libraryReducer,
         profile: profileReducer,
-        search: searchReducer
+        search: searchReducer,
+        language: languageReducer,
     },
     middleware,
     player: {

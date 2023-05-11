@@ -74,6 +74,16 @@ export const lightSetting = StyleSheet.create({
         color: 'black',
         fontSize: 16,
         paddingStart: 15,
+    },
+
+    nameText: {
+        color: 'black',
+        fontSize: 20,
+        fontWeight: '500'
+    },
+
+    usernameText: {
+        color: 'black'
     }
 })
 
@@ -82,7 +92,8 @@ export const darkSetting = StyleSheet.create({
         color: colors.black,
         marginLeft: 10,
         // borderRadius: 0,
-        backgroundColor: 'rgba(255, 255, 255, 0.4)',
+        backgroundColor: colors.dark_grey,
+        borderRadius: 5
     },
     loginText: {
         fontSize: 16,
@@ -90,12 +101,12 @@ export const darkSetting = StyleSheet.create({
         color: colors.white
     },
     dark: {
-        backgroundColor: colors.dark,
+        backgroundColor: colors.dark_backgr,
         color: "#fff"
     },
     title: {
-        top: 10,
-        height: 30,
+        // top: 10,
+        // height: 30,
         marginTop: 10,
 
     },
@@ -106,11 +117,11 @@ export const darkSetting = StyleSheet.create({
         justifyContent: 'space-between',
         alignContent: 'center',
         alignItems: 'center',
-        height: 45,
         marginVertical: 3,
         marginHorizontal: 16,
         borderRadius: 7,
-        backgroundColor: 'rgba(255, 255, 255, 0.4)'
+        backgroundColor: colors.dark_grey,
+        height: 45,
     },
 
     fontBlur: {
@@ -121,8 +132,18 @@ export const darkSetting = StyleSheet.create({
     },
 
     fontText: {
-        color: '#fff',
+        color: colors.dark_sub,
         fontSize: 16,
         paddingStart: 15,
+    },
+
+    nameText: {
+        color: 'white',
+        fontSize: 20,
+        fontWeight: '500'
+    },
+
+    usernameText: {
+        color: 'white'
     }
 })

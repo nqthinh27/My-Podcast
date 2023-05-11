@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Image } from "react-native";
+import { Image, StatusBar } from "react-native";
 import Home from "../screens/Home";
 import Library from "../screens/Library/Library";
 import Following from "../screens/Following";
@@ -7,6 +7,7 @@ import Post from "../screens/Post";
 import Setting from "../screens/Setting";
 import { useSelector } from "react-redux";
 import colors from "../constants/colors";
+import languageSlice from "../redux/slices/languageSlice";
 
 const Tab = createBottomTabNavigator();
 const screenOptions = ({ route }) => ({
@@ -42,14 +43,18 @@ const screenOptions = ({ route }) => ({
 
 export default function UIScreen(props) {
     const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
+    const currentLanguage = useSelector(
+        (state) => state.language.currentLanguage
+    );
 
     return (
-        <Tab.Navigator initialRouteName="Home" screenOptions={screenOptions}>
+        <Tab.Navigator initialRouteName="Home" screenOptions={screenOptions}
+        >
             <Tab.Screen
                 name="Home"
                 component={Home}
                 options={{
-                    title: 'Trang chủ',
+                    title: currentLanguage == 'vi' ? 'Trang chủ' : 'Home',
                     tabBarActiveBackgroundColor: isDarkTheme ? colors.black : colors.white,
                     tabBarInactiveBackgroundColor: isDarkTheme ? colors.black : colors.white,
                 }}
@@ -58,7 +63,7 @@ export default function UIScreen(props) {
                 name="Following"
                 component={Following}
                 options={{
-                    tabBarLabel: 'Theo dõi',
+                    tabBarLabel:  currentLanguage == 'vi' ? 'Theo dõi' : 'Following',
                     tabBarActiveBackgroundColor: isDarkTheme ? colors.black : colors.white,
                     tabBarInactiveBackgroundColor: isDarkTheme ? colors.black : colors.white,
                 }} />
@@ -74,14 +79,14 @@ export default function UIScreen(props) {
                 name="Library"
                 component={Library}
                 options={{
-                    tabBarLabel: 'Thư viện',
+                    tabBarLabel:  currentLanguage == 'vi' ? 'Thư viện' : 'Library',
                     tabBarActiveBackgroundColor: isDarkTheme ? colors.black : colors.white,
                     tabBarInactiveBackgroundColor: isDarkTheme ? colors.black : colors.white,
                 }} />
             <Tab.Screen
                 name="Setting"
                 component={Setting} options={{
-                    tabBarLabel: 'Cài đặt',
+                    tabBarLabel:  currentLanguage == 'vi' ? 'Cài đặt' : 'Setting',
                     tabBarActiveBackgroundColor: isDarkTheme ? colors.black : colors.white,
                     tabBarInactiveBackgroundColor: isDarkTheme ? colors.black : colors.white,
                 }} />

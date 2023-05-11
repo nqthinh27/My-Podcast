@@ -54,7 +54,9 @@ export default function Home(props) {
     const screenWidth = Math.min(325);
     const position = useSelector((state) => state.player.position);
     const sound = useSelector((state) => state.player.sound);
-
+    const currentLanguage = useSelector(
+        (state) => state.language.currentLanguage
+    );
     const [isLoading, setIsLoading] = useState(false);
     const fetchHomeData = async () => {
         setIsLoading(true);
@@ -162,7 +164,7 @@ export default function Home(props) {
                 />
 
                 <TouchableOpacity style={lightHome.coverAll}>
-                    <Text style={isDarkTheme ? darkHome.title : lightHome.title}>Bảng xếp hạng</Text>
+                    <Text style={isDarkTheme ? darkHome.title : lightHome.title}>{currentLanguage === "vi" ? "Bảng xếp hạng" : "Charts"}</Text>
                     {/* <Text style={isDarkTheme ? darkHome.title : lightHome.title}>Bảng xếp hạng</Text> */}
                     <Icon
                         name='chevron-right'
@@ -290,7 +292,7 @@ export default function Home(props) {
 
                 {/* ==========================================Mới phát hành========================================== */}
                 <TouchableOpacity style={lightHome.coverAll}>
-                    <Text style={[isDarkTheme ? darkHome.title : lightHome.title, lightHome.blank]}>Mới phát hành</Text>
+                    <Text style={[isDarkTheme ? darkHome.title : lightHome.title, lightHome.blank]}>{currentLanguage === "vi" ? "Mới phát hành" : "New releases"}</Text>
                     <Icon
                         name='chevron-right'
                         style={{ opacity: 1, marginLeft: 8, marginTop: 13 }}
@@ -334,7 +336,7 @@ export default function Home(props) {
                 </ScrollView>
                 {/* ==========================================Tác giả nổi bật==========================================*/}
                 <TouchableOpacity style={[lightHome.coverAll, { marginTop: 16 }]}>
-                    <Text style={isDarkTheme ? darkHome.title : lightHome.title}>Tác giả nổi bật</Text>
+                    <Text style={isDarkTheme ? darkHome.title : lightHome.title}>{currentLanguage === "vi" ? "Tác giả nổi bật" : "Featured author"}</Text>
                     <Icon
                         name='chevron-right'
                         style={{ opacity: 1, marginLeft: 8 }}
