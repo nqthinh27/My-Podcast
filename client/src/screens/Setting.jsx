@@ -81,624 +81,621 @@ export default function Setting(props) {
                 GlobalStyles.customSafeArea,
             ]}
         >
-            {!isPlayScreen && (
-                <ScrollView>
-                    {!user && (
-                        <View style={lightSetting.accountSuccess}>
+            <ScrollView>
+                {!user && (
+                    <View style={lightSetting.accountSuccess}>
+                        <Image
+                            source={{
+                                uri: avatar,
+                            }}
+                            style={lightSetting.avatar}
+                        />
+                        <View style={{ marginLeft: 16 }}>
+                            <Text
+                                style={
+                                    isDarkTheme
+                                        ? darkSetting.fontText
+                                        : lightSetting.fontText
+                                }
+                            >
+                                {currentLanguage === "vi"
+                                    ? "Xin chào"
+                                    : "Welcome!"}
+                            </Text>
+                            {/* <Text style={{ fontSize: 16, }}>Ấn vào đây để Đăng nhập hoặc Đăng ký</Text> */}
+                            <View style={{ flexDirection: "row" }}>
+                                <TouchableOpacity
+                                    style={
+                                        isDarkTheme
+                                            ? darkSetting.loginButton
+                                            : lightSetting.loginButton
+                                    }
+                                    onPress={() => {
+                                        handleLogin();
+                                    }}
+                                >
+                                    <Text
+                                        style={
+                                            isDarkTheme
+                                                ? darkSetting.loginText
+                                                : lightSetting.loginText
+                                        }
+                                    >
+                                        {currentLanguage === "vi"
+                                            ? "Đăng nhập"
+                                            : "Log in"}
+                                    </Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={
+                                        isDarkTheme
+                                            ? darkSetting.loginButton
+                                            : lightSetting.loginButton
+                                    }
+                                    onPress={() => {
+                                        navigate("Register");
+                                    }}
+                                >
+                                    <Text
+                                        style={
+                                            isDarkTheme
+                                                ? darkSetting.loginText
+                                                : lightSetting.loginText
+                                        }
+                                    >
+                                        {currentLanguage === "vi"
+                                            ? "Đăng ký"
+                                            : "Register"}
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
+                )}
+                {user && (
+                    <View style={lightSetting.accountSuccess}>
+                        <TouchableOpacity
+                            onPress={() => {
+                                handleLogin();
+                            }}
+                        >
                             <Image
                                 source={{
                                     uri: avatar,
                                 }}
-                                style={lightSetting.avatar}
-                            />
-                            <View style={{ marginLeft: 16 }}>
-                                <Text
-                                    style={
-                                        isDarkTheme
-                                            ? darkSetting.fontText
-                                            : lightSetting.fontText
-                                    }
-                                >
-                                    {currentLanguage === "vi"
-                                        ? "Xin chào"
-                                        : "Welcome!"}
-                                </Text>
-                                {/* <Text style={{ fontSize: 16, }}>Ấn vào đây để Đăng nhập hoặc Đăng ký</Text> */}
-                                <View style={{ flexDirection: "row" }}>
-                                    <TouchableOpacity
-                                        style={
-                                            isDarkTheme
-                                                ? darkSetting.loginButton
-                                                : lightSetting.loginButton
-                                        }
-                                        onPress={() => {
-                                            handleLogin();
-                                        }}
-                                    >
-                                        <Text
-                                            style={
-                                                isDarkTheme
-                                                    ? darkSetting.loginText
-                                                    : lightSetting.loginText
-                                            }
-                                        >
-                                            {currentLanguage === "vi"
-                                                ? "Đăng nhập"
-                                                : "Log in"}
-                                        </Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity
-                                        style={
-                                            isDarkTheme
-                                                ? darkSetting.loginButton
-                                                : lightSetting.loginButton
-                                        }
-                                        onPress={() => {
-                                            navigate("Register");
-                                        }}
-                                    >
-                                        <Text
-                                            style={
-                                                isDarkTheme
-                                                    ? darkSetting.loginText
-                                                    : lightSetting.loginText
-                                            }
-                                        >
-                                            {currentLanguage === "vi"
-                                                ? "Đăng ký"
-                                                : "Register"}
-                                        </Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </View>
-                        </View>
-                    )}
-                    {user && (
-                        <View style={lightSetting.accountSuccess}>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    handleLogin();
-                                }}
-                            >
-                                <Image
-                                    source={{
-                                        uri: avatar,
-                                    }}
-                                    style={lightSetting.avatarSuccess}
-                                />
-                            </TouchableOpacity>
-                            <View style={{ marginLeft: 16 }}>
-                                <Text
-                                    style={
-                                        isDarkTheme
-                                            ? darkSetting.nameText
-                                            : lightSetting.nameText
-                                    }
-                                >
-                                    {user.fullName}
-                                </Text>
-                                <Text
-                                    style={
-                                        isDarkTheme
-                                            ? darkSetting.usernameText
-                                            : lightSetting.usernameText
-                                    }
-                                >
-                                    @{user.userName}
-                                </Text>
-                            </View>
-                        </View>
-                    )}
-                    <View>
-                        <View style={lightSetting.title}>
-                            <Text
-                                style={
-                                    isDarkTheme
-                                        ? darkSetting.fontBlur
-                                        : lightSetting.fontBlur
-                                }
-                            >
-                                {currentLanguage === "vi"
-                                    ? "Tài khoản"
-                                    : "Account"}
-                            </Text>
-                        </View>
-                        <TouchableOpacity
-                            style={
-                                isDarkTheme
-                                    ? darkSetting.setIco
-                                    : lightSetting.setIco
-                            }
-                        >
-                            <Icon
-                                name="user"
-                                style={{ paddingStart: 10 }}
-                                size={18}
-                                color={
-                                    isDarkTheme
-                                        ? darkSetting.dark.color
-                                        : lightSetting.light.color
-                                }
-                            />
-                            <Text
-                                style={
-                                    isDarkTheme
-                                        ? darkSetting.fontText
-                                        : lightSetting.fontText
-                                }
-                            >
-                                {currentLanguage === "vi"
-                                    ? "Tài khoản"
-                                    : "Account"}
-                            </Text>
-                            <View style={{ flex: 1 }} />
-                            <Icon
-                                name="chevron-right"
-                                style={{ paddingEnd: 10, opacity: 0.5 }}
-                                size={20}
-                                color={
-                                    isDarkTheme
-                                        ? darkSetting.dark.color
-                                        : lightSetting.light.color
-                                }
+                                style={lightSetting.avatarSuccess}
                             />
                         </TouchableOpacity>
-                        <TouchableOpacity
-                            style={
-                                isDarkTheme
-                                    ? darkSetting.setIco
-                                    : lightSetting.setIco
-                            }
-                        >
-                            <Icon
-                                name="lock"
-                                style={{ paddingStart: 10, opacity: 0.6 }}
-                                size={18}
-                                color={
-                                    isDarkTheme
-                                        ? darkSetting.dark.color
-                                        : lightSetting.light.color
-                                }
-                            />
+                        <View style={{ marginLeft: 16 }}>
                             <Text
                                 style={
                                     isDarkTheme
-                                        ? darkSetting.fontText
-                                        : lightSetting.fontText
+                                        ? darkSetting.nameText
+                                        : lightSetting.nameText
                                 }
                             >
-                                {currentLanguage === "vi"
-                                    ? "Quyền riêng tư"
-                                    : "Privacy"}
+                                {user.fullName}
                             </Text>
-                            <View style={{ flex: 1 }} />
-                            <Icon
-                                name="chevron-right"
-                                style={{ paddingEnd: 10, opacity: 0.5 }}
-                                size={20}
-                                color={
-                                    isDarkTheme
-                                        ? darkSetting.dark.color
-                                        : lightSetting.light.color
-                                }
-                            />
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={
-                                isDarkTheme
-                                    ? darkSetting.setIco
-                                    : lightSetting.setIco
-                            }
-                        >
-                            <Icon
-                                name="shield-alt"
-                                style={{ paddingStart: 10, opacity: 0.5 }}
-                                size={18}
-                                color={
-                                    isDarkTheme
-                                        ? darkSetting.dark.color
-                                        : lightSetting.light.color
-                                }
-                            />
                             <Text
                                 style={
                                     isDarkTheme
-                                        ? darkSetting.fontText
-                                        : lightSetting.fontText
+                                        ? darkSetting.usernameText
+                                        : lightSetting.usernameText
                                 }
                             >
-                                {currentLanguage === "vi"
-                                    ? "Bảo mật"
-                                    : "Security"}
+                                @{user.userName}
                             </Text>
-                            <View style={{ flex: 1 }} />
-                            <Icon
-                                name="chevron-right"
-                                style={{ paddingEnd: 10, opacity: 0.5 }}
-                                size={20}
-                                color={
-                                    isDarkTheme
-                                        ? darkSetting.dark.color
-                                        : lightSetting.light.color
-                                }
-                            />
-                        </TouchableOpacity>
-                    </View>
-                    <View>
-                        <View style={lightSetting.title}>
-                            <Text
-                                style={
-                                    isDarkTheme
-                                        ? darkSetting.fontBlur
-                                        : lightSetting.fontBlur
-                                }
-                            >
-                                {currentLanguage === "vi"
-                                    ? "Hiển thị"
-                                    : "Display"}
-                            </Text>
-                        </View>
-                        <View
-                            style={
-                                isDarkTheme
-                                    ? darkSetting.setIco
-                                    : lightSetting.setIco
-                            }
-                        >
-                            <Icon
-                                name="globe-asia"
-                                style={{ paddingStart: 10, opacity: 0.5 }}
-                                size={18}
-                                color={
-                                    isDarkTheme
-                                        ? darkSetting.dark.color
-                                        : lightSetting.light.color
-                                }
-                            />
-                            <Text
-                                style={
-                                    isDarkTheme
-                                        ? darkSetting.fontText
-                                        : lightSetting.fontText
-                                }
-                            >
-                                {currentLanguage === "vi"
-                                    ? "Ngôn ngữ"
-                                    : "Language"}
-                            </Text>
-                            <View style={{ flex: 1 }} />
-                            <Switch
-                                trackColor={{
-                                    false: "#767577",
-                                    true: "#2196F3",
-                                }}
-                                thumbColor={"#fff"}
-                                style={{
-                                    marginRight: 5
-                                }}
-                                onValueChange={handleLanguageToggle}
-                                value={isLanguageEn}
-                            />
-                        </View>
-                        <TouchableOpacity
-                            style={
-                                isDarkTheme
-                                    ? darkSetting.setIco
-                                    : lightSetting.setIco
-                            }
-                        >
-                            <Icon
-                                name="bell"
-                                style={{ paddingStart: 10, opacity: 0.6 }}
-                                size={18}
-                                color={
-                                    isDarkTheme
-                                        ? darkSetting.dark.color
-                                        : lightSetting.light.color
-                                }
-                            />
-                            <Text
-                                style={
-                                    isDarkTheme
-                                        ? darkSetting.fontText
-                                        : lightSetting.fontText
-                                }
-                            >
-                                {currentLanguage === "vi"
-                                    ? "Thông báo"
-                                    : "Notification"}
-                            </Text>
-                            <View style={{ flex: 1 }} />
-                            <Icon
-                                name="chevron-right"
-                                style={{ paddingEnd: 10, opacity: 0.5 }}
-                                size={20}
-                                color={
-                                    isDarkTheme
-                                        ? darkSetting.dark.color
-                                        : lightSetting.light.color
-                                }
-                            />
-                        </TouchableOpacity>
-
-                        <View
-                            style={[
-                                isDarkTheme
-                                    ? darkSetting.setIco
-                                    : lightSetting.setIco,
-                            ]}
-                        >
-                            <Icon
-                                name="moon"
-                                style={{ paddingStart: 10 }}
-                                size={18}
-                                color={
-                                    isDarkTheme
-                                        ? darkSetting.dark.color
-                                        : lightSetting.light.color
-                                }
-                            />
-                            <Text
-                                style={
-                                    isDarkTheme
-                                        ? darkSetting.fontText
-                                        : lightSetting.fontText
-                                }
-                            >
-                                {currentLanguage === "vi"
-                                    ? "Chế độ tối"
-                                    : "Dark mode"}
-                            </Text>
-                            <View style={{ flex: 1 }} />
-                            <Switch
-                                trackColor={{
-                                    false: "#767577",
-                                    true: "#2196F3",
-                                }}
-                                thumbColor={"#fff"}
-                                style={{ marginRight: 5 }}
-                                onValueChange={() => dispatch(toggleDarkMode())}
-                                value={isDarkTheme}
-                            />
                         </View>
                     </View>
-                    <View>
-                        <View style={lightSetting.title}>
-                            <Text
-                                style={
-                                    isDarkTheme
-                                        ? darkSetting.fontBlur
-                                        : lightSetting.fontBlur
-                                }
-                            >
-                                {currentLanguage === "vi"
-                                    ? "Hỗ trợ & giới thiệu"
-                                    : "Support & Introduction"}
-                            </Text>
-                        </View>
-                        <TouchableOpacity
+                )}
+                <View>
+                    <View style={lightSetting.title}>
+                        <Text
                             style={
                                 isDarkTheme
-                                    ? darkSetting.setIco
-                                    : lightSetting.setIco
+                                    ? darkSetting.fontBlur
+                                    : lightSetting.fontBlur
                             }
                         >
-                            <Icon
-                                name="exclamation-triangle"
-                                style={{ paddingStart: 10, opacity: 0.5 }}
-                                size={18}
-                                color={
-                                    isDarkTheme
-                                        ? darkSetting.dark.color
-                                        : lightSetting.light.color
-                                }
-                            />
-                            <Text
-                                style={
-                                    isDarkTheme
-                                        ? darkSetting.fontText
-                                        : lightSetting.fontText
-                                }
-                            >
-                                {currentLanguage === "vi"
-                                    ? "Báo cáo vấn đề"
-                                    : "Issue report"}
-                            </Text>
-                            <View style={{ flex: 1 }} />
-                            <Icon
-                                name="chevron-right"
-                                style={{ paddingEnd: 10, opacity: 0.5 }}
-                                size={20}
-                                color={
-                                    isDarkTheme
-                                        ? darkSetting.dark.color
-                                        : lightSetting.light.color
-                                }
-                            />
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={
-                                isDarkTheme
-                                    ? darkSetting.setIco
-                                    : lightSetting.setIco
-                            }
-                        >
-                            <Icon
-                                name="toolbox"
-                                style={{ paddingStart: 10, opacity: 0.6 }}
-                                size={18}
-                                color={
-                                    isDarkTheme
-                                        ? darkSetting.dark.color
-                                        : lightSetting.light.color
-                                }
-                            />
-                            <Text
-                                style={
-                                    isDarkTheme
-                                        ? darkSetting.fontText
-                                        : lightSetting.fontText
-                                }
-                            >
-                                {currentLanguage === "vi"
-                                    ? "Hỗ trợ"
-                                    : "Support"}
-                            </Text>
-                            <View style={{ flex: 1 }} />
-                            <Icon
-                                name="chevron-right"
-                                style={{ paddingEnd: 10, opacity: 0.5 }}
-                                size={20}
-                                color={
-                                    isDarkTheme
-                                        ? darkSetting.dark.color
-                                        : lightSetting.light.color
-                                }
-                            />
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={
-                                isDarkTheme
-                                    ? darkSetting.setIco
-                                    : lightSetting.setIco
-                            }
-                        >
-                            <Icon
-                                name="info-circle"
-                                style={{ paddingStart: 10, opacity: 0.5 }}
-                                size={18}
-                                color={
-                                    isDarkTheme
-                                        ? darkSetting.dark.color
-                                        : lightSetting.light.color
-                                }
-                            />
-                            <Text
-                                style={
-                                    isDarkTheme
-                                        ? darkSetting.fontText
-                                        : lightSetting.fontText
-                                }
-                            >
-                                {currentLanguage === "vi"
-                                    ? "Giới thiệu"
-                                    : "Introduction"}
-                            </Text>
-                            <View style={{ flex: 1 }} />
-                            <Icon
-                                name="chevron-right"
-                                style={{ paddingEnd: 10, opacity: 0.5 }}
-                                size={20}
-                                color={
-                                    isDarkTheme
-                                        ? darkSetting.dark.color
-                                        : lightSetting.light.color
-                                }
-                            />
-                        </TouchableOpacity>
+                            {currentLanguage === "vi"
+                                ? "Tài khoản"
+                                : "Account"}
+                        </Text>
                     </View>
-                    <View>
-                        <View style={lightSetting.title}>
-                            <Text
-                                style={
-                                    isDarkTheme
-                                        ? darkSetting.fontBlur
-                                        : lightSetting.fontBlur
-                                }
-                            >
-                                {currentLanguage === "vi"
-                                    ? "Quản lý"
-                                    : "Management"}
-                            </Text>
-                        </View>
-                        <TouchableOpacity
+                    <TouchableOpacity
+                        style={
+                            isDarkTheme
+                                ? darkSetting.setIco
+                                : lightSetting.setIco
+                        }
+                    >
+                        <Icon
+                            name="user"
+                            style={{ paddingStart: 10 }}
+                            size={18}
+                            color={
+                                isDarkTheme
+                                    ? darkSetting.dark.color
+                                    : lightSetting.light.color
+                            }
+                        />
+                        <Text
                             style={
                                 isDarkTheme
-                                    ? darkSetting.setIco
-                                    : lightSetting.setIco
+                                    ? darkSetting.fontText
+                                    : lightSetting.fontText
                             }
                         >
-                            <Icon
-                                name="sync"
-                                style={{ paddingStart: 10, opacity: 0.5 }}
-                                size={18}
-                                color={
-                                    isDarkTheme
-                                        ? darkSetting.dark.color
-                                        : lightSetting.light.color
-                                }
-                            />
-                            <Text
-                                style={
-                                    isDarkTheme
-                                        ? darkSetting.fontText
-                                        : lightSetting.fontText
-                                }
-                            >
-                                {currentLanguage === "vi"
-                                    ? "Chuyển đổi tài khoản"
-                                    : "Switch account"}
-                            </Text>
-                            <View style={{ flex: 1 }} />
-                            <Icon
-                                name="chevron-right"
-                                style={{ paddingEnd: 10, opacity: 0.5 }}
-                                size={20}
-                                color={
-                                    isDarkTheme
-                                        ? darkSetting.dark.color
-                                        : lightSetting.light.color
-                                }
-                            />
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
+                            {currentLanguage === "vi"
+                                ? "Tài khoản"
+                                : "Account"}
+                        </Text>
+                        <View style={{ flex: 1 }} />
+                        <Icon
+                            name="chevron-right"
+                            style={{ paddingEnd: 10, opacity: 0.5 }}
+                            size={20}
+                            color={
+                                isDarkTheme
+                                    ? darkSetting.dark.color
+                                    : lightSetting.light.color
+                            }
+                        />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={
+                            isDarkTheme
+                                ? darkSetting.setIco
+                                : lightSetting.setIco
+                        }
+                    >
+                        <Icon
+                            name="lock"
+                            style={{ paddingStart: 10, opacity: 0.6 }}
+                            size={18}
+                            color={
+                                isDarkTheme
+                                    ? darkSetting.dark.color
+                                    : lightSetting.light.color
+                            }
+                        />
+                        <Text
                             style={
                                 isDarkTheme
-                                    ? darkSetting.setIco
-                                    : lightSetting.setIco
+                                    ? darkSetting.fontText
+                                    : lightSetting.fontText
                             }
-                            onPress={() => {
-                                handleLogout();
+                        >
+                            {currentLanguage === "vi"
+                                ? "Quyền riêng tư"
+                                : "Privacy"}
+                        </Text>
+                        <View style={{ flex: 1 }} />
+                        <Icon
+                            name="chevron-right"
+                            style={{ paddingEnd: 10, opacity: 0.5 }}
+                            size={20}
+                            color={
+                                isDarkTheme
+                                    ? darkSetting.dark.color
+                                    : lightSetting.light.color
+                            }
+                        />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={
+                            isDarkTheme
+                                ? darkSetting.setIco
+                                : lightSetting.setIco
+                        }
+                    >
+                        <Icon
+                            name="shield-alt"
+                            style={{ paddingStart: 10, opacity: 0.5 }}
+                            size={18}
+                            color={
+                                isDarkTheme
+                                    ? darkSetting.dark.color
+                                    : lightSetting.light.color
+                            }
+                        />
+                        <Text
+                            style={
+                                isDarkTheme
+                                    ? darkSetting.fontText
+                                    : lightSetting.fontText
+                            }
+                        >
+                            {currentLanguage === "vi"
+                                ? "Bảo mật"
+                                : "Security"}
+                        </Text>
+                        <View style={{ flex: 1 }} />
+                        <Icon
+                            name="chevron-right"
+                            style={{ paddingEnd: 10, opacity: 0.5 }}
+                            size={20}
+                            color={
+                                isDarkTheme
+                                    ? darkSetting.dark.color
+                                    : lightSetting.light.color
+                            }
+                        />
+                    </TouchableOpacity>
+                </View>
+                <View>
+                    <View style={lightSetting.title}>
+                        <Text
+                            style={
+                                isDarkTheme
+                                    ? darkSetting.fontBlur
+                                    : lightSetting.fontBlur
+                            }
+                        >
+                            {currentLanguage === "vi"
+                                ? "Hiển thị"
+                                : "Display"}
+                        </Text>
+                    </View>
+                    <View
+                        style={
+                            isDarkTheme
+                                ? darkSetting.setIco
+                                : lightSetting.setIco
+                        }
+                    >
+                        <Icon
+                            name="globe-asia"
+                            style={{ paddingStart: 10, opacity: 0.5 }}
+                            size={18}
+                            color={
+                                isDarkTheme
+                                    ? darkSetting.dark.color
+                                    : lightSetting.light.color
+                            }
+                        />
+                        <Text
+                            style={
+                                isDarkTheme
+                                    ? darkSetting.fontText
+                                    : lightSetting.fontText
+                            }
+                        >
+                            {currentLanguage === "vi"
+                                ? "Ngôn ngữ"
+                                : "Language"}
+                        </Text>
+                        <View style={{ flex: 1 }} />
+                        <Switch
+                            trackColor={{
+                                false: "#767577",
+                                true: "#2196F3",
                             }}
-                        >
-                            <Icon
-                                name="sign-out-alt"
-                                style={{ paddingStart: 10, opacity: 0.6 }}
-                                size={18}
-                                color={
-                                    isDarkTheme
-                                        ? darkSetting.dark.color
-                                        : lightSetting.light.color
-                                }
-                            />
-                            <Text
-                                style={
-                                    isDarkTheme
-                                        ? darkSetting.fontText
-                                        : lightSetting.fontText
-                                }
-                            >
-                                {currentLanguage === "vi"
-                                    ? "Đăng xuất"
-                                    : "Log out"}
-                            </Text>
-                            <View style={{ flex: 1 }} />
-                            <Icon
-                                name="chevron-right"
-                                style={{ paddingEnd: 10, opacity: 0.5 }}
-                                size={20}
-                                color={
-                                    isDarkTheme
-                                        ? darkSetting.dark.color
-                                        : lightSetting.light.color
-                                }
-                            />
-                        </TouchableOpacity>
+                            thumbColor={"#fff"}
+                            style={{
+                                marginRight: 5
+                            }}
+                            onValueChange={handleLanguageToggle}
+                            value={isLanguageEn}
+                        />
                     </View>
-                </ScrollView>
-            )}
-            {isPlayScreen && <PlayerScreen />}
+                    <TouchableOpacity
+                        style={
+                            isDarkTheme
+                                ? darkSetting.setIco
+                                : lightSetting.setIco
+                        }
+                    >
+                        <Icon
+                            name="bell"
+                            style={{ paddingStart: 10, opacity: 0.6 }}
+                            size={18}
+                            color={
+                                isDarkTheme
+                                    ? darkSetting.dark.color
+                                    : lightSetting.light.color
+                            }
+                        />
+                        <Text
+                            style={
+                                isDarkTheme
+                                    ? darkSetting.fontText
+                                    : lightSetting.fontText
+                            }
+                        >
+                            {currentLanguage === "vi"
+                                ? "Thông báo"
+                                : "Notification"}
+                        </Text>
+                        <View style={{ flex: 1 }} />
+                        <Icon
+                            name="chevron-right"
+                            style={{ paddingEnd: 10, opacity: 0.5 }}
+                            size={20}
+                            color={
+                                isDarkTheme
+                                    ? darkSetting.dark.color
+                                    : lightSetting.light.color
+                            }
+                        />
+                    </TouchableOpacity>
+
+                    <View
+                        style={[
+                            isDarkTheme
+                                ? darkSetting.setIco
+                                : lightSetting.setIco,
+                        ]}
+                    >
+                        <Icon
+                            name="moon"
+                            style={{ paddingStart: 10 }}
+                            size={18}
+                            color={
+                                isDarkTheme
+                                    ? darkSetting.dark.color
+                                    : lightSetting.light.color
+                            }
+                        />
+                        <Text
+                            style={
+                                isDarkTheme
+                                    ? darkSetting.fontText
+                                    : lightSetting.fontText
+                            }
+                        >
+                            {currentLanguage === "vi"
+                                ? "Chế độ tối"
+                                : "Dark mode"}
+                        </Text>
+                        <View style={{ flex: 1 }} />
+                        <Switch
+                            trackColor={{
+                                false: "#767577",
+                                true: "#2196F3",
+                            }}
+                            thumbColor={"#fff"}
+                            style={{ marginRight: 5 }}
+                            onValueChange={() => dispatch(toggleDarkMode())}
+                            value={isDarkTheme}
+                        />
+                    </View>
+                </View>
+                <View>
+                    <View style={lightSetting.title}>
+                        <Text
+                            style={
+                                isDarkTheme
+                                    ? darkSetting.fontBlur
+                                    : lightSetting.fontBlur
+                            }
+                        >
+                            {currentLanguage === "vi"
+                                ? "Hỗ trợ & giới thiệu"
+                                : "Support & Introduction"}
+                        </Text>
+                    </View>
+                    <TouchableOpacity
+                        style={
+                            isDarkTheme
+                                ? darkSetting.setIco
+                                : lightSetting.setIco
+                        }
+                    >
+                        <Icon
+                            name="exclamation-triangle"
+                            style={{ paddingStart: 10, opacity: 0.5 }}
+                            size={18}
+                            color={
+                                isDarkTheme
+                                    ? darkSetting.dark.color
+                                    : lightSetting.light.color
+                            }
+                        />
+                        <Text
+                            style={
+                                isDarkTheme
+                                    ? darkSetting.fontText
+                                    : lightSetting.fontText
+                            }
+                        >
+                            {currentLanguage === "vi"
+                                ? "Báo cáo vấn đề"
+                                : "Issue report"}
+                        </Text>
+                        <View style={{ flex: 1 }} />
+                        <Icon
+                            name="chevron-right"
+                            style={{ paddingEnd: 10, opacity: 0.5 }}
+                            size={20}
+                            color={
+                                isDarkTheme
+                                    ? darkSetting.dark.color
+                                    : lightSetting.light.color
+                            }
+                        />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={
+                            isDarkTheme
+                                ? darkSetting.setIco
+                                : lightSetting.setIco
+                        }
+                    >
+                        <Icon
+                            name="toolbox"
+                            style={{ paddingStart: 10, opacity: 0.6 }}
+                            size={18}
+                            color={
+                                isDarkTheme
+                                    ? darkSetting.dark.color
+                                    : lightSetting.light.color
+                            }
+                        />
+                        <Text
+                            style={
+                                isDarkTheme
+                                    ? darkSetting.fontText
+                                    : lightSetting.fontText
+                            }
+                        >
+                            {currentLanguage === "vi"
+                                ? "Hỗ trợ"
+                                : "Support"}
+                        </Text>
+                        <View style={{ flex: 1 }} />
+                        <Icon
+                            name="chevron-right"
+                            style={{ paddingEnd: 10, opacity: 0.5 }}
+                            size={20}
+                            color={
+                                isDarkTheme
+                                    ? darkSetting.dark.color
+                                    : lightSetting.light.color
+                            }
+                        />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={
+                            isDarkTheme
+                                ? darkSetting.setIco
+                                : lightSetting.setIco
+                        }
+                    >
+                        <Icon
+                            name="info-circle"
+                            style={{ paddingStart: 10, opacity: 0.5 }}
+                            size={18}
+                            color={
+                                isDarkTheme
+                                    ? darkSetting.dark.color
+                                    : lightSetting.light.color
+                            }
+                        />
+                        <Text
+                            style={
+                                isDarkTheme
+                                    ? darkSetting.fontText
+                                    : lightSetting.fontText
+                            }
+                        >
+                            {currentLanguage === "vi"
+                                ? "Giới thiệu"
+                                : "Introduction"}
+                        </Text>
+                        <View style={{ flex: 1 }} />
+                        <Icon
+                            name="chevron-right"
+                            style={{ paddingEnd: 10, opacity: 0.5 }}
+                            size={20}
+                            color={
+                                isDarkTheme
+                                    ? darkSetting.dark.color
+                                    : lightSetting.light.color
+                            }
+                        />
+                    </TouchableOpacity>
+                </View>
+                <View>
+                    <View style={lightSetting.title}>
+                        <Text
+                            style={
+                                isDarkTheme
+                                    ? darkSetting.fontBlur
+                                    : lightSetting.fontBlur
+                            }
+                        >
+                            {currentLanguage === "vi"
+                                ? "Quản lý"
+                                : "Management"}
+                        </Text>
+                    </View>
+                    <TouchableOpacity
+                        style={
+                            isDarkTheme
+                                ? darkSetting.setIco
+                                : lightSetting.setIco
+                        }
+                    >
+                        <Icon
+                            name="sync"
+                            style={{ paddingStart: 10, opacity: 0.5 }}
+                            size={18}
+                            color={
+                                isDarkTheme
+                                    ? darkSetting.dark.color
+                                    : lightSetting.light.color
+                            }
+                        />
+                        <Text
+                            style={
+                                isDarkTheme
+                                    ? darkSetting.fontText
+                                    : lightSetting.fontText
+                            }
+                        >
+                            {currentLanguage === "vi"
+                                ? "Chuyển đổi tài khoản"
+                                : "Switch account"}
+                        </Text>
+                        <View style={{ flex: 1 }} />
+                        <Icon
+                            name="chevron-right"
+                            style={{ paddingEnd: 10, opacity: 0.5 }}
+                            size={20}
+                            color={
+                                isDarkTheme
+                                    ? darkSetting.dark.color
+                                    : lightSetting.light.color
+                            }
+                        />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={
+                            isDarkTheme
+                                ? darkSetting.setIco
+                                : lightSetting.setIco
+                        }
+                        onPress={() => {
+                            handleLogout();
+                        }}
+                    >
+                        <Icon
+                            name="sign-out-alt"
+                            style={{ paddingStart: 10, opacity: 0.6 }}
+                            size={18}
+                            color={
+                                isDarkTheme
+                                    ? darkSetting.dark.color
+                                    : lightSetting.light.color
+                            }
+                        />
+                        <Text
+                            style={
+                                isDarkTheme
+                                    ? darkSetting.fontText
+                                    : lightSetting.fontText
+                            }
+                        >
+                            {currentLanguage === "vi"
+                                ? "Đăng xuất"
+                                : "Log out"}
+                        </Text>
+                        <View style={{ flex: 1 }} />
+                        <Icon
+                            name="chevron-right"
+                            style={{ paddingEnd: 10, opacity: 0.5 }}
+                            size={20}
+                            color={
+                                isDarkTheme
+                                    ? darkSetting.dark.color
+                                    : lightSetting.light.color
+                            }
+                        />
+                    </TouchableOpacity>
+                </View>
+            </ScrollView>
             {isMiniPlayer && <MiniPlayer />}
         </SafeAreaView>
     );

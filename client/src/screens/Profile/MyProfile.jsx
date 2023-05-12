@@ -52,7 +52,7 @@ function MyProfile(props) {
         <SafeAreaView
             style={[
                 styles.myprofile,
-                GlobalStyles.droidSafeArea,
+                GlobalStyles.customSafeArea,
                 isDarkTheme
                     ? darkProfile.profileContainer
                     : lightProfile.profileContainer,

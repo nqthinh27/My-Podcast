@@ -5,7 +5,7 @@ import { setIsMiniPlayer, setPlayValue } from '../slices/playerSlice';
 import { postDataAPI } from '../../ultis/fetchData';
 import { getHistoryListData } from './libraryApi';
 
-export const getPost = async (postId, dispatch, token) => {
+export const getPost = async (postId, dispatch, token, navigate) => {
     dispatch(getPostDataStart());
     try {
         const res = await axios.get(`${BASE_URL}/post/${postId}`);
@@ -15,7 +15,7 @@ export const getPost = async (postId, dispatch, token) => {
             postDataAPI(`history/${postId}/add`, null, token);
         }
         // dispatch(setIsMiniPlayer(false));
-        // navigate('PlayerScreen');
+        navigate('PlayerScreen');
         dispatch(setPlayValue(true))
     } catch (err) {
         dispatch(getPostDataFailed())

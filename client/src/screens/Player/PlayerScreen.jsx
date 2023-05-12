@@ -75,6 +75,8 @@ export default function PlayerScreen(props) {
     const isPlayer = useSelector((state) => state.player.isPlayer);
     const currentSound = useSelector((state) => state.player.currentSound);
     const isPlayScreen = useSelector((state) => state.player.isPlayScreen);
+    const access_token = useSelector((state) => state.auth.login.access_token);
+
     const currentLanguage = useSelector(
         (state) => state.language.currentLanguage
     );
@@ -97,10 +99,6 @@ export default function PlayerScreen(props) {
                 interruptionModeIOS: 1,
                 playsInSilentModeIOS: true,
             });
-            if (sound) {
-                await sound.unloadAsync();
-                dispatch(setSound(null));
-            }
             const { sound: song } = await Audio.Sound.createAsync(
                 { uri },
                 {
@@ -125,7 +123,8 @@ export default function PlayerScreen(props) {
     }
     // console.log("sound: ", detailPost.audio);
     const onBackPress = () => {
-        dispatch(setIsPlayScreen(false));
+        // dispatch(setIsPlayScreen(false));
+        navigation.goBack();
         dispatch(setIsMiniPlayer(true));
         console.log("back isMiniPlayer: " + isMiniPlayer);
         console.log("back isPlayer: " + isPlayer);
@@ -144,14 +143,14 @@ export default function PlayerScreen(props) {
         // sound.unloadAsync();
         console.log("back");
         dispatch(setIsMiniPlayer(true));
-        dispatch(setIsPlayScreen(false));
+        navigation.goBack();
         // dispatch(setIsPlaying(true));
         // if (!playValue) dispatch(setIsPlayer(true));
         // navigation.navigate('UIScreen');
     }
 
     useEffect(() => {
-        if (!isMiniPlayer && isPlayScreen && isFocused) {
+        if (isFocused) {
             playSound();
             console.log("bài hát: " + detailPost.audio);
         }
@@ -168,11 +167,15 @@ export default function PlayerScreen(props) {
     }, [playValue]);
 
     const playSound = async () => {
-        if (detailPost !== null) {
-            await loadSound(detailPost.audio);
-            console.log("phát đầu tiên");
-            console.log("Views: " + detailPost.views);
+
+        if (sound) {
+            await sound.unloadAsync();
+            dispatch(setSound(null));
         }
+        await loadSound(detailPost.audio);
+        console.log("phát đầu tiên");
+        console.log("Views: " + detailPost.views);
+
     };
 
     async function pauseSound() {
@@ -228,7 +231,7 @@ export default function PlayerScreen(props) {
                 dispatch(setSound(null));
             }
             if (uri) {
-                await getPost(uri, dispatch, access_token);
+                await getPost(uri, dispatch, access_token, navigation.navigate);
             }
         } catch (error) {
             console.log(error);
@@ -275,13 +278,20 @@ export default function PlayerScreen(props) {
 
     const handleNextPress = () => {
         scrollViewRef.current.scrollTo({
-            y: device.height + 90,
+            y: device.height * 2,
+            animated: true,
+        });
+    };
+
+    const handlePrevPress = () => {
+        scrollViewRef.current.scrollTo({
+            y: 0,
             animated: true,
         });
     };
 
     return (
-        <View>
+        <View style={GlobalStyles.customSafeArea}>
             {/* <View > */}
             {/* <View style={{ borderRadius: 80, overflow: "hidden" }}> */}
             <ScrollView
@@ -291,8 +301,7 @@ export default function PlayerScreen(props) {
             >
                 <View
                     style={{
-                        height: device.height * 0.858,
-                        flex: 1,
+                        height: device.height,
                     }}
                 >
                     <View style={styles.playscreenHeader}>
@@ -552,7 +561,7 @@ export default function PlayerScreen(props) {
                                 </TouchableOpacity>
                             </View>
                         </View>
-                        <View style={{ flex: 1, justifyContent: "space-around" }}>
+                        <View style={{flex: 1, justifyContent: "space-around" }}>
                             <TouchableOpacity
                                 style={styles.playscreenMore}
                                 onPress={handleNextPress}
@@ -577,12 +586,12 @@ export default function PlayerScreen(props) {
                     </View>
                 </View>
 
-                <View>
+                <View style={{
+                    height: device.height,
+                }}>
                     <View style={styles.playscreenHeader}>
                         <TouchableOpacity
-                        // onPress={() => {
-                        //     navigate("PlayerScreen");
-                        // }}
+                            onPress={handlePrevPress}
                         >
                             <Icon
                                 name={"chevron-down"}
@@ -952,11 +961,11 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         flexDirection: "row",
         marginHorizontal: 16,
-        height: device.height * 0.05,
+        // height: device.height * 0.05,
     },
 
     playscreenMain: {
-        flex: 0,
+        // flex: 0,
         borderRadius: 30,
         // paddingBottom: 20,F
         marginHorizontal: 16,
