@@ -163,7 +163,6 @@ export default function MiniPlayer(props) {
             switchToNewSound(nextTrack._id);
             dispatch(setCurrentSound(nextTrack.index));
             dispatch(setPosition(0));
-            dispatch(setIsPlayScreen(false));
             dispatch(setIsPlaying(true));
         }
     }
@@ -175,9 +174,7 @@ export default function MiniPlayer(props) {
             switchToNewSound(prevTrack._id);
             dispatch(setCurrentSound(prevTrack.index));
             dispatch(setPosition(0));
-            dispatch(setIsPlayScreen(false));
             dispatch(setIsPlaying(true));
-
         }
     }
     // useEffect(() => {
@@ -242,7 +239,7 @@ export default function MiniPlayer(props) {
                             // if (playValue) {
                             //     dispatch(setIsPlayer(false));
                             // };
-                            dispatch(setIsPlayScreen(true));
+                            navigation.navigate('PlayerScreen');
                         }}
                     >
                         <View style={stylesMiniPlayer.miniplayerAvatar}>

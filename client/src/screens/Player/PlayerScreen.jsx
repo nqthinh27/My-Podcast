@@ -148,9 +148,9 @@ export default function PlayerScreen(props) {
         // if (!playValue) dispatch(setIsPlayer(true));
         // navigation.navigate('UIScreen');
     }
-
+    
     useEffect(() => {
-        if (isFocused) {
+        if (!isMiniPlayer) {
             playSound();
             console.log("bài hát: " + detailPost.audio);
         }
