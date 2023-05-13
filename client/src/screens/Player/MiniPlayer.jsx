@@ -82,7 +82,7 @@ export default function MiniPlayer(props) {
     }
 
     useEffect(() => {
-        if (isPlaying) {
+        if (isPlaying && isFocused) {
             playSound();
             console.log("mini player");
             dispatch(setIsPlaying(false));
@@ -90,7 +90,7 @@ export default function MiniPlayer(props) {
     }, [detailPost.audio]);
 
     const playSound = async () => {
-        if (detailPost !== null && isFocused) {
+        if (detailPost !== null) {
             await loadSound(detailPost.audio);
             console.log("phát đầu tiên mini player");
         }

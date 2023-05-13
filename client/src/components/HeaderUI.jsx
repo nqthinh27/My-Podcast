@@ -124,7 +124,7 @@ export default function HeaderUI(props) {
                         placeholder={currentLanguage === "vi" ? "Tìm kiếm podcast, tác giả, album,..." : "Search for podcasts, authors, albums,..."}
                         // onChange={(event) => setSearchResult(event.target.value)}
                         onFocus={handleSearch}
-                        placeholderTextColor={isDarkTheme ? darkHeader.input.color : lightHeader.input.color}
+                        placeholderTextColor={isDarkTheme ? darkHeader.placeholder.color : lightHeader.placeholder.color}
                     />
                 </View>
                 <Modal visible={searchValue} >

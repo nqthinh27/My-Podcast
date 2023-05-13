@@ -1,4 +1,4 @@
-import { React, useState, useRef, useEffect, useCallback } from "react";
+import { React, useState, useRef, useEffect, useCallback  } from "react";
 import {
     Text,
     View,
@@ -10,6 +10,7 @@ import {
     TextInput,
     SafeAreaView,
     BackHandler,
+    Platform
 } from "react-native";
 import Slider from "@react-native-community/slider";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -38,6 +39,7 @@ import {
     darkProfile,
     lightProfile,
 } from "../../constants/darkLight/themeProfile";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function PlayerScreen(props) {
     // navigation
@@ -48,6 +50,7 @@ export default function PlayerScreen(props) {
     const sound = useSelector((state) => state.player.sound);
     const isFocused = useIsFocused();
     const [showCommentScrollView, setShowCommentScrollView] = useState(true);
+    const insets = useSafeAreaInsets();
 
     const handleCommentPress = () => {
         setShowCommentScrollView(true);
@@ -148,7 +151,7 @@ export default function PlayerScreen(props) {
         // if (!playValue) dispatch(setIsPlayer(true));
         // navigation.navigate('UIScreen');
     }
-    
+
     useEffect(() => {
         if (!isMiniPlayer) {
             playSound();
@@ -167,7 +170,6 @@ export default function PlayerScreen(props) {
     }, [playValue]);
 
     const playSound = async () => {
-
         if (sound) {
             await sound.unloadAsync();
             dispatch(setSound(null));
@@ -175,7 +177,6 @@ export default function PlayerScreen(props) {
         await loadSound(detailPost.audio);
         console.log("phát đầu tiên");
         console.log("Views: " + detailPost.views);
-
     };
 
     async function pauseSound() {
@@ -289,9 +290,17 @@ export default function PlayerScreen(props) {
             animated: true,
         });
     };
+    
 
     return (
-        <View style={[GlobalStyles.customSafeArea, isDarkTheme ? darkProfile.profileContainer : lightProfile.profileContainer]}>
+        <SafeAreaView
+            style={[
+                GlobalStyles.customSafeArea,
+                isDarkTheme
+                    ? darkProfile.profileContainer
+                    : lightProfile.profileContainer,
+            ]}
+        >
             {/* <View > */}
             {/* <View style={{ borderRadius: 80, overflow: "hidden" }}> */}
             <ScrollView
@@ -301,8 +310,8 @@ export default function PlayerScreen(props) {
             >
                 <View
                     style={{
-                        height: device.height,
-                        backgroundColor: 'grey'
+                        // height: device.height - insets.top - insets.bottom,
+                        height: Platform.OS === 'android' ? device.height : device.height - insets.top - insets.bottom,
                     }}
                 >
                     <View style={styles.playscreenHeader}>
@@ -562,7 +571,9 @@ export default function PlayerScreen(props) {
                                 </TouchableOpacity>
                             </View>
                         </View>
-                        <View style={{flex: 1, justifyContent: "space-around" }}>
+                        <View
+                            style={{ flex: 1, justifyContent: "space-around" }}
+                        >
                             <TouchableOpacity
                                 style={styles.playscreenMore}
                                 onPress={handleNextPress}
@@ -587,13 +598,13 @@ export default function PlayerScreen(props) {
                     </View>
                 </View>
 
-                <View style={{
-                    height: device.height,
-                }}>
+                <View
+                    style={{
+                        height: Platform.OS === 'android' ? device.height : device.height - insets.top - insets.bottom,
+                    }}
+                >
                     <View style={styles.playscreenHeader}>
-                        <TouchableOpacity
-                            onPress={handlePrevPress}
-                        >
+                        <TouchableOpacity onPress={handlePrevPress}>
                             <Icon
                                 name={"chevron-down"}
                                 style={{}}
@@ -893,9 +904,9 @@ export default function PlayerScreen(props) {
 
                                 <View style={styles.informationComment}>
                                     <Comment />
-                                    {/* <Comment />
                                     <Comment />
-                                    <Comment /> */}
+                                    <Comment />
+                                    <Comment />
                                 </View>
                                 <TouchableOpacity onPress={handleBackPress}>
                                     <Text>
@@ -953,7 +964,7 @@ export default function PlayerScreen(props) {
                     </View>
                 </View>
             </ScrollView>
-        </View>
+        </SafeAreaView>
     );
 }
 
@@ -971,7 +982,7 @@ const styles = StyleSheet.create({
         // paddingBottom: 20,F
         marginHorizontal: 16,
         // flex: 2
-        backgroundColor: 'grey'
+        backgroundColor: "grey",
     },
 
     playscreenInteractionBar: {
