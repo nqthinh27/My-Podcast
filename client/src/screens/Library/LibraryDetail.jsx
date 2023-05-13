@@ -18,6 +18,9 @@ import { getLikedListData, getRecommendData } from "../../redux/actions/libraryA
 import GlobalStyles from "../../components/GlobalStyles";
 import Loading from "../../components/Loading";
 import { postDataAPI } from "../../ultis/fetchData";
+import axios from "axios";
+import { BASE_URL } from "../../ultis/config";
+import {darkLibrary, lightLibrary} from "../../constants/darkLight/themeLibrary";
 
 function LibraryDetail({ route }) {
     const { title } = route.params;
@@ -26,6 +29,8 @@ function LibraryDetail({ route }) {
     const access_token = useSelector((state) => state.auth.login.access_token);
     const [data, setData] = useState([])
     const [isLoading, setIsLoading] = useState(false);
+    const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
+
     // const currentUser = useSelector((state) => state.auth.login.currentUser);
     // const userLikedList = useSelector((state) => state.library.likedList.data);
     // useEffect(() => {
@@ -41,7 +46,7 @@ function LibraryDetail({ route }) {
             res = await postDataAPI('like', null, access_token);;
             setData(res.data.liked);
         } else if (title === 'Lịch sử nghe') {
-            res = await postDataAPI('history', null, access_token);;
+            res = await postDataAPI('history', null, access_token);
             setData(res.data.history);
         }
         setIsLoading(false);
@@ -50,16 +55,16 @@ function LibraryDetail({ route }) {
         fetchData();
     }, [dispatch])
     return (
-        <SafeAreaView style={[GlobalStyles.customSafeArea, { backgroundColor: '#fff' }]}>
+        <SafeAreaView style={[GlobalStyles.customSafeArea, isDarkTheme ? darkLibrary.libraryContainer : lightLibrary.libraryContainer]}>
             <ScrollView style={{ marginHorizontal: 16 }}>
                 <Text
-                    style={{
+                    style={[{
                         fontSize: 21,
                         fontWeight: "bold",
                         // marginTop: 8,
                         marginBottom: 8,
                         alignSelf: 'center'
-                    }}
+                    }, isDarkTheme ? darkLibrary.libraryText : lightLibrary.libraryText]}
                 >
                     {title}
                 </Text>

@@ -9,7 +9,7 @@ import Post2 from './src/screens/Post2';
 export default function App() {
   return (
     <Provider store={store}>
-      <StatusBar style="dark"></StatusBar>
+      {/* <StatusBar style="dark"></StatusBar> */}
       <Navigator />
     </Provider>
     // <Post2/>

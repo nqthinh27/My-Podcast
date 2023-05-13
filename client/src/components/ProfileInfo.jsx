@@ -3,6 +3,9 @@ import { StyleSheet, Text, View, Image } from "react-native";
 import { device } from "../constants/device";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
+import { useSelector } from "react-redux";
+import { lightHeader, darkHeader } from '../constants/darkLight/themeHeaderUI'
+
 function ProfileInfo(props) {
     const navigation = useNavigation();
     const { avt, name, followers, following, posts, id } = props;
@@ -13,6 +16,11 @@ function ProfileInfo(props) {
         navigation.navigate('FollowDetail', { type: 'following', id: id })
     }
     console.log(id);
+
+    const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
+    const currentLanguage = useSelector(
+        (state) => state.language.currentLanguage
+    );
     return (
         <View style={styles.profileinfo}>
             <Image
@@ -29,10 +37,10 @@ function ProfileInfo(props) {
             <View style={styles.profileinfoUser}>
                 <View style={styles.profileinfoName}>
                     <Text
-                        style={{
+                        style={[{
                             fontWeight: "600",
                             fontSize: 20,
-                        }}
+                        }, isDarkTheme ? darkHeader.text : lightHeader.text]}
                     >
                         {name}
                     </Text>
@@ -40,22 +48,22 @@ function ProfileInfo(props) {
 
                 <View style={styles.profileinfoDetails}>
                     <View style={styles.profileinfoPostView}>
-                        <Text style={styles.textmedium}>{posts}</Text>
-                        <Text style={styles.textsmall}>Bài đăng</Text>
+                        <Text style={[styles.textmedium, isDarkTheme ? darkHeader.text : lightHeader.text]}>{posts}</Text>
+                        <Text style={[styles.textsmall, isDarkTheme ? darkHeader.text : lightHeader.text]}>{currentLanguage === "vi" ? "Bài đăng" : "Posts"}</Text>
                     </View>
                     <TouchableOpacity
                         style={styles.profileinfoFollowerView}
                         onPress={navigateFollowersDetail}
                         activeOpacity={1}>
-                        <Text style={styles.textmedium}>{followers}</Text>
-                        <Text style={styles.textsmall}>Người theo dõi</Text>
+                        <Text style={[styles.textmedium, isDarkTheme ? darkHeader.text : lightHeader.text]}>{followers}</Text>
+                        <Text style={[styles.textsmall, isDarkTheme ? darkHeader.text : lightHeader.text]}>{currentLanguage === "vi" ? "Người theo dõi" : "Followers"}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={styles.profileinfoFollowingView}
                         onPress={navigateFollowingDetail}
                         activeOpacity={1}>
-                        <Text style={styles.textmedium}>{following}</Text>
-                        <Text style={styles.textsmall}>Đang theo dõi</Text>
+                        <Text style={[styles.textmedium, isDarkTheme ? darkHeader.text : lightHeader.text]}>{following}</Text>
+                        <Text style={[styles.textsmall, isDarkTheme ? darkHeader.text : lightHeader.text]}>{currentLanguage === "vi" ? "Đang theo dõi" : "Following"}</Text>
                     </TouchableOpacity>
                 </View>
             </View>

@@ -1,8 +1,14 @@
 import React from "react";
 import { Text, View, Image, StyleSheet } from "react-native";
 import { formatNum } from "../ultis/helper";
+import { lightHeader, darkHeader } from '../constants/darkLight/themeHeaderUI'
+import { useSelector } from "react-redux";
 
 function PodcastListItem({ item }) {
+    const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
+    const currentLanguage = useSelector(
+        (state) => state.language.currentLanguage
+    );
     return (
         <View
             style={{
@@ -27,17 +33,17 @@ function PodcastListItem({ item }) {
                 }}
             >
                 <Text
-                    style={{
+                    style={[{
                         fontWeight: "500",
                         fontSize: 18,
-                    }}
+                    }, isDarkTheme ? darkHeader.text : lightHeader.text]}
                     numberOfLines={1}
                 >
                     {item.title}
                 </Text>
 
-                <Text style={{}}>{item.owner.fullName}</Text>
-                <Text style={{color: '#414141'}}>{formatNum(item.views)} Lượt nghe | {formatNum(item.likes)} Lượt yêu thích</Text>
+                <Text style={isDarkTheme ? darkHeader.text : lightHeader.text}>{item.owner.fullName}</Text>
+                <Text style={isDarkTheme ? darkHeader.text : {color: '#414141'}}>{formatNum(item.views)}{currentLanguage === "vi" ? " Lượt nghe | " : " Listens | "}{formatNum(item.likes)}{currentLanguage === "vi" ? " Lượt yêu thích" : " Favourites"}</Text>
             </View>
         </View>
     );

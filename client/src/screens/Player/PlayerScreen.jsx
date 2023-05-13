@@ -1,4 +1,4 @@
-import { React, useState, useRef, useEffect } from "react";
+import { React, useState, useRef, useEffect, useCallback } from "react";
 import {
     Text,
     View,
@@ -19,11 +19,25 @@ import GlobalStyles from "../../components/GlobalStyles";
 import { Audio } from "expo-av";
 import Comment from "../../components/Comment";
 import { useDispatch, useSelector } from "react-redux";
-import { setCurrentSound, setDuration, setIsMiniPlayer, setIsPlayScreen, setIsPlayer, setIsPlaying, setNextPress, setPlayValue, setPosition } from "../../redux/slices/playerSlice";
-import { useNavigation } from "@react-navigation/native";
+import {
+    setCurrentSound,
+    setDuration,
+    setIsMiniPlayer,
+    setIsPlayScreen,
+    setIsPlayer,
+    setIsPlaying,
+    setNextPress,
+    setPlayValue,
+    setPosition,
+    setPrevPress,
+    setSound,
+} from "../../redux/slices/playerSlice";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { getPost } from "../../redux/actions/postApi";
-
-
+import {
+    darkProfile,
+    lightProfile,
+} from "../../constants/darkLight/themeProfile";
 
 export default function PlayerScreen(props) {
     // navigation
@@ -31,18 +45,17 @@ export default function PlayerScreen(props) {
     // //function of navigate
     // const { navigate, goback } = navigation;
 
-    const { sound, loadSound, switchToNewSound } = props;
-
-
+    const sound = useSelector((state) => state.player.sound);
+    const isFocused = useIsFocused();
     const [showCommentScrollView, setShowCommentScrollView] = useState(true);
 
     const handleCommentPress = () => {
         setShowCommentScrollView(true);
-    }
+    };
 
     const handleBackPress = () => {
         setShowCommentScrollView(false);
-    }
+    };
 
     // const [isPlaying, setIsPlaying] = useState(false);
     // const [playValue, setPlayValue] = useState(false);
@@ -62,15 +75,56 @@ export default function PlayerScreen(props) {
     const isPlayer = useSelector((state) => state.player.isPlayer);
     const currentSound = useSelector((state) => state.player.currentSound);
     const isPlayScreen = useSelector((state) => state.player.isPlayScreen);
-    
+    const access_token = useSelector((state) => state.auth.login.access_token);
+
+    const currentLanguage = useSelector(
+        (state) => state.language.currentLanguage
+    );
+    const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
 
     const nextPress = useSelector((state) => state.player.nextPress);
+    const prevPress = useSelector((state) => state.player.prevPress);
 
     const dataSound = useSelector((state) => state.player.dataSound);
+    async function loadSound(uri) {
+        try {
+            // if (sound) {
+            //     await sound.unloadAsync();
+            //     sound = null;
+            //   }
+            await Audio.setAudioModeAsync({
+                staysActiveInBackground: true,
+                interruptionModeAndroid: 1,
+                shouldDuckAndroid: true,
+                interruptionModeIOS: 1,
+                playsInSilentModeIOS: true,
+            });
+            const { sound: song } = await Audio.Sound.createAsync(
+                { uri },
+                {
+                    shouldPlay: true,
+                    isLooping: true,
+                    positionMillis: position,
+                },
+                onPlaybackStatusUpdate
+            );
+            dispatch(setSound(song));
+            // dispatch(setPlayValue(true));
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
+    function onPlaybackStatusUpdate(status) {
+        if (status.isPlaying) {
+            dispatch(setPosition(status.positionMillis));
+            dispatch(setDuration(status.durationMillis));
+        }
+    }
     // console.log("sound: ", detailPost.audio);
     const onBackPress = () => {
-        dispatch(setIsPlayScreen(false))
+        // dispatch(setIsPlayScreen(false));
+        navigation.goBack();
         dispatch(setIsMiniPlayer(true));
         console.log("back isMiniPlayer: " + isMiniPlayer);
         console.log("back isPlayer: " + isPlayer);
@@ -78,57 +132,32 @@ export default function PlayerScreen(props) {
     };
 
     useEffect(() => {
-        BackHandler.addEventListener('hardwareBackPress', onBackPress);
+        BackHandler.addEventListener("hardwareBackPress", onBackPress);
         return () => {
-            BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+            BackHandler.removeEventListener("hardwareBackPress", onBackPress);
         };
     }, [navigation]);
-
-    // 
-    // useEffect(() => {
-    //     if (isMiniPlayer) {
-    //         // playSound();
-    //         // dispatch(setIsMiniPlayer(false));
-    //         console.log("phát nhạc khi focus trở lại màn hình PlayerScreen");
-    //     }
-    // }, [isMiniPlayer]);
-
 
     // ấn nút thu nhỏ màn hình
     function changeMiniPlayer() {
         // sound.unloadAsync();
+        console.log("back");
         dispatch(setIsMiniPlayer(true));
-        dispatch(setIsPlayScreen(false));
+        navigation.goBack();
         // dispatch(setIsPlaying(true));
         // if (!playValue) dispatch(setIsPlayer(true));
         // navigation.navigate('UIScreen');
     }
-
-    // useEffect(() => {
-    //     if (soundUrl === null) {
-    //         async function loadInitialData() {
-    //             dispatch(setCurrentTrack(songs[0]));
-    //             dispatch(setSoundUrl(songs[0].url));
-    //         }
-    //         console.log("nhập bài hát");
-    //         loadInitialData();
-    //     }
-    // }, []);
+    
     useEffect(() => {
-        if (!isMiniPlayer && isPlayScreen) {
+        if (!isMiniPlayer) {
             playSound();
-            console.log("ductu");
-        } 
-        // return () => {
-        //     if (sound != null) {
-        //         sound.unloadAsync();
-        //         // setSound(null);
-        //     }
-        // };
+            console.log("bài hát: " + detailPost.audio);
+        }
     }, [detailPost.audio]);
 
     useEffect(() => {
-        if (sound != null) {
+        if (sound != null && isFocused) {
             if (playValue) {
                 resumeSound(detailPost.audio);
             } else {
@@ -137,21 +166,16 @@ export default function PlayerScreen(props) {
         }
     }, [playValue]);
 
-    // const unloadSound = async () => {
-    //     try {
-    //         await sound.unloadAsync();
-    //         // setSound(null);
-    //         setIsPlaying(false);
-    //     } catch (error) {
-    //         console.log('Error unloading audio: ', error);
-    //     }
-    // };
-
     const playSound = async () => {
-        if (detailPost !== null && !isMiniPlayer) {
-            await loadSound(detailPost.audio);
-            console.log("phát đầu tiên");
+
+        if (sound) {
+            await sound.unloadAsync();
+            dispatch(setSound(null));
         }
+        await loadSound(detailPost.audio);
+        console.log("phát đầu tiên");
+        console.log("Views: " + detailPost.views);
+
     };
 
     async function pauseSound() {
@@ -165,10 +189,7 @@ export default function PlayerScreen(props) {
         if (sound != null) {
             const status = await sound.getStatusAsync();
             if (!status.isLoaded) {
-                await sound.loadAsync(
-                    { uri },
-                    { shouldPlay: true }
-                );
+                await sound.loadAsync({ uri }, { shouldPlay: true });
             }
             await sound.playAsync();
             dispatch(setPlayValue(true));
@@ -176,40 +197,52 @@ export default function PlayerScreen(props) {
         }
     }
 
-    function onSliderValueChange(value) {
-        if (sound != null) {
-            sound.setPositionAsync(value);
-            dispatch(setPosition(value));
+    async function onSliderValueChange(value) {
+        try {
+            if (sound !== null) {
+                await sound.setPositionAsync(value);
+                dispatch(setPosition(value));
+                console.log("lặp");
+            }
+        } catch (error) {
+            console.log(error);
+            // Hiển thị thông báo lỗi cho người dùng tại đây
+        }
+        if (value > duration) {
+            value = duration;
+        } else if (value < 0) {
+            value = 0;
         }
     }
 
-
     const formatTime = (time) => {
         if (time == null) {
-            return '--:--';
+            return "--:--";
         }
         const minutes = Math.floor(time / 60000);
         const seconds = ((time % 60000) / 1000).toFixed(0);
-        return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
     };
 
-    // async function switchToNewSound(uri) {
-    //     try {
-    //         if (sound != null) {
-    //             await sound.unloadAsync();
-    //         }
-    //         if (uri) {
-    //             await getPost(uri, dispatch);
-
-    //         }
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // }
+    async function switchToNewSound(uri) {
+        try {
+            if (sound != null) {
+                await sound.unloadAsync();
+                dispatch(setSound(null));
+            }
+            if (uri) {
+                await getPost(uri, dispatch, access_token, navigation.navigate);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     function onNextPress() {
         // console.log("currentNext: " + currentTrack.id)
-        const currentIndex = dataSound.findIndex((item) => item.index === currentSound);
+        const currentIndex = dataSound.findIndex(
+            (item) => item.index === currentSound
+        );
         const nextTrack = dataSound[currentIndex + 1];
         console.log("soundnext: " + nextTrack._id);
         if (nextTrack) {
@@ -222,7 +255,9 @@ export default function PlayerScreen(props) {
 
     function onPrevPress() {
         // console.log("currentPrev: " + currentTrack.id)
-        const currentIndex = dataSound.findIndex((item) => item.index === currentSound);
+        const currentIndex = dataSound.findIndex(
+            (item) => item.index === currentSound
+        );
         const prevTrack = dataSound[currentIndex - 1];
         if (prevTrack) {
             switchToNewSound(prevTrack._id);
@@ -232,16 +267,6 @@ export default function PlayerScreen(props) {
         }
     }
 
-    // useEffect(() => {
-    //     if (sound != null) {
-    //         if (playValue) {
-    //             resumeSound(detailPost.audio);
-    //         } else {
-    //             pauseSound();
-    //         }
-    //     }
-    // }, [playValue]);
-
     async function stopSound() {
         if (sound) {
             await sound.stopAsync();
@@ -249,25 +274,24 @@ export default function PlayerScreen(props) {
         }
     }
 
-    // useEffect(() => {
-    //     return sound
-    //         ? () => {
-
-    //             sound.unloadAsync();
-    //             console.log("sound đang");
-
-    //         }
-    //         : undefined;
-    // }, [sound]);
-
     const scrollViewRef = useRef(null);
 
     const handleNextPress = () => {
-        scrollViewRef.current.scrollTo({ y: device.height - 83, animated: true });
+        scrollViewRef.current.scrollTo({
+            y: device.height * 2,
+            animated: true,
+        });
+    };
+
+    const handlePrevPress = () => {
+        scrollViewRef.current.scrollTo({
+            y: 0,
+            animated: true,
+        });
     };
 
     return (
-        <View>
+        <View style={GlobalStyles.customSafeArea}>
             {/* <View > */}
             {/* <View style={{ borderRadius: 80, overflow: "hidden" }}> */}
             <ScrollView
@@ -275,216 +299,318 @@ export default function PlayerScreen(props) {
                 showsVerticalScrollIndicator={false}
                 ref={scrollViewRef}
             >
-                <View style={styles.playscreenHeader}>
-                    <TouchableOpacity>
-                        <Icon
-                            name={"chevron-down"}
-                            style={{}}
-                            size={35}
-                            color={"black"}
-                            onPress={() => {
-                                changeMiniPlayer();
-                            }}
-                            value={isMiniPlayer}
-                        />
-                    </TouchableOpacity>
+                <View
+                    style={{
+                        height: device.height,
+                    }}
+                >
+                    <View style={styles.playscreenHeader}>
+                        <TouchableOpacity>
+                            <Icon
+                                name={"chevron-down"}
+                                style={{}}
+                                size={35}
+                                onPress={() => {
+                                    changeMiniPlayer();
+                                }}
+                                value={isMiniPlayer}
+                                color={isDarkTheme ? "white" : "black"}
+                            />
+                        </TouchableOpacity>
 
-                    <TouchableOpacity>
-                        <Icon
-                            name="dots-horizontal"
-                            // style={{ opacity: 1, top: 10 }}
-                            size={35}
-                            color={"black"}
-                        />
-                    </TouchableOpacity>
-                </View>
+                        <TouchableOpacity>
+                            <Icon
+                                name="dots-horizontal"
+                                // style={{ opacity: 1, top: 10 }}
+                                size={35}
+                                color={isDarkTheme ? "white" : "black"}
+                            />
+                        </TouchableOpacity>
+                    </View>
 
-                <View >
-                    <View style={[{ overflow: 'hidden' }, styles.playscreenMain]}>
-                        <ImageBackground
-                            source={{
-                                uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Tu%2FRectangle%2038.png?alt=media&token=780197d0-e51a-496c-8ff1-006b24341c50",
-                            }}
-                            // resizeMode="cover"
-                            // style={{ width: '100%', height: '100%' }}
-                            opacity={0.09}
-
+                    <View style={{ flex: 1 }}>
+                        <View
+                            style={[
+                                { overflow: "hidden" },
+                                styles.playscreenMain,
+                            ]}
                         >
-                            <View>
-                                <Image
-                                    source={{
-                                        uri: detailPost.image,
-                                    }}
-                                    style={styles.playscreenImgAvt}
-                                />
-                            </View>
-                            <View>
-                                <Text style={styles.playscreenTitle}>
-                                    {detailPost.title}
-                                </Text>
-                                <Text
-                                    style={styles.playscreenAuthor}
-                                    onPress={() => {
-                                        navigate("OtherProfile");
-                                    }}
-                                >
-                                    {detailPost.owner.fullName}
-                                </Text>
-                            </View>
-                            <View>
-                                <Slider
-                                    style={styles.progressBar}
-                                    minimumValue={0}
-                                    maximumValue={duration}
-                                    value={position}
-                                    thumbTintColor="black"
-                                    minimumTrackTintColor="black"
-                                    maximumTrackTintColor="black"
-                                    onValueChange={onSliderValueChange}
-                                />
-                                <View style={styles.progressLevelDur}>
-                                    <Text style={styles.progressLabelText}>
-                                        {formatTime(position)}
+                            <ImageBackground
+                                source={{
+                                    uri: detailPost.image,
+                                }}
+                                // resizeMode="repeat"
+                                // style={{ width: '100%', height: '100%' }}
+                                opacity={isDarkTheme ? 0.4 : 0.08}
+                            >
+                                <View>
+                                    <Image
+                                        source={{
+                                            uri: detailPost.image,
+                                        }}
+                                        style={styles.playscreenImgAvt}
+                                    />
+                                </View>
+                                <View>
+                                    <Text
+                                        style={[
+                                            styles.playscreenTitle,
+                                            isDarkTheme
+                                                ? darkProfile.profileText
+                                                : lightProfile.profileText,
+                                        ]}
+                                        numberOfLines={1}
+                                        ellipsizeMode="tail"
+                                    >
+                                        {detailPost.title}
                                     </Text>
-                                    <Text style={styles.progressLabelText}>
-                                        {formatTime(duration)}
+                                    <Text
+                                        numberOfLines={1}
+                                        ellipsizeMode="tail"
+                                        style={[
+                                            styles.playscreenAuthor,
+                                            ,
+                                            isDarkTheme
+                                                ? darkProfile.profileText
+                                                : lightProfile.profileText,
+                                        ]}
+                                        onPress={() => {
+                                            navigate("OtherProfile");
+                                        }}
+                                    >
+                                        {detailPost.owner.fullName}
                                     </Text>
                                 </View>
-                            </View>
-                            <View style={styles.playscreenControl}>
-                                <TouchableOpacity>
-                                    <Image
-                                        style={{
-                                            width: 23.79,
-                                            height: 20.15,
-                                            opacity: 0.8,
-                                        }}
-                                        source={{
-                                            uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_random_btn.png?alt=media&token=dda7b7d4-d4f8-4f2f-a5fe-ceb20ad135e7",
-                                        }}
+                                <View>
+                                    <Slider
+                                        style={styles.progressBar}
+                                        minimumValue={0}
+                                        maximumValue={duration}
+                                        value={position}
+                                        thumbTintColor={
+                                            isDarkTheme ? "white" : "black"
+                                        }
+                                        minimumTrackTintColor={
+                                            isDarkTheme ? "white" : "black"
+                                        }
+                                        maximumTrackTintColor={
+                                            isDarkTheme ? "white" : "black"
+                                        }
+                                        onValueChange={onSliderValueChange}
                                     />
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={() => { onPrevPress() }}>
-                                    <Image
-                                        style={{ width: 28, height: 28 }}
-                                        source={{
-                                            uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Tu%2Fbxs_skip-next-circle.png?alt=media&token=10b12ffd-b779-4fdf-8376-b1f8baa92256",
-                                        }}
-                                    />
-                                </TouchableOpacity>
-                                {playValue ? (
-                                    <TouchableOpacity onPress={() => pauseSound()}>
+                                    <View style={styles.progressLevelDur}>
+                                        <Text
+                                            style={[
+                                                styles.progressLabelText,
+                                                isDarkTheme
+                                                    ? darkProfile.profileText
+                                                    : lightProfile.profileText,
+                                            ]}
+                                        >
+                                            {formatTime(position)}
+                                        </Text>
+                                        <Text
+                                            style={[
+                                                styles.progressLabelText,
+                                                isDarkTheme
+                                                    ? darkProfile.profileText
+                                                    : lightProfile.profileText,
+                                            ]}
+                                        >
+                                            {formatTime(duration)}
+                                        </Text>
+                                    </View>
+                                </View>
+                                <View style={styles.playscreenControl}>
+                                    <TouchableOpacity>
                                         <Image
-                                            style={{ width: 55, height: 55 }}
+                                            style={[
+                                                {
+                                                    width: 23.79,
+                                                    height: 20.15,
+                                                    opacity: 0.8,
+                                                },
+                                                isDarkTheme
+                                                    ? darkProfile.img
+                                                    : lightProfile.img,
+                                            ]}
                                             source={{
-                                                uri:
-                                                    "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fpause.png?alt=media&token=ae6b74e7-ac06-40a8-a1a7-09d3380e2863",
+                                                uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_random_btn.png?alt=media&token=dda7b7d4-d4f8-4f2f-a5fe-ceb20ad135e7",
                                             }}
                                         />
                                     </TouchableOpacity>
-                                ) : (
-                                    <TouchableOpacity onPress={() => resumeSound(detailPost.audio)}>
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            onPrevPress();
+                                        }}
+                                    >
                                         <Image
-                                            style={{ width: 55, height: 55 }}
+                                            style={[
+                                                { width: 28, height: 28 },
+                                                isDarkTheme
+                                                    ? darkProfile.img
+                                                    : lightProfile.img,
+                                            ]}
                                             source={{
-                                                uri:
-                                                    "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Tu%2FGroup%2066.png?alt=media&token=5fb2d1e2-48a0-43bb-9773-ce3424e388f4",
+                                                uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_prev_playersc.png?alt=media&token=7926276d-71be-4e3b-8c8d-42fd0ab3d369",
                                             }}
                                         />
                                     </TouchableOpacity>
-                                )}
-                                <TouchableOpacity onPress={() => { onNextPress() }}>
-                                    <Image
-                                        style={{ width: 28, height: 28 }}
-                                        source={{
-                                            uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Tu%2Ffluent_next-32-regular.png?alt=media&token=db668d13-33de-4f5b-99bd-c5723dd21f13",
+                                    {playValue ? (
+                                        <TouchableOpacity
+                                            onPress={() => pauseSound()}
+                                        >
+                                            <Image
+                                                style={{
+                                                    width: 55,
+                                                    height: 55,
+                                                }}
+                                                source={{
+                                                    uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_pause_playersc.png?alt=media&token=4c757d52-ce70-456a-aa36-c8c581af7be6",
+                                                }}
+                                            />
+                                        </TouchableOpacity>
+                                    ) : (
+                                        <TouchableOpacity
+                                            onPress={() =>
+                                                resumeSound(detailPost.audio)
+                                            }
+                                        >
+                                            <Image
+                                                style={{
+                                                    width: 55,
+                                                    height: 55,
+                                                }}
+                                                source={{
+                                                    uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_play_playersc.png?alt=media&token=916c4f80-4489-41b1-b834-de6f2d5affd8",
+                                                }}
+                                            />
+                                        </TouchableOpacity>
+                                    )}
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            onNextPress();
                                         }}
+                                    >
+                                        <Image
+                                            style={[
+                                                { width: 22, height: 22 },
+                                                ,
+                                                isDarkTheme
+                                                    ? darkProfile.img
+                                                    : lightProfile.img,
+                                            ]}
+                                            source={{
+                                                uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_next_playersc.png?alt=media&token=2bb45ceb-8cab-4f30-b01c-cc799d55756d",
+                                            }}
+                                        />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity>
+                                        <Image
+                                            style={[
+                                                { width: 17.33, height: 23.83 },
+                                                isDarkTheme
+                                                    ? darkProfile.img
+                                                    : lightProfile.img,
+                                            ]}
+                                            source={{
+                                                uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_loop_btn.png?alt=media&token=114eb650-f8c3-4734-aa83-90aec1325949",
+                                            }}
+                                        />
+                                    </TouchableOpacity>
+                                </View>
+                            </ImageBackground>
+                        </View>
+                        <View style={styles.playscreenInteractionBar}>
+                            <View style={styles.playscreenSocial}>
+                                <TouchableOpacity>
+                                    <Icon
+                                        name="cards-heart-outline"
+                                        style={{}}
+                                        size={30}
+                                        // color={"red"}
+                                        color={isDarkTheme ? "white" : "black"}
                                     />
                                 </TouchableOpacity>
                                 <TouchableOpacity>
-                                    <Image
-                                        style={{ width: 17.33, height: 23.83 }}
-                                        source={{
-                                            uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_loop_btn.png?alt=media&token=114eb650-f8c3-4734-aa83-90aec1325949",
-                                        }}
+                                    <Icon
+                                        name="comment-outline"
+                                        style={{}}
+                                        size={30}
+                                        // color={"#15d147"}
+                                        color={isDarkTheme ? "white" : "black"}
+                                    />
+                                </TouchableOpacity>
+                                <TouchableOpacity>
+                                    <Icon
+                                        name="share-variant"
+                                        style={{}}
+                                        size={30}
+                                        // color={"#0d72ff"}
+                                        color={isDarkTheme ? "white" : "black"}
+                                    />
+                                </TouchableOpacity>
+                                <TouchableOpacity>
+                                    <Icon
+                                        name="bookmark-outline"
+                                        style={{}}
+                                        size={30}
+                                        // color={colors.primary}
+                                        color={isDarkTheme ? "white" : "black"}
                                     />
                                 </TouchableOpacity>
                             </View>
-                        </ImageBackground>
-                    </View>
-                    <View style={styles.playscreenInteractionBar}>
-                        <View style={styles.playscreenSocial}>
-                            <TouchableOpacity>
+                        </View>
+                        <View style={{flex: 1, justifyContent: "space-around" }}>
+                            <TouchableOpacity
+                                style={styles.playscreenMore}
+                                onPress={handleNextPress}
+                            >
+                                <Text
+                                    style={{
+                                        fontSize: 18,
+                                        color: colors.white,
+                                    }}
+                                >
+                                    {currentLanguage === "vi"
+                                        ? "Xem thêm"
+                                        : "More"}
+                                </Text>
                                 <Icon
-                                    name="cards-heart-outline"
-                                    style={{}}
-                                    size={30}
-                                // color={"red"}
-                                />
-                            </TouchableOpacity>
-                            <TouchableOpacity>
-                                <Icon
-                                    name="comment-outline"
-                                    style={{}}
-                                    size={30}
-                                // color={"#15d147"}
-                                />
-                            </TouchableOpacity>
-                            <TouchableOpacity>
-                                <Icon
-                                    name="share-variant"
-                                    style={{}}
-                                    size={30}
-                                // color={"#0d72ff"}
-                                />
-                            </TouchableOpacity>
-                            <TouchableOpacity>
-                                <Icon
-                                    name="bookmark-outline"
-                                    style={{}}
-                                    size={30}
-                                // color={colors.primary}
+                                    name={"chevron-down"}
+                                    size={20}
+                                    color="white"
                                 />
                             </TouchableOpacity>
                         </View>
                     </View>
-                    <TouchableOpacity
-                        style={styles.playscreenMore}
-                        onPress={handleNextPress}
-                    >
-                        <Text style={{ fontSize: 18, color: colors.white }}>
-                            Xem thêm
-                        </Text>
-                        <Icon
-                            name={"chevron-down"}
-                            size={20}
-                            color={colors.white}
-                        />
-                    </TouchableOpacity>
                 </View>
-                <View>
+
+                <View style={{
+                    height: device.height,
+                }}>
                     <View style={styles.playscreenHeader}>
                         <TouchableOpacity
-                        // onPress={() => {
-                        //     navigate("PlayerScreen");
-                        // }}
+                            onPress={handlePrevPress}
                         >
                             <Icon
                                 name={"chevron-down"}
                                 style={{}}
                                 size={35}
-                                color={"black"}
+                                color={isDarkTheme ? "white" : "black"}
                             />
                         </TouchableOpacity>
 
                         <TouchableOpacity>
-                            <Icon name="dots-horizontal" size={35} color={"black"} />
+                            <Icon
+                                name="dots-horizontal"
+                                size={35}
+                                color={isDarkTheme ? "white" : "black"}
+                            />
                         </TouchableOpacity>
                     </View>
 
-                    <View
-                        style={{ flex: 1, marginHorizontal: 16 }}
-                    >
+                    <View style={{ flex: 1, marginHorizontal: 16 }}>
                         <View style={styles.informationInfor}>
                             <Image
                                 style={{
@@ -499,31 +625,97 @@ export default function PlayerScreen(props) {
                             />
 
                             <View style={styles.informationAccountInfo}>
-                                <Text style={styles.informationAccountUsername}>
+                                <Text
+                                    style={[
+                                        styles.informationAccountUsername,
+                                        isDarkTheme
+                                            ? darkProfile.profileText
+                                            : lightProfile.profileText,
+                                    ]}
+                                >
                                     {detailPost.owner.fullName}
                                 </Text>
                                 {/* <View style={{ flexDirection: "row" }}>
                                     <Text style={{ fontSize: 13 }}>@</Text> */}
-                                <Text style={{ fontSize: 13 }}>@{detailPost.owner.userName}</Text>
+                                <Text
+                                    style={[
+                                        { fontSize: 13 },
+                                        isDarkTheme
+                                            ? darkProfile.profileText
+                                            : lightProfile.profileText,
+                                    ]}
+                                >
+                                    @{detailPost.owner.userName}
+                                </Text>
                                 {/* </View> */}
                                 <View style={{ flexDirection: "row" }}>
-                                    <Icon name="circle-small" size={15} />
-                                    <Text style={{ fontSize: 13 }}>56</Text>
-                                    <Text style={{ fontSize: 13 }}>
+                                    <Icon
+                                        name="circle-small"
+                                        size={15}
+                                        color={isDarkTheme ? "white" : "black"}
+                                    />
+                                    <Text
+                                        style={[
+                                            { fontSize: 13 },
+                                            isDarkTheme
+                                                ? darkProfile.profileText
+                                                : lightProfile.profileText,
+                                        ]}
+                                    >
+                                        56
+                                    </Text>
+                                    <Text
+                                        style={[
+                                            { fontSize: 13 },
+                                            isDarkTheme
+                                                ? darkProfile.profileText
+                                                : lightProfile.profileText,
+                                        ]}
+                                    >
                                         {" "}
-                                        Người theo dõi
+                                        {currentLanguage === "vi"
+                                            ? "Người theo dõi"
+                                            : "Followers"}
                                     </Text>
                                 </View>
                                 <View style={{ flexDirection: "row" }}>
-                                    <Icon name="circle-small" size={15} />
-                                    <Text style={{ fontSize: 13 }}>06</Text>
-                                    <Text style={{ fontSize: 13 }}> Bài đăng</Text>
+                                    <Icon
+                                        name="circle-small"
+                                        size={15}
+                                        color={isDarkTheme ? "white" : "black"}
+                                    />
+                                    <Text
+                                        style={[
+                                            { fontSize: 13 },
+                                            isDarkTheme
+                                                ? darkProfile.profileText
+                                                : lightProfile.profileText,
+                                        ]}
+                                    >
+                                        06
+                                    </Text>
+                                    <Text
+                                        style={[
+                                            { fontSize: 13 },
+                                            isDarkTheme
+                                                ? darkProfile.profileText
+                                                : lightProfile.profileText,
+                                        ]}
+                                    >
+                                        {currentLanguage === "vi"
+                                            ? " Bài đăng"
+                                            : " posts"}
+                                    </Text>
                                 </View>
                                 <View style={styles.informationFile}>
                                     <TouchableOpacity
                                         style={styles.informationInteract}
                                     >
-                                        <Text style={{ fontSize: 12 }}>Theo dõi</Text>
+                                        <Text style={{ fontSize: 12 }}>
+                                            {currentLanguage === "vi"
+                                                ? "Theo dõi"
+                                                : "Follow"}
+                                        </Text>
                                         <Image
                                             source={{
                                                 uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_user-follow-line.png?alt=media&token=fd5930b3-e9c0-4332-9c6e-3455cff44bd2",
@@ -538,7 +730,11 @@ export default function PlayerScreen(props) {
                                     <TouchableOpacity
                                         style={styles.informationInteract}
                                     >
-                                        <Text style={{ fontSize: 12 }}>Xem hồ sơ</Text>
+                                        <Text style={{ fontSize: 12 }}>
+                                            {currentLanguage === "vi"
+                                                ? "Xem hồ sơ"
+                                                : "View profile"}
+                                        </Text>
                                         <Image
                                             source={{
                                                 uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_outline-navigate-next.png?alt=media&token=fa6d02cd-f751-41f9-8a57-0b0d58afe67d",
@@ -557,26 +753,32 @@ export default function PlayerScreen(props) {
                             {/* xem thêm */}
                             {playValue ? (
                                 <TouchableOpacity onPress={() => pauseSound()}>
-                                    <Image
-                                        style={{ width: 30, height: 30 }}
-                                        source={{
-                                            uri:
-                                                "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fpause.png?alt=media&token=ae6b74e7-ac06-40a8-a1a7-09d3380e2863",
-                                        }}
+                                    <Icon
+                                        name="pause"
+                                        size={30}
+                                        color={isDarkTheme ? "white" : "black"}
                                     />
                                 </TouchableOpacity>
                             ) : (
-                                <TouchableOpacity onPress={() => resumeSound(detailPost.audio)}>
-                                    <Image
-                                        style={{ width: 30, height: 30 }}
-                                        source={{
-                                            uri:
-                                                "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Tu%2FGroup%2066.png?alt=media&token=5fb2d1e2-48a0-43bb-9773-ce3424e388f4",
-                                        }}
+                                <TouchableOpacity
+                                    onPress={() =>
+                                        resumeSound(detailPost.audio)
+                                    }
+                                >
+                                    <Icon
+                                        name="play"
+                                        size={30}
+                                        color={isDarkTheme ? "white" : "black"}
                                     />
                                 </TouchableOpacity>
                             )}
-                            <View style={{ flexDirection: 'row' }}>
+                            <View
+                                style={{
+                                    flexDirection: "row",
+                                    justifyContent: "center",
+                                    alignContent: "center",
+                                }}
+                            >
                                 {/* <Slider
                                     // style={}
                                     minimumValue={0}
@@ -588,62 +790,102 @@ export default function PlayerScreen(props) {
                                     onValueChange={onSliderValueChange}
                                 /> */}
                                 {/* <View style={styles.progressLevelDur}> */}
-                                <Text style={{
-                                    fontSize: 12,
-                                    marginHorizontal: 9,
-                                }}>
-                                    {formatTime(position)}/{formatTime(duration)}
+                                <Text
+                                    style={[
+                                        {
+                                            fontSize: 12,
+                                            marginHorizontal: 9,
+                                            alignSelf: "center",
+                                        },
+                                        isDarkTheme
+                                            ? darkProfile.profileText
+                                            : lightProfile.profileText,
+                                    ]}
+                                >
+                                    {formatTime(position)}/
+                                    {formatTime(duration)}
                                 </Text>
                                 {/* <Text style={styles.progressLabelText}>
                                         {formatTime(duration)}
                                     </Text> */}
                                 {/* </View> */}
                                 <Slider
-                                    style={{ width: device.width / 2 }}
+                                    style={{ width: device.width / 1.5 }}
                                     minimumValue={0}
                                     maximumValue={duration}
                                     value={position}
-                                    thumbTintColor="black"
-                                    minimumTrackTintColor="black"
-                                    maximumTrackTintColor="black"
+                                    thumbTintColor={
+                                        isDarkTheme ? "white" : "black"
+                                    }
+                                    minimumTrackTintColor={
+                                        isDarkTheme ? "white" : "black"
+                                    }
+                                    maximumTrackTintColor={
+                                        isDarkTheme ? "white" : "black"
+                                    }
                                     onValueChange={onSliderValueChange}
                                 />
                             </View>
                         </View>
                         <View style={styles.informationSavedFavorites}>
-                            <TouchableOpacity style={styles.informationSavedFavorites}>
+                            <TouchableOpacity
+                                style={styles.informationSavedFavorites}
+                            >
                                 <Icon
                                     name="heart-outline"
                                     style={styles.iconBack}
                                     size={30}
-                                    color={"black"}
+                                    color={isDarkTheme ? "white" : "black"}
                                 />
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.informationSavedFavorites}>
+                            <TouchableOpacity
+                                style={styles.informationSavedFavorites}
+                            >
                                 <Icon
                                     name="bookmark-outline"
                                     style={styles.iconBack}
                                     size={30}
-                                    color={"black"}
+                                    color={isDarkTheme ? "white" : "black"}
                                 />
                             </TouchableOpacity>
                         </View>
 
                         {showCommentScrollView && (
-                            <ScrollView style={{ height: 550 }}>
+                            <ScrollView style={{ height: device.height * 0.6 }}>
                                 <View>
                                     <Text
-                                        style={{
-                                            fontSize: 25,
-                                            fontWeight: "bold",
-                                        }}
+                                        style={[
+                                            {
+                                                fontSize: 25,
+                                                fontWeight: "bold",
+                                            },
+                                            isDarkTheme
+                                                ? darkProfile.profileText
+                                                : lightProfile.profileText,
+                                        ]}
                                     >
                                         {detailPost.title}
                                     </Text>
-                                    <Text style={{ color: "#5E5E5E", marginVertical: 5 }}>
-                                        Đăng tải: 6 giờ trước
+                                    <Text
+                                        style={[
+                                            { marginVertical: 5 },
+                                            isDarkTheme
+                                                ? darkProfile.textsub
+                                                : { color: "#5E5E5E" },
+                                        ]}
+                                    >
+                                        {currentLanguage === "vi"
+                                            ? "Đăng tải: 6 giờ trước"
+                                            : "Posted: 6 hours ago"}
                                     </Text>
-                                    <Text style={{ fontSize: 15, lineHeight: 22 }}>
+                                    <Text
+                                        style={[
+                                            { fontSize: 15, lineHeight: 22 },
+                                            isDarkTheme
+                                                ? darkProfile.profileText
+                                                : lightProfile.profileText,
+                                        ]}
+                                    >
                                         {detailPost.content}{" "}
                                     </Text>
                                 </View>
@@ -655,7 +897,11 @@ export default function PlayerScreen(props) {
                                     <Comment />
                                 </View>
                                 <TouchableOpacity onPress={handleBackPress}>
-                                    <Text>Quay lại</Text>
+                                    <Text>
+                                        {currentLanguage === "vi"
+                                            ? "Quay lại"
+                                            : "Back"}
+                                    </Text>
                                 </TouchableOpacity>
                             </ScrollView>
                         )}
@@ -678,11 +924,18 @@ export default function PlayerScreen(props) {
 
                                         paddingLeft: 10,
                                     }}
-                                    placeholder="Thêm bình luận"
+                                    placeholder={
+                                        currentLanguage === "vi"
+                                            ? "Thêm bình luận"
+                                            : "Add comment"
+                                    }
                                 ></TextInput>
 
                                 <TouchableOpacity
-                                    style={{ marginRight: 20, alignSelf: "center" }}
+                                    style={{
+                                        marginRight: 20,
+                                        alignSelf: "center",
+                                    }}
                                 >
                                     <Image
                                         style={{
@@ -699,7 +952,6 @@ export default function PlayerScreen(props) {
                     </View>
                 </View>
             </ScrollView>
-            {/* </View> */}
         </View>
     );
 }
@@ -709,23 +961,26 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         flexDirection: "row",
         marginHorizontal: 16,
-        paddingBottom: 5,
+        // height: device.height * 0.05,
     },
 
     playscreenMain: {
+        // flex: 0,
         borderRadius: 30,
         // paddingBottom: 20,F
         marginHorizontal: 16,
-        marginTop: 20,
+        // flex: 2
     },
 
     playscreenInteractionBar: {
-        //flex: 1,
+        flex: 0,
         // backgroundColor: "rgba(255,255,255,0.7)",
         borderRadius: 18,
-        height: 60,
+        // height: 60,
         // backgroundColor: 'blue',
-        marginTop: 20,
+        justifyContent: "center",
+        alignContent: "center",
+        height: device.height * 0.1,
     },
 
     playscreenTitle: {
@@ -747,8 +1002,8 @@ const styles = StyleSheet.create({
 
     playscreenImgAvt: {
         //position: 'absolute',
-        width: device.width - 64,
-        height: device.width - 64,
+        width: device.width - 80,
+        height: device.width - 80,
         alignSelf: "center",
         top: 16,
         borderRadius: 20,
@@ -790,11 +1045,9 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         marginHorizontal: 40,
-        top: 15,
     },
 
     playscreenMore: {
-        flex: 1,
         backgroundColor: colors.primary,
         justifyContent: "center",
         alignItems: "center",
@@ -803,9 +1056,9 @@ const styles = StyleSheet.create({
         padding: 5,
         paddingLeft: 10,
         borderRadius: 5,
-        position: "relative",
-        marginTop: 20,
-        marginBottom: 40,
+        // position: "relative",
+        // marginTop: 20,
+        // height: device.height * 0.04,
     },
     informationHeader: {
         justifyContent: "space-between",
@@ -893,5 +1146,4 @@ const styles = StyleSheet.create({
         backgroundColor: "#ffffff",
         width: "100%",
     },
-
 });
