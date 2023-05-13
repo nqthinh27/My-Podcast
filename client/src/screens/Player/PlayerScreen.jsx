@@ -291,7 +291,7 @@ export default function PlayerScreen(props) {
     };
 
     return (
-        <View style={GlobalStyles.customSafeArea}>
+        <View style={[GlobalStyles.customSafeArea, isDarkTheme ? darkProfile.profileContainer : lightProfile.profileContainer]}>
             {/* <View > */}
             {/* <View style={{ borderRadius: 80, overflow: "hidden" }}> */}
             <ScrollView
@@ -302,6 +302,7 @@ export default function PlayerScreen(props) {
                 <View
                     style={{
                         height: device.height,
+                        backgroundColor: 'grey'
                     }}
                 >
                     <View style={styles.playscreenHeader}>
