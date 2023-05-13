@@ -71,12 +71,8 @@ function Library(props) {
             {!isPlayScreen && <ScrollView>
                 <HeaderUI />
 
-                <View style={[
-                GlobalStyles.customSafeArea,
-                isDarkTheme
-                    ? darkLibrary.libraryContainer
-                    : lightLibrary.libraryContainer,
-            ]}>
+                <View 
+            >
                     <Text
                         style={[
                             {
