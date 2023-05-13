@@ -113,7 +113,8 @@ export default function Home(props) {
     return (
         <SafeAreaView style={[GlobalStyles.customSafeArea, { backgroundColor: isDarkTheme ? darkHome.wrapper.backgroundColor : lightHome.wrapper.backgroundColor }]}>
             {/* <NavigationEvents onDidFocus={()=> this.setState({})} /> */}
-            {!isPlayScreen && <ScrollView>
+            {/* {!isPlayScreen &&  */}
+            <ScrollView>
                 {/* ==========================================HEADER========================================== */}
                 <HeaderUI />
                 {/* ==========================================Slide bar========================================== */}
@@ -144,13 +145,13 @@ export default function Home(props) {
                                         dispatch(setIsMiniPlayer(false));
                                         console.log("home");
                                     }
-                                    await getPost(item._id, dispatch, access_token);
+                                    await getPost(item._id, dispatch, access_token, navigation.navigate);
                                     // if (isMiniPlayer) {
                                     //     setDetailPost(null);
                                     // }
                                     dispatch(setDataSound(SliderData));
                                     dispatch(setCurrentSound(item.index));
-                                    dispatch(setIsPlayScreen(true))
+                                    // dispatch(setIsPlayScreen(true))
                                     // dispatch(setCurrentSound(item._id));
                                 }}
                             >
@@ -195,13 +196,13 @@ export default function Home(props) {
                                                     dispatch(setDuration(0));
                                                     dispatch(setIsMiniPlayer(false));
                                                 }
-                                                await getPost(item._id, dispatch, access_token);
+                                                await getPost(item._id, dispatch, access_token, navigation.navigate);
                                                 // if (isMiniPlayer) {
                                                 //     setDetailPost(null);
                                                 // }
                                                 dispatch(setDataSound(TopTrendingData));
                                                 dispatch(setCurrentSound(item.index));
-                                                dispatch(setIsPlayScreen(true))
+                                                // dispatch(setIsPlayScreen(true))
                                                 // dispatch(setCurrentSound(item._id));
                                             }}
                                             key={index}
@@ -230,13 +231,13 @@ export default function Home(props) {
                                                     dispatch(setDuration(0));
                                                     dispatch(setIsMiniPlayer(false));
                                                 }
-                                                await getPost(item._id, dispatch, access_token);
+                                                await getPost(item._id, dispatch, access_token, navigation.navigate);
                                                 // if (isMiniPlayer) {
                                                 //     setDetailPost(null);
                                                 // }
                                                 dispatch(setDataSound(TopTrendingData));
                                                 dispatch(setCurrentSound(item.index));
-                                                dispatch(setIsPlayScreen(true))
+                                                // dispatch(setIsPlayScreen(true))
                                                 // dispatch(setCurrentSound(item._id));
                                             }}
                                             key={index}
@@ -265,13 +266,13 @@ export default function Home(props) {
                                                     dispatch(setDuration(0));
                                                     dispatch(setIsMiniPlayer(false));
                                                 }
-                                                await getPost(item._id, dispatch, access_token);
+                                                await getPost(item._id, dispatch, access_token, navigation.navigate);
                                                 // if (isMiniPlayer) {
                                                 //     setDetailPost(null);
                                                 // }
                                                 dispatch(setDataSound(TopTrendingData));
                                                 dispatch(setCurrentSound(item.index));
-                                                dispatch(setIsPlayScreen(true))
+                                                // dispatch(setIsPlayScreen(true))
                                                 // dispatch(setCurrentSound(item._id));
                                             }}
                                             key={index}
@@ -315,13 +316,13 @@ export default function Home(props) {
                                         dispatch(setDuration(0));
                                         dispatch(setIsMiniPlayer(false));
                                     }
-                                    await getPost(item._id, dispatch, access_token);
+                                    await getPost(item._id, dispatch, access_token, navigation.navigate);
                                     // if (isMiniPlayer) {
                                     //     setDetailPost(null);
                                     // }
                                     dispatch(setDataSound(NewReleaseData));
                                     dispatch(setCurrentSound(item.index));
-                                    dispatch(setIsPlayScreen(true))
+                                    // dispatch(setIsPlayScreen(true))
                                     // dispatch(setCurrentSound(item._id));
                                 }}
                                 key={index}
@@ -362,8 +363,8 @@ export default function Home(props) {
                     })}
                 </ScrollView>
             </ScrollView>
-            }
-            {isPlayScreen && <PlayerScreen />}
+            {/* } */}
+            {/* {isPlayScreen && <PlayerScreen />} */}
             {isMiniPlayer && <MiniPlayer />}
             {isLoading && <Loading />}
         </SafeAreaView>

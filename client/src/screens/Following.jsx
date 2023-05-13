@@ -255,7 +255,7 @@ export default function Following(props) {
 
     return (
         <SafeAreaView style={[GlobalStyles.customSafeArea, { backgroundColor: isDarkTheme ? colors.dark_backgr : colors.white }]}>
-            {!isPlayScreen && <ScrollView>
+            <ScrollView>
                 <HeaderUI />
                 <View style={isDarkTheme ? darkfollowStyles.contentWrapper : lightfollowStyles.contentWrapper}>
                     <View style={followStyles.contentSection}>
@@ -347,8 +347,6 @@ export default function Following(props) {
                     </View>
                 </View>
             </ScrollView>
-            }
-            {isPlayScreen && sound != null && <PlayerScreen />}  
             {isMiniPlayer && <MiniPlayer />}
         </SafeAreaView>
     )

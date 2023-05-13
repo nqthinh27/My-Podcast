@@ -25,7 +25,7 @@ export default function Navigator(props) {
 
     return(
         <>
-        <StatusBar barStyle={isDarkTheme ? "light-content" : "dark-content"}/>
+        {/* <StatusBar barStyle={isDarkTheme ? "dark-content" : "light-content"}/> */}
         <NavigationContainer>
             <Stack.Navigator initialRouteName="UIScreen" screenOptions={{headerShown:false}} >
                 <Stack.Screen name={"Home"} component={Home} />

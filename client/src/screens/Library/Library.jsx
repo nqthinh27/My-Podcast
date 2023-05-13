@@ -16,7 +16,7 @@ import { useIsFocused } from "@react-navigation/native";
 import HeaderUI from "../../components/HeaderUI";
 import { getRecommendData } from "../../redux/actions/libraryApi";
 import GlobalStyles from "../../components/GlobalStyles";
-import {darkLibrary, lightLibrary} from "../../constants/darkLight/themeLibrary";
+import { darkLibrary, lightLibrary } from "../../constants/darkLight/themeLibrary";
 import MiniPlayer from "../Player/MiniPlayer";
 import PlayerScreen from "../Player/PlayerScreen";
 import { useNavigation } from "@react-navigation/native";
@@ -68,7 +68,7 @@ function Library(props) {
 
     return (
         <SafeAreaView style={[GlobalStyles.customSafeArea, isDarkTheme ? darkLibrary.libraryContainer : lightLibrary.libraryContainer]}>
-            {!isPlayScreen && <ScrollView>
+            <ScrollView>
                 <HeaderUI />
 
                 <View 
@@ -94,13 +94,13 @@ function Library(props) {
                             flex: 1,
                             marginHorizontal: 16,
                             justifyContent: "space-around",
-                            
+
                         }}
                     >
                         <TouchableOpacity
                             style={[styles.libraryButton, isDarkTheme ? darkLibrary.libraryFunction : lightLibrary.libraryFunction]}
                             onPress={() => {
-                                 if (!user) warningLogin(navigate, "Login");
+                                if (!user) warningLogin(navigate, "Login");
                                 else handleNavigateLib(currentLanguage === "vi" ? "Danh sách đã lưu" : "Saved list");
                             }}
                         >
@@ -136,11 +136,11 @@ function Library(props) {
                                 color="#FF0000"
                             />
                             <Text style={[
-                                    styles.libraryIconButton,
-                                    isDarkTheme
-                                        ? darkLibrary.libraryText
-                                        : lightLibrary.libraryText,
-                                ]}>
+                                styles.libraryIconButton,
+                                isDarkTheme
+                                    ? darkLibrary.libraryText
+                                    : lightLibrary.libraryText,
+                            ]}>
                                 {currentLanguage === "vi"
                                     ? "Yêu thích"
                                     : "Favorite"}
@@ -170,11 +170,11 @@ function Library(props) {
                                 color="#00EBEB"
                             />
                             <Text style={[
-                                    styles.libraryIconButton,
-                                    isDarkTheme
-                                        ? darkLibrary.libraryText
-                                        : lightLibrary.libraryText,
-                                ]}>
+                                styles.libraryIconButton,
+                                isDarkTheme
+                                    ? darkLibrary.libraryText
+                                    : lightLibrary.libraryText,
+                            ]}>
                                 {currentLanguage === "vi"
                                     ? "Nghe gần đây"
                                     : "Recently"}
@@ -218,10 +218,10 @@ function Library(props) {
                             marginLeft: 16,
                             marginVertical: 10,
                         }, isDarkTheme
-                        ? darkLibrary.libraryText
-                        : lightLibrary.libraryText,]}
+                            ? darkLibrary.libraryText
+                            : lightLibrary.libraryText,]}
                     >
-                    {currentLanguage === "vi" ? "Mọi người cũng nghe" : "Everyone is listening as well"}
+                        {currentLanguage === "vi" ? "Mọi người cũng nghe" : "Everyone is listening as well"}
                     </Text>
 
                     <View style={{ marginHorizontal: 16 }}>
@@ -239,9 +239,6 @@ function Library(props) {
                     </View>
                 </View>
             </ScrollView>
-
-            }
-            {isPlayScreen && sound != null && <PlayerScreen />}
             {isMiniPlayer && <MiniPlayer
             // avtUrl={detailPost.image}
             // tittle={detailPost.title}
