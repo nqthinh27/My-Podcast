@@ -271,7 +271,7 @@ export default function PlayerScreen(props) {
 
     const handleNextPress = () => {
         scrollViewRef.current.scrollTo({
-            y: device.height + 90,
+            y: device.height,
             animated: true,
         });
     };
@@ -315,7 +315,7 @@ export default function PlayerScreen(props) {
                         </TouchableOpacity>
                     </View>
 
-                    <View style={{ flex: 1}}>
+                    <View style={{flex: 1}}>
                         <View
                             style={[
                                 { overflow: "hidden" },
@@ -879,9 +879,9 @@ export default function PlayerScreen(props) {
 
                                 <View style={styles.informationComment}>
                                     <Comment />
+                                    {/* <Comment />
                                     <Comment />
-                                    <Comment />
-                                    <Comment />
+                                    <Comment /> */}
                                 </View>
                                 <TouchableOpacity onPress={handleBackPress}>
                                     <Text>
@@ -948,15 +948,16 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         flexDirection: "row",
         marginHorizontal: 16,
-        height: device.height * 0.05,
+        // height: device.height * 0.05,
     },
 
     playscreenMain: {
-        flex: 0,
+        // flex: 0,
         borderRadius: 30,
         // paddingBottom: 20,F
         marginHorizontal: 16,
         // flex: 2
+        backgroundColor: 'grey'
     },
 
     playscreenInteractionBar: {
@@ -1000,7 +1001,7 @@ const styles = StyleSheet.create({
 
     progressBar: {
         width: 310,
-        height: 40,
+        // height: 40,
         marginTop: 20,
         flexDirection: "row",
         alignSelf: "center",
