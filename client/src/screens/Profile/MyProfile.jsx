@@ -17,6 +17,7 @@ import ProfilePodcast from "../../components/ProfilePodcast";
 import { useDispatch, useSelector } from "react-redux";
 // import { device } from "../constants/device";
 import { useNavigation } from "@react-navigation/native";
+import { darkProfile, lightProfile } from "../../constants/darkLight/themeProfile";
 import { getMyFollowers, getMyFollowing, getMyUserAllPosts, getMyUserTopPosts } from "../../redux/actions/authApi";
 import { formatNum, timeDiff } from "../../ultis/helper";
 import Loading from "../../components/Loading";
@@ -40,9 +41,23 @@ function MyProfile(props) {
     }, [dispatch])
     const topPosts = useSelector((state) => state.auth.topPosts.data);
     const allPosts = useSelector((state) => state.auth.allPosts.data);
-    
+    const followingList = useSelector((state) => state.auth.following.data);
+    const followersList = useSelector((state) => state.auth.followers.data);
+    const currentLanguage = useSelector(
+        (state) => state.language.currentLanguage
+    );
+    const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
+
     return (
-        <SafeAreaView style={[styles.myprofile, GlobalStyles.customSafeArea]}>
+        <SafeAreaView
+            style={[
+                styles.myprofile,
+                GlobalStyles.customSafeArea,
+                isDarkTheme
+                    ? darkProfile.profileContainer
+                    : lightProfile.profileContainer,
+            ]}
+        >
             <ScrollView>
                 <View style={styles.myprofileHeader}>
                     <Icon
@@ -51,9 +66,17 @@ function MyProfile(props) {
                         onPress={() => {
                             goBack();
                         }}
+                        color={isDarkTheme ? "white" : "black"}
                     />
-                    <Text style={styles.myprofileTextHeader}>
-                        Trang cá nhân
+                    <Text
+                        style={[
+                            styles.myprofileTextHeader,
+                            isDarkTheme
+                                ? darkProfile.profileText
+                                : lightProfile.profileText,
+                        ]}
+                    >
+                        {currentLanguage === "vi" ? "Trang cá nhân    " : "My profile    "}
                     </Text>
                     <Text> </Text>
                 </View>
@@ -73,22 +96,44 @@ function MyProfile(props) {
                         id={currentUser._id}
                     ></ProfileInfo>
 
-                    <TouchableOpacity style={styles.myprofileEditProfile} onPress={()=>navigate('EditProfile')}>
+                    <TouchableOpacity
+                        style={
+                            isDarkTheme
+                                ? darkProfile.myprofileEditProfile
+                                : lightProfile.myprofileEditProfile
+                        }
+                     onPress={()=>navigate('EditProfile')}>
                         <Text style={styles.myprofileButtonEditprofile}>
-                            Chỉnh sửa trang cá nhân
+                            {currentLanguage === "vi" ? "Chỉnh sửa trang cá nhân" : "Edit my profile"}
                         </Text>
                     </TouchableOpacity>
+                    <View style={{ flexDirection: "row" }}>
+                        <Text
+                            style={[
+                                {
+                                    marginLeft: 16,
+                                    fontSize: 18,
+                                    fontWeight: "bold",
+                                    marginBottom: 10,
+                                },
+                                isDarkTheme
+                                    ? darkProfile.profileText
+                                    : lightProfile.profileText,
+                            ]}
+                        >
+                            {currentLanguage === "vi" ? "Nổi bật" : "Popular"}
+                        </Text>
+                        <Icon
+                            name={"chevron-right"}
+                            size={18}
+                            style={{ paddingTop: 1 }}
+                            color={isDarkTheme ? "white" : "black"}
+                            onPress={() => {
+                                navigate("UIScreen");
+                            }}
+                        />
+                    </View>
 
-                    <Text
-                        style={{
-                            marginLeft: 16,
-                            fontSize: 18,
-                            fontWeight: "bold",
-                            marginBottom: 10,
-                        }}
-                    >
-                        Nổi bật
-                    </Text>
                     <View
                         style={{
                             marginHorizontal: 8,
@@ -104,22 +149,38 @@ function MyProfile(props) {
                                     <ProfilePodcast
                                         image={item.image}
                                         title={item.title}
-                                        des={formatNum(item.views) + " Lượt nghe"} />
+                                        des={formatNum(item.views) + " " + (currentLanguage === "vi" ? "Lượt nghe" : "Listened")} />
                                 </TouchableOpacity>
                             );
                         })}
                     </View>
 
-                    <Text
-                        style={{
-                            marginLeft: 16,
-                            fontSize: 18,
-                            fontWeight: "bold",
-                            marginBottom: 10,
-                        }}
-                    >
-                        Mới phát hành
-                    </Text>
+                    <View style={{ flexDirection: "row" }}>
+                        <Text
+                            style={[
+                                {
+                                    marginLeft: 16,
+                                    fontSize: 18,
+                                    fontWeight: "bold",
+                                    marginBottom: 10,
+                                },
+                                isDarkTheme
+                                    ? darkProfile.profileText
+                                    : lightProfile.profileText,
+                            ]}
+                        >
+                            {currentLanguage === "vi" ? "Mới phát hành" : "New release"}
+                        </Text>
+                        <Icon
+                            name={"chevron-right"}
+                            size={18}
+                            style={{ paddingTop: 1 }}
+                            color={isDarkTheme ? "white" : "black"}
+                            onPress={() => {
+                                navigate("UIScreen");
+                            }}
+                        />
+                    </View>
 
                     <View
                         style={{

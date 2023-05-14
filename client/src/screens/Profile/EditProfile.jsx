@@ -22,6 +22,7 @@ import firebase from '../../../config';
 import { patchDataAPI, putDataAPI } from "../../ultis/fetchData";
 import Loading from "../../components/Loading";
 import { updateMyProfile } from "../../redux/actions/authApi";
+import { darkProfile, lightProfile } from "../../constants/darkLight/themeProfile";
 
 function EditProfile(props) {
     // navigation
@@ -38,6 +39,11 @@ function EditProfile(props) {
     const [address, setAddress] = useState(currentUser.address);
     const email = currentUser.email
     const [isLoading, setIsLoading] = useState(false);
+    const currentLanguage = useSelector(
+        (state) => state.language.currentLanguage
+    );
+    const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
+
     // handle change avatar
     // const [image, setImage] = useState(null);
     const [uploadingAvatar, setUploadingAvatar] = useState(false);
@@ -121,7 +127,7 @@ function EditProfile(props) {
     }
 
     return (
-        <SafeAreaView style={[styles.editprofile, GlobalStyles.customSafeArea]}>
+        <SafeAreaView style={[styles.editprofile, GlobalStyles.customSafeArea,isDarkTheme? darkProfile.profileContainer : lightProfile.profileContainer]}>
             <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
                 <ScrollView>
                     <View style={styles.editprofileHeader}>
@@ -132,9 +138,17 @@ function EditProfile(props) {
                             onPress={() => {
                                 goBack();
                             }}
+                            color={isDarkTheme ? "white" : "black"}
                         />
-                        <Text style={styles.editprofileTextHeader}>
-                            Chỉnh sửa hồ sơ
+                        <Text
+                        style={[
+                            styles.editprofileTextHeader,
+                            isDarkTheme
+                                ? darkProfile.profileText
+                                : lightProfile.profileText,
+                        ]}
+                    >
+                            {currentLanguage === "vi" ? "Chỉnh sửa hồ sơ" : "Edit profile"}
                         </Text>
 
                         <TouchableOpacity
@@ -168,7 +182,7 @@ function EditProfile(props) {
                                     fontWeight: "500",
                                 }}
                             >
-                                Lưu
+                                {currentLanguage === "vi" ? "Lưu" : "Save"}
                             </Text>
                         </TouchableOpacity>
                     </View>
@@ -197,7 +211,7 @@ function EditProfile(props) {
                             }}
                             onPress={pickAvatar}
                         >
-                            <Text>Sửa</Text>
+                            <Text>{currentLanguage === "vi" ? "Sửa" : "Edit"}</Text>
                         </TouchableOpacity>
                     </View>
 
@@ -209,16 +223,16 @@ function EditProfile(props) {
                                     color: colors.primary,
                                 }}
                             >
-                                Họ tên:
+                                {currentLanguage === "vi" ? "Họ tên:" : "Full name:"}
                             </Text>
                         </View>
                         <View style={styles.editprofileInput}>
                             <TextInput
-                                style={{
+                                style={[{
                                     fontSize: 17,
                                     paddingBottom: 5,
 
-                                }}
+                                }, isDarkTheme ? darkProfile.profileText : lightProfile.profileText]}
                                 secureTextEntry={false}
                                 autoCapitalize="words"
                                 value={fullName}
@@ -238,11 +252,11 @@ function EditProfile(props) {
                         </View>
                         <View style={styles.editprofileInput}>
                             <TextInput
-                                style={{
+                                style={[{
                                     fontSize: 17,
                                     paddingBottom: 5,
 
-                                }}
+                                }, isDarkTheme ? darkProfile.profileText : lightProfile.profileText]}
                                 value={email}
                             ></TextInput>
                         </View>
@@ -255,17 +269,17 @@ function EditProfile(props) {
                                     color: colors.primary,
                                 }}
                             >
-                                Tên người dùng:
+                                {currentLanguage === "vi" ? "Tên người dùng:" : "User name:"}
                             </Text>
                         </View>
                         <View style={[styles.editprofileInput, { flexDirection: 'row', alignItems: 'center' }]}>
-                            <Text>@</Text>
+                            <Text style={isDarkTheme ? darkProfile.profileText : lightProfile.profileText}>@</Text>
                             <TextInput
-                                style={{
+                                style={[{
                                     fontSize: 17,
                                     paddingBottom: 5,
                                     flex: 1
-                                }}
+                                }, isDarkTheme ? darkProfile.profileText : lightProfile.profileText]}
                                 secureTextEntry={false}
                                 value={userName}
                                 onChangeText={setUserName}
@@ -282,7 +296,7 @@ function EditProfile(props) {
                                     marginBottom: 5
                                 }}
                             >
-                                Giới tính:
+                                {currentLanguage === "vi" ? "Giới tính:" : "Gender:"}
                             </Text>
                         </View>
                         <View style={styles.editprofileInput}>
@@ -293,19 +307,25 @@ function EditProfile(props) {
                                 }}
                                 onValueChange={(value) => setGender(value)}
                                 items={[
-                                    { label: "Nam", value: "male" },
-                                    { label: "Nữ", value: "female" },
-                                    { label: "Khác", value: "" },
+                                    { label: currentLanguage === "vi" ? "Nam" : "Male", value: "male" },
+                                    { label: currentLanguage === "vi" ? "Nữ" : "Female", value: "female" },
+                                    { label: currentLanguage === "vi" ? "Khác" : "Other", value: "" },
                                 ]}
                                 style={{
                                     inputIOS: {
                                         fontSize: 17,
+                                        color: isDarkTheme ? darkProfile.profileText.color : lightProfile.profileText.color,
                                     },
                                     inputAndroid: {
                                         fontSize: 17,
+                                        color: isDarkTheme ? darkProfile.profileText.color : lightProfile.profileText.color,
                                     },
+                                    
                                 }}
                                 value={gender}
+                                // textStyle ={isDarkTheme ? darkProfile.profileText : lightProfile.profileText}
+                                textStyle={{ color: 'green' }}
+
                             />
                         </View>
 
@@ -317,15 +337,15 @@ function EditProfile(props) {
                                     color: colors.primary,
                                 }}
                             >
-                                Số điện thoại:
+                                {currentLanguage === "vi" ? "Số điện thoại:" : "Phone number:"}
                             </Text>
                         </View>
                         <View style={styles.editprofileInput}>
                             <TextInput
-                                style={{
+                                style={[{
                                     fontSize: 17,
                                     paddingBottom: 5,
-                                }}
+                                }, isDarkTheme ? darkProfile.profileText : lightProfile.profileText]}
                                 secureTextEntry={false}
                                 keyboardType="numeric"
                                 value={mobile}
@@ -341,15 +361,15 @@ function EditProfile(props) {
                                     color: colors.primary,
                                 }}
                             >
-                                Địa chỉ:
+                                {currentLanguage === "vi" ? "Địa chỉ:" : "Address:"}
                             </Text>
                         </View>
                         <View style={styles.editprofileInput}>
                             <TextInput
-                                style={{
+                                style={[{
                                     fontSize: 17,
                                     paddingBottom: 5,
-                                }}
+                                }, isDarkTheme ? darkProfile.profileText : lightProfile.profileText]}
                                 secureTextEntry={false}
                                 value={address}
                                 onChangeText={setAddress}

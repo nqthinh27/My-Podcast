@@ -1,1 +1,5 @@
+<<<<<<< HEAD
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"5fcc2a065fca40148fad32eb75243b09","collectionName":"likes","type":"collection"}
+=======
 {"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"44d16e49d8854f578a6b3782f61625e9","collectionName":"likes","type":"collection"}
+>>>>>>> 73c3dae4e64c4e16433cd01171eba47757e41761

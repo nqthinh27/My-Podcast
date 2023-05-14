@@ -54,6 +54,9 @@ export default function HeaderUI(props) {
     const [firstSearch, setFirstSearch] = useState(true);
     const textInputRef = useRef(null);
     const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
+    const currentLanguage = useSelector(
+        (state) => state.language.currentLanguage
+    );
     useEffect(() => {
         textInputRef.current?.focus();
     }, []);
@@ -118,21 +121,22 @@ export default function HeaderUI(props) {
                         style={lightHeader.input}
                         // autoFocus={false}
                         // value={searchValue}
-                        placeholder="Tìm kiếm podcast, tác giả, album,..."
+                        placeholder={currentLanguage === "vi" ? "Tìm kiếm podcast, tác giả, album,..." : "Search for podcasts, authors, albums,..."}
                         // onChange={(event) => setSearchResult(event.target.value)}
                         onFocus={handleSearch}
-
+                        placeholderTextColor={isDarkTheme ? darkHeader.input.color : lightHeader.input.color}
                     />
                 </View>
                 <Modal visible={searchValue} >
-                    <SafeAreaView style={GlobalStyles.customSafeArea}>
+                    <SafeAreaView style={[GlobalStyles.customSafeArea, isDarkTheme ? darkHeader.background : lightHeader.background]}>
                         <View style={lightHeader.header}>
                             <Icon style={lightHeader.back}
                                 name={'chevron-left'}
                                 size={26}
                                 onPress={goBack}
+                                color={isDarkTheme ? darkHeader.input.color : lightHeader.input.color}
                             />
-                            <View style={lightHeader.searchSection}>
+                            <View style={isDarkTheme ? darkHeader.searchSection : lightHeader.searchSection}>
                                 <Icon
                                     style={lightHeader.searchIcon}
                                     name="search"
@@ -141,10 +145,10 @@ export default function HeaderUI(props) {
                                 />
                                 <TextInput
                                     autoFocus={true}
-                                    style={lightHeader.input}
+                                    style={isDarkTheme ? darkHeader.input : lightHeader.input}
                                     // ref={textInputRef}
                                     value={keyword}
-                                    placeholder="Tìm kiếm podcast, tác giả, album,..."
+                                    placeholder={currentLanguage === "vi" ? "Tìm kiếm podcast, tác giả, album,..." : "Search for podcasts, authors, albums,..."}
                                     onChangeText={setKeyword}
                                     // underlineColorAndroid="transparent"
                                     onSubmitEditing={handleSearchResult}
@@ -153,26 +157,26 @@ export default function HeaderUI(props) {
                         </View>
                         {postsResult.length == 0 && usersResult.length == 0 && !firstSearch &&
                             <Text
-                                style={{
+                                style={[{
                                     fontSize: 20,
                                     fontWeight: "500",
                                     alignSelf: "center",
                                     marginTop: 40
-                                }}
+                                }, isDarkTheme ? darkHeader.text : lightHeader.text]}
                             >
-                                Oops! Không tìm thấy kết quả...
+                                {currentLanguage === "vi" ? "Oops! Không tìm thấy kết quả..." : "Oops! No results found..."}
                             </Text>}
                         <ScrollView>
                             {usersResult.length > 0 && <Text
-                                style={{
+                                style={[{
                                     fontSize: 18,
                                     fontWeight: "bold",
                                     marginHorizontal: 16,
                                     marginTop: 16,
                                     marginBottom: 8,
-                                }}
+                                }, isDarkTheme ? darkHeader.text : lightHeader.text]}
                             >
-                                Người dùng liên quan
+                                {currentLanguage === "vi" ? "Người dùng liên quan" : "Related users"}
                             </Text>}
                             <View style={{ marginHorizontal: 16 }}>
                                 {usersResult.map((item, index) => {
@@ -190,14 +194,14 @@ export default function HeaderUI(props) {
                                 })}
                             </View>
                             {postsResult.length > 0 && <Text
-                                style={{
+                                style={[{
                                     fontSize: 18,
                                     fontWeight: "bold",
                                     marginHorizontal: 16,
                                     marginBottom: 8,
-                                }}
+                                }, isDarkTheme ? darkHeader.text : lightHeader.text]}
                             >
-                                Podcast liên quan
+                                {currentLanguage === "vi" ? "Podcast liên quan" : "Related podcasts"}
                             </Text>}
                             <View style={{ marginHorizontal: 16 }}>
                                 {postsResult.map((item, index) => {
