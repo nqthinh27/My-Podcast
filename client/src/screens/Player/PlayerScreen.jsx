@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import Slider from "@react-native-community/slider";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { Ionicons } from '@expo/vector-icons';
 import colors from "../../constants/colors";
 import { device } from "../../constants/device";
 import GlobalStyles from "../../components/GlobalStyles";
@@ -22,28 +23,20 @@ import { useDispatch, useSelector } from "react-redux";
 import { setCurrentSound, setDuration, setIsMiniPlayer, setIsPlayScreen, setIsPlayer, setIsPlaying, setNextPress, setPlayValue, setPosition } from "../../redux/slices/playerSlice";
 import { useNavigation } from "@react-navigation/native";
 import { getPost } from "../../redux/actions/postApi";
+import { patchDataAPI, postDataAPI } from "../../ultis/fetchData";
+import { getLikedListData, getSavedListData } from "../../redux/actions/libraryApi";
 
 
 
 export default function PlayerScreen(props) {
-    // navigation
-    // const { navigation, route } = props;
-    // //function of navigate
-    // const { navigate, goback } = navigation;
-
     const { sound, loadSound, switchToNewSound } = props;
-
-
     const [showCommentScrollView, setShowCommentScrollView] = useState(true);
-
     const handleCommentPress = () => {
         setShowCommentScrollView(true);
     }
-
     const handleBackPress = () => {
         setShowCommentScrollView(false);
     }
-
     // const [isPlaying, setIsPlaying] = useState(false);
     // const [playValue, setPlayValue] = useState(false);
     // const [sound, setSound] = useState(null);
@@ -61,13 +54,11 @@ export default function PlayerScreen(props) {
     const isMiniPlayer = useSelector((state) => state.player.isMiniPlayer);
     const isPlayer = useSelector((state) => state.player.isPlayer);
     const currentSound = useSelector((state) => state.player.currentSound);
+    const currentUser = useSelector((state) => state.auth.login.currentUser);
+    const access_token = useSelector((state) => state.auth.login.access_token);
     const isPlayScreen = useSelector((state) => state.player.isPlayScreen);
-    
-
     const nextPress = useSelector((state) => state.player.nextPress);
-
     const dataSound = useSelector((state) => state.player.dataSound);
-
     // console.log("sound: ", detailPost.audio);
     const onBackPress = () => {
         dispatch(setIsPlayScreen(false))
@@ -118,7 +109,7 @@ export default function PlayerScreen(props) {
         if (!isMiniPlayer && isPlayScreen) {
             playSound();
             console.log("ductu");
-        } 
+        }
         // return () => {
         //     if (sound != null) {
         //         sound.unloadAsync();
@@ -266,6 +257,41 @@ export default function PlayerScreen(props) {
         scrollViewRef.current.scrollTo({ y: device.height - 83, animated: true });
     };
 
+    // handle save and like
+    const userSavedList = useSelector((state) => state.library.savedList.data);
+    const isSaved = userSavedList.some(element => element._id == "props._id");
+    const [save, setSave] = useState(isSaved);
+    const userLikedList = useSelector((state) => state.library.likedList.data);
+    const isLiked = userLikedList.some(element => element._id == "props._id");
+    const [like, setLike] = useState(isLiked);
+    const fetchInFo = async () => {
+        if (currentUser) {
+            await getLikedListData(dispatch, access_token);
+            await getSavedListData(dispatch, access_token);
+        }
+    }
+
+    useEffect(() => {
+        fetchInFo();
+    }, []);
+    const handleSave = async () => {
+        if (!save) {
+            await postDataAPI(`save/${"item._id"}/add`, null, access_token);
+        } else {
+            await patchDataAPI(`save/${"item._id"}/remove`, null, access_token);
+        }
+        setSave(!save)
+    }
+    const handleLike = async () => {
+        if (!like) {
+            await postDataAPI(`like/${"item._id"}/add`, null, access_token);
+            setCurrentLikes(prevLikes => prevLikes + 1);
+        } else {
+            await patchDataAPI(`like/${"item._id"}/remove`, null, access_token);
+            setCurrentLikes(prevLikes => prevLikes - 1);
+        }
+        setLike(!like)
+    }
     return (
         <View>
             {/* <View > */}
@@ -414,12 +440,12 @@ export default function PlayerScreen(props) {
                     </View>
                     <View style={styles.playscreenInteractionBar}>
                         <View style={styles.playscreenSocial}>
-                            <TouchableOpacity>
+                            <TouchableOpacity onPress={handleLike}>
                                 <Icon
-                                    name="cards-heart-outline"
+                                    name={like ? "cards-heart" : "cards-heart-outline"}
                                     style={{}}
                                     size={30}
-                                // color={"red"}
+                                    color={like ? 'red' : null}
                                 />
                             </TouchableOpacity>
                             <TouchableOpacity>
@@ -438,12 +464,12 @@ export default function PlayerScreen(props) {
                                 // color={"#0d72ff"}
                                 />
                             </TouchableOpacity>
-                            <TouchableOpacity>
-                                <Icon
-                                    name="bookmark-outline"
+                            <TouchableOpacity onPress={handleSave}>
+                                <Ionicons
+                                    name={save ? "bookmark" : "bookmark-outline"}
                                     style={{}}
                                     size={30}
-                                // color={colors.primary}
+                                    color={save ? colors.primary : null}
                                 />
                             </TouchableOpacity>
                         </View>
@@ -611,20 +637,21 @@ export default function PlayerScreen(props) {
                             </View>
                         </View>
                         <View style={styles.informationSavedFavorites}>
-                            <TouchableOpacity style={styles.informationSavedFavorites}>
+                            
+                            <TouchableOpacity onPress={handleLike} style={styles.informationSavedFavorites}>
                                 <Icon
-                                    name="heart-outline"
+                                    name={like ? "cards-heart" : "cards-heart-outline"}
                                     style={styles.iconBack}
                                     size={30}
-                                    color={"black"}
+                                    color={like ? 'red' : null}
                                 />
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.informationSavedFavorites}>
+                            <TouchableOpacity onPress={handleLike} style={styles.informationSavedFavorites}>
                                 <Icon
-                                    name="bookmark-outline"
+                                    name={save ? "bookmark" : "bookmark-outline"}
                                     style={styles.iconBack}
                                     size={30}
-                                    color={"black"}
+                                    color={save ? colors.primary : null}
                                 />
                             </TouchableOpacity>
                         </View>
