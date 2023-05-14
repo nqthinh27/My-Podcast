@@ -291,7 +291,7 @@ export default function PlayerScreen(props) {
     };
 
     return (
-        <View style={GlobalStyles.customSafeArea}>
+        <SafeAreaView style={GlobalStyles.customSafeArea}>
             {/* <View > */}
             {/* <View style={{ borderRadius: 80, overflow: "hidden" }}> */}
             <ScrollView
@@ -952,7 +952,7 @@ export default function PlayerScreen(props) {
                     </View>
                 </View>
             </ScrollView>
-        </View>
+        </SafeAreaView>
     );
 }
 
