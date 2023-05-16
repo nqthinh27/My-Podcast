@@ -259,10 +259,10 @@ export default function PlayerScreen(props) {
 
     // handle save and like
     const userSavedList = useSelector((state) => state.library.savedList.data);
-    const isSaved = userSavedList.some(element => element._id == "props._id");
+    const isSaved = userSavedList.some(element => element._id == detailPost._id);
     const [save, setSave] = useState(isSaved);
     const userLikedList = useSelector((state) => state.library.likedList.data);
-    const isLiked = userLikedList.some(element => element._id == "props._id");
+    const isLiked = userLikedList.some(element => element._id == detailPost._id);
     const [like, setLike] = useState(isLiked);
     const fetchInFo = async () => {
         if (currentUser) {
@@ -276,18 +276,18 @@ export default function PlayerScreen(props) {
     }, []);
     const handleSave = async () => {
         if (!save) {
-            await postDataAPI(`save/${"item._id"}/add`, null, access_token);
+            await postDataAPI(`save/${detailPost._id}/add`, null, access_token);
         } else {
-            await patchDataAPI(`save/${"item._id"}/remove`, null, access_token);
+            await patchDataAPI(`save/${detailPost._id}/remove`, null, access_token);
         }
         setSave(!save)
     }
     const handleLike = async () => {
         if (!like) {
-            await postDataAPI(`like/${"item._id"}/add`, null, access_token);
+            await postDataAPI(`like/${detailPost._id}/add`, null, access_token);
             setCurrentLikes(prevLikes => prevLikes + 1);
         } else {
-            await patchDataAPI(`like/${"item._id"}/remove`, null, access_token);
+            await patchDataAPI(`like/${detailPost._id}/remove`, null, access_token);
             setCurrentLikes(prevLikes => prevLikes - 1);
         }
         setLike(!like)

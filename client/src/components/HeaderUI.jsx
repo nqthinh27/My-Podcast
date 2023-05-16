@@ -17,13 +17,14 @@ import { lightHeader, darkHeader } from '../constants/darkLight/themeHeaderUI'
 import { useSelector, useDispatch } from "react-redux";
 import { isTokenExpired } from "../ultis/auth";
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { stayLogged } from "../redux/actions/authApi";
+import { getNotifies, stayLogged } from "../redux/actions/authApi";
 import { avatarDefault } from "../constants/app";
 import { searchPosts, searchUsers } from "../redux/actions/searchApi";
 import PodcastListItem from "./PodcastListItem";
 import UserListItem from "./UserListItem";
 import { ScrollView } from "react-native-gesture-handler";
 import { getOtherUser } from "../redux/actions/profileApi";
+import { warningLogin } from "../ultis/warning";
 
 export default function HeaderUI(props) {
     //navigation
@@ -32,6 +33,7 @@ export default function HeaderUI(props) {
     const { navigate, goback } = navigation;
     const dispatch = useDispatch();
     const currentUser = useSelector((state) => state.auth.login.currentUser);
+    const access_token = useSelector((state) => state.auth.login.access_token);
     const fetchUser = async () => {
         const refresh_token = await AsyncStorage.getItem('refresh_token');
         if (refresh_token) {
@@ -45,6 +47,18 @@ export default function HeaderUI(props) {
         if (!currentUser)
             fetchUser();
     }, [])
+    const notifies = useSelector((state) => state.auth.notifies.data);
+    const fetchNotify = async () => {
+        await getNotifies(access_token, dispatch);
+        if (notifies[0]) {
+            console.log(notifies[0].isRead);
+            setIsReaded(notifies[0].isRead);
+        }
+    }
+    useEffect(() => {
+        if (currentUser)
+            fetchNotify();
+    }, [currentUser])
     let avatar = avatarDefault;
     if (currentUser) {
         avatar = currentUser.avatar;
@@ -90,7 +104,14 @@ export default function HeaderUI(props) {
     //   setShowResult(false);
     // };
 
-
+    const handleNotifyNavigate = () => {
+        if (!currentUser) {
+            warningLogin(navigate, 'Login');
+        } else {
+            navigate('Notify');
+        }
+    }
+    const [isReaded, setIsReaded] = useState(true);
     return (
         <View>
             <View style={lightHeader.header}>
@@ -216,10 +237,11 @@ export default function HeaderUI(props) {
                         </ScrollView>
                     </SafeAreaView>
                 </Modal>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={handleNotifyNavigate}>
                     <Image
                         source={{
-                            uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_bell1.png?alt=media&token=85036c85-d95d-4b34-bff2-7f193a3149a4",
+                            uri: isReaded ? 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_bell0.png?alt=media&token=379b01a8-692f-404c-9420-9b8716fd056d' :
+                                "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_bell1.png?alt=media&token=85036c85-d95d-4b34-bff2-7f193a3149a4",
                         }}
                         style={lightHeader.bell}
                     />
