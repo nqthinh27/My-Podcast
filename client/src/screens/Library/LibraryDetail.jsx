@@ -39,13 +39,13 @@ function LibraryDetail({ route }) {
     const fetchData = async () => {
         setIsLoading(true);
         var res = null;
-        if (title == 'Đanh sách đã lưu') {
+        if (title === 'Danh sách đã lưu' || title === "Saved list") {
             res = await postDataAPI('save', null, access_token);;
             setData(res.data.saved);
-        } else if (title === 'Danh sách đã thích') {
+        } else if (title === 'Danh sách đã thích' || title === "Liked list") {
             res = await postDataAPI('like', null, access_token);;
             setData(res.data.liked);
-        } else if (title === 'Lịch sử nghe') {
+        } else if (title === 'Lịch sử nghe' || title === "Recently") {
             res = await postDataAPI('history', null, access_token);
             setData(res.data.history);
         }
