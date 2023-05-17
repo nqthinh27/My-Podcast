@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native'
 import React from 'react'
+import { timeDiff2 } from '../../ultis/helper'
 
 export default function NotifyItem(props) {
     return (
@@ -13,7 +14,10 @@ export default function NotifyItem(props) {
                 }}
                 source={{ uri: props.image }}
             />
-            <Text style={{ flexWrap: 'wrap', flex: 1 }}>{props.content}</Text>
+            <View style = {{ flex: 1}}>
+                <Text style={{ flexWrap: 'wrap', fontSize: 16 }}>{props.content}</Text>
+                <Text >{timeDiff2(props.createAt)}</Text>
+            </View>
         </View>
     )
 }

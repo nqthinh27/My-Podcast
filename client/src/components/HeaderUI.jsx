@@ -46,18 +46,21 @@ export default function HeaderUI(props) {
     useEffect(() => {
         if (!currentUser)
             fetchUser();
+        console.log(notifies);
     }, [])
+
+    // useEffect(() => {
+    //     if (notifies[0]) {
+    //         console.log(notifies[0].isRead);
+    //         setIsReaded(notifies[0].isRead);
+    //     }
+    // }, [notifies])
     const notifies = useSelector((state) => state.auth.notifies.data);
     const fetchNotify = async () => {
         await getNotifies(access_token, dispatch);
-        if (notifies[0]) {
-            console.log(notifies[0].isRead);
-            setIsReaded(notifies[0].isRead);
-        }
     }
     useEffect(() => {
-        if (currentUser)
-            fetchNotify();
+        fetchNotify();
     }, [currentUser])
     let avatar = avatarDefault;
     if (currentUser) {
@@ -111,7 +114,7 @@ export default function HeaderUI(props) {
             navigate('Notify');
         }
     }
-    const [isReaded, setIsReaded] = useState(true);
+    const isRead = useSelector((state) => state.auth.notifies.isRead);
     return (
         <View>
             <View style={lightHeader.header}>
@@ -240,7 +243,7 @@ export default function HeaderUI(props) {
                 <TouchableOpacity onPress={handleNotifyNavigate}>
                     <Image
                         source={{
-                            uri: isReaded ? 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_bell0.png?alt=media&token=379b01a8-692f-404c-9420-9b8716fd056d' :
+                            uri: isRead ? 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_bell0.png?alt=media&token=379b01a8-692f-404c-9420-9b8716fd056d' :
                                 "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_bell1.png?alt=media&token=85036c85-d95d-4b34-bff2-7f193a3149a4",
                         }}
                         style={lightHeader.bell}

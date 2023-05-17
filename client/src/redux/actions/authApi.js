@@ -127,7 +127,7 @@ export const getNotifies = async (access_token, dispatch) => {
     try {
         const res = await postDataAPI(`notify/get`,null, access_token);
         dispatch(getNotifiesSuccess(res.data.notifies));
-        console.log(res.data.notifies);
+        console.log('Lấy dữ liệu thông báo thành công!');
     } catch (err) {
         dispatch(getNotifiesFailed());
         console.log('Lấy dữ liệu thông báo thất bại!');
