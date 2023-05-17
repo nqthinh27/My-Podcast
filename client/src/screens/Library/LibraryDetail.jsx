@@ -39,7 +39,7 @@ function LibraryDetail({ route }) {
     const fetchData = async () => {
         setIsLoading(true);
         var res = null;
-        if (title == 'Đanh sách đã lưu') {
+        if (title == 'Danh sách đã lưu') {
             res = await postDataAPI('save', null, access_token);;
             setData(res.data.saved);
         } else if (title === 'Danh sách đã thích') {

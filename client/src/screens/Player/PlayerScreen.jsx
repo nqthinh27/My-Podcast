@@ -124,10 +124,9 @@ export default function PlayerScreen(props) {
     // console.log("sound: ", detailPost.audio);
     const onBackPress = () => {
         // dispatch(setIsPlayScreen(false));
-        navigation.goBack();
-        dispatch(setIsMiniPlayer(true));
-        console.log("back isMiniPlayer: " + isMiniPlayer);
-        console.log("back isPlayer: " + isPlayer);
+        navigation.goBack(null);
+        // dispatch(setIsMiniPlayer(true));
+        console.log("back của thiết bị");
         return true;
     };
 
@@ -148,7 +147,7 @@ export default function PlayerScreen(props) {
         // if (!playValue) dispatch(setIsPlayer(true));
         // navigation.navigate('UIScreen');
     }
-    
+
     useEffect(() => {
         if (!isMiniPlayer) {
             playSound();
@@ -561,7 +560,7 @@ export default function PlayerScreen(props) {
                                 </TouchableOpacity>
                             </View>
                         </View>
-                        <View style={{flex: 1, justifyContent: "space-around" }}>
+                        <View style={{ flex: 1, justifyContent: "space-around" }}>
                             <TouchableOpacity
                                 style={styles.playscreenMore}
                                 onPress={handleNextPress}
