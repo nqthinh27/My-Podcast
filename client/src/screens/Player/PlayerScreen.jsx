@@ -166,7 +166,6 @@ export default function PlayerScreen(props) {
     }, [playValue]);
 
     const playSound = async () => {
-
         if (sound) {
             await sound.unloadAsync();
             dispatch(setSound(null));

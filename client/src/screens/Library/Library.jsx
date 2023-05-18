@@ -20,6 +20,8 @@ import { darkLibrary, lightLibrary } from "../../constants/darkLight/themeLibrar
 import MiniPlayer from "../Player/MiniPlayer";
 import PlayerScreen from "../Player/PlayerScreen";
 import { useNavigation } from "@react-navigation/native";
+import { setDuration, setIsMiniPlayer, setPosition, setSound, setSoundId } from "../../redux/slices/playerSlice";
+import { getPost } from "../../redux/actions/postApi";
 
 function Library(props) {
     const navigation = useNavigation();
@@ -37,6 +39,8 @@ function Library(props) {
     const isMiniPlayer = useSelector((state) => state.player.isMiniPlayer);
     const isPlayScreen = useSelector((state) => state.player.isPlayScreen);
     const sound = useSelector((state) => state.player.sound);
+    const access_token = useSelector((state) => state.auth.login.access_token);
+    const sound_id = useSelector((state) => state.player.sound_id);
 
     useEffect(() => {
         if (isFocused && !user) {
@@ -230,7 +234,17 @@ function Library(props) {
                         {recommendData.map((item, index) => {
                             return (
                                 <TouchableOpacity
-                                    onPress={() => {
+                                    onPress={async () => {
+                                        if (item._id != sound_id && sound != null) {
+                                            await sound.unloadAsync();
+                                            dispatch(setSound(null));
+                                            dispatch(setPosition(0));
+                                            dispatch(setDuration(0));
+                                            // dispatch(setIsPlaying(true));
+                                            dispatch(setIsMiniPlayer(false));
+                                            dispatch(setSoundId(item._id));
+                                        }
+                                        getPost(item._id, dispatch, access_token, navigation.navigate);    
                                     }}
                                     key={index}
                                 >
