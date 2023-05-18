@@ -25,6 +25,7 @@ import UserListItem from "./UserListItem";
 import { ScrollView } from "react-native-gesture-handler";
 import { getOtherUser } from "../redux/actions/profileApi";
 import { warningLogin } from "../ultis/warning";
+import { StatusBar } from 'expo-status-bar';
 
 export default function HeaderUI(props) {
     //navigation
@@ -120,6 +121,7 @@ export default function HeaderUI(props) {
     const isRead = useSelector((state) => state.auth.notifies.isRead);
     return (
         <View>
+            <StatusBar style={isDarkTheme ? 'light' : 'dark'}></StatusBar>
             <View style={lightHeader.header}>
                 <TouchableOpacity
                     onPress={() => {

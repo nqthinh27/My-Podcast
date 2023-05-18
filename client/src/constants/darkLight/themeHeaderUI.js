@@ -35,7 +35,7 @@ export const lightHeader = StyleSheet.create({
         marginRight: 12,
         padding: 0,
         flex: 1,
-        color: colors.black,
+        color: "#aaa",
     },
 
     bell: {

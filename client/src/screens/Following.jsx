@@ -257,7 +257,7 @@ export default function Following(props) {
         <SafeAreaView style={[GlobalStyles.customSafeArea, { backgroundColor: isDarkTheme ? colors.dark_backgr : colors.white }]}>
             <ScrollView>
                 <HeaderUI />
-                <View style={isDarkTheme ? darkfollowStyles.contentWrapper : lightfollowStyles.contentWrapper}>
+                <View style={[isDarkTheme ? darkfollowStyles.contentWrapper : lightfollowStyles.contentWrapper, { backgroundColor: isDarkTheme ? colors.dark_backgr : colors.white } ]}>
                     <View style={followStyles.contentSection}>
                         <View>
                             {newFeed.map((item, index) => {
@@ -265,7 +265,7 @@ export default function Following(props) {
                                 // const isPlaying = soundCurrent === item._id && playStatus[item._id];
 
                                 return (
-                                    <View key={index}>
+                                    <View key={index} >
                                         <TouchableOpacity
                                             onPress={() => {
                                                 getOtherUser(item.owner._id, dispatch, navigation.navigate, currentUser)

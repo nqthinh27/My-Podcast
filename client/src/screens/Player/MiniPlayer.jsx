@@ -240,6 +240,7 @@ export default function MiniPlayer(props) {
                             //     dispatch(setIsPlayer(false));
                             // };
                             navigation.navigate('PlayerScreen');
+                            console.log("chuyển màn");
                         }}
                     >
                         <View style={stylesMiniPlayer.miniplayerAvatar}>
