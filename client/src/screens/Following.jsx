@@ -261,7 +261,7 @@ export default function Following(props) {
                     <View style={followStyles.contentSection}>
                         <View>
                             {newFeed.map((item, index) => {
-
+                                console.log('123');
                                 // const isPlaying = soundCurrent === item._id && playStatus[item._id];
 
                                 return (

@@ -76,8 +76,8 @@ export default function Home(props) {
     useEffect(() => {
         console.log("gọi sound");
         return sound
-            ? () => {
-                sound.unloadAsync();
+            ? async () => {
+                await sound.unloadAsync();
                 console.log("sound đang");
             }
             : undefined;
@@ -97,7 +97,7 @@ export default function Home(props) {
     //   }, [dispatch, navigation]);
     // console.log("home");
     useEffect(() => {
-        if (SliderData && SliderData.length > 0 && !isPlayScreen) {
+        if (SliderData && SliderData.length > 0) {
             const intervalId = setInterval(() => {
                 const nextIndex = (currentIndex + 1) % SliderData.length;
                 flatListRef.current.scrollToIndex({ index: nextIndex });
@@ -106,9 +106,9 @@ export default function Home(props) {
 
             return () => clearInterval(intervalId);
         }
-        console.log("gọi");
+        console.log("tự nhảy bài SliderData");
 
-    }, [currentIndex, isPlayScreen]);
+    });
 
     return (
         <SafeAreaView style={[GlobalStyles.customSafeArea, { backgroundColor: isDarkTheme ? darkHome.wrapper.backgroundColor : lightHome.wrapper.backgroundColor }]}>

@@ -14,7 +14,6 @@ export const getPost = async (postId, dispatch, token, navigate) => {
         if (token !== null) {
             postDataAPI(`history/${postId}/add`, null, token);
         }
-        // dispatch(setIsMiniPlayer(false));
         navigate('PlayerScreen');
         dispatch(setIsMiniPlayer(true));
         dispatch(setPlayValue(true))
