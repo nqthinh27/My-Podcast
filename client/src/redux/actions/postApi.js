@@ -16,6 +16,7 @@ export const getPost = async (postId, dispatch, token, navigate) => {
         }
         // dispatch(setIsMiniPlayer(false));
         navigate('PlayerScreen');
+        dispatch(setIsMiniPlayer(true));
         dispatch(setPlayValue(true))
     } catch (err) {
         dispatch(getPostDataFailed())

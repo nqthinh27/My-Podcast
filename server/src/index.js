@@ -29,6 +29,7 @@ app.use('/follow', require('./routes/followRouter'));
 app.use('/search', require('./routes/searchRouter'));
 app.use('/home', require('./routes/homeRouter'));
 app.use('/following', require('./routes/followingRouter'));
+app.use('/notify', require('./routes/notifyRouter'));
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
