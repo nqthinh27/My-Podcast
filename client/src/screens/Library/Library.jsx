@@ -25,7 +25,7 @@ function Library(props) {
     const navigation = useNavigation();
 
     // const { navigation, route } = props;
-    // const { navigate, goback } = navigation;
+    const { navigate, goback } = navigation;
     const dispatch = useDispatch();
 
     const currentLanguage = useSelector(
@@ -70,11 +70,9 @@ function Library(props) {
         <SafeAreaView style={[GlobalStyles.customSafeArea, isDarkTheme ? darkLibrary.libraryContainer : lightLibrary.libraryContainer]}>
             <ScrollView>
                 <HeaderUI />
-                <View style={[
-                    isDarkTheme
-                        ? darkLibrary.libraryContainer
-                        : lightLibrary.libraryContainer,
-                ]}>
+
+                <View 
+            >
                     <Text
                         style={[
                             {
@@ -162,7 +160,7 @@ function Library(props) {
                             style={[styles.libraryButton, isDarkTheme ? darkLibrary.libraryFunction : lightLibrary.libraryFunction]}
                             onPress={() => {
                                 if (!user) warningLogin(navigate, "Login");
-                                else handleNavigateLib(currentLanguage === "vi" ? "Lịch sử nghe" : "History");
+                                else handleNavigateLib(currentLanguage === "vi" ? "Lịch sử nghe" : "Recently");
                             }}
                         >
                             <Icon

@@ -46,6 +46,9 @@ export const lightHeader = StyleSheet.create({
     },
     text : {
         color: colors.black
+    },
+
+    placeholder: {
     }
 });
 
@@ -96,5 +99,9 @@ export const darkHeader = StyleSheet.create({
     },
     text : {
         color: '#fff'
+    },
+    
+    placeholder: {
+        color: colors.dark_sub
     }
 });

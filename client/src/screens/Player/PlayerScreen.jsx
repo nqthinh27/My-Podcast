@@ -1,4 +1,4 @@
-import { React, useState, useRef, useEffect, useCallback } from "react";
+import { React, useState, useRef, useEffect, useCallback  } from "react";
 import {
     Text,
     View,
@@ -10,6 +10,7 @@ import {
     TextInput,
     SafeAreaView,
     BackHandler,
+    Platform
 } from "react-native";
 import Slider from "@react-native-community/slider";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -38,6 +39,7 @@ import {
     darkProfile,
     lightProfile,
 } from "../../constants/darkLight/themeProfile";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function PlayerScreen(props) {
     // navigation
@@ -48,6 +50,7 @@ export default function PlayerScreen(props) {
     const sound = useSelector((state) => state.player.sound);
     const isFocused = useIsFocused();
     const [showCommentScrollView, setShowCommentScrollView] = useState(true);
+    const insets = useSafeAreaInsets();
 
     const handleCommentPress = () => {
         setShowCommentScrollView(true);
@@ -166,7 +169,6 @@ export default function PlayerScreen(props) {
     }, [playValue]);
 
     const playSound = async () => {
-
         if (sound) {
             await sound.unloadAsync();
             dispatch(setSound(null));
@@ -174,7 +176,6 @@ export default function PlayerScreen(props) {
         await loadSound(detailPost.audio);
         console.log("phát đầu tiên");
         console.log("Views: " + detailPost.views);
-
     };
 
     async function pauseSound() {
@@ -288,9 +289,17 @@ export default function PlayerScreen(props) {
             animated: true,
         });
     };
+    
 
     return (
-        <SafeAreaView style={GlobalStyles.customSafeArea}>
+        <SafeAreaView
+            style={[
+                GlobalStyles.customSafeArea,
+                isDarkTheme
+                    ? darkProfile.profileContainer
+                    : lightProfile.profileContainer,
+            ]}
+        >
             {/* <View > */}
             {/* <View style={{ borderRadius: 80, overflow: "hidden" }}> */}
             <ScrollView
@@ -300,7 +309,8 @@ export default function PlayerScreen(props) {
             >
                 <View
                     style={{
-                        height: device.height,
+                        // height: device.height - insets.top - insets.bottom,
+                        height: Platform.OS === 'android' ? device.height : device.height - insets.top - insets.bottom,
                     }}
                 >
                     <View style={styles.playscreenHeader}>
@@ -527,7 +537,6 @@ export default function PlayerScreen(props) {
                                         name="cards-heart-outline"
                                         style={{}}
                                         size={30}
-                                        // color={"red"}
                                         color={isDarkTheme ? "white" : "black"}
                                     />
                                 </TouchableOpacity>
@@ -536,16 +545,6 @@ export default function PlayerScreen(props) {
                                         name="comment-outline"
                                         style={{}}
                                         size={30}
-                                        // color={"#15d147"}
-                                        color={isDarkTheme ? "white" : "black"}
-                                    />
-                                </TouchableOpacity>
-                                <TouchableOpacity>
-                                    <Icon
-                                        name="share-variant"
-                                        style={{}}
-                                        size={30}
-                                        // color={"#0d72ff"}
                                         color={isDarkTheme ? "white" : "black"}
                                     />
                                 </TouchableOpacity>
@@ -554,7 +553,6 @@ export default function PlayerScreen(props) {
                                         name="bookmark-outline"
                                         style={{}}
                                         size={30}
-                                        // color={colors.primary}
                                         color={isDarkTheme ? "white" : "black"}
                                     />
                                 </TouchableOpacity>
@@ -585,13 +583,13 @@ export default function PlayerScreen(props) {
                     </View>
                 </View>
 
-                <View style={{
-                    height: device.height,
-                }}>
+                <View
+                    style={{
+                        height: Platform.OS === 'android' ? device.height : device.height - insets.top - insets.bottom,
+                    }}
+                >
                     <View style={styles.playscreenHeader}>
-                        <TouchableOpacity
-                            onPress={handlePrevPress}
-                        >
+                        <TouchableOpacity onPress={handlePrevPress}>
                             <Icon
                                 name={"chevron-down"}
                                 style={{}}
@@ -969,6 +967,7 @@ const styles = StyleSheet.create({
         // paddingBottom: 20,F
         marginHorizontal: 16,
         // flex: 2
+        backgroundColor: "grey",
     },
 
     playscreenInteractionBar: {
@@ -1012,7 +1011,7 @@ const styles = StyleSheet.create({
 
     progressBar: {
         width: 310,
-        height: 40,
+        // height: 40,
         marginTop: 20,
         flexDirection: "row",
         alignSelf: "center",
