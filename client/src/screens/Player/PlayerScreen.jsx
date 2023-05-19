@@ -42,6 +42,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getLikedListData, getSavedListData } from "../../redux/actions/libraryApi";
 import { patchDataAPI, postDataAPI } from "../../ultis/fetchData";
+import { timeDiff, timeDiff2 } from "../../ultis/helper";
 
 export default function PlayerScreen(props) {
     // navigation
@@ -706,7 +707,7 @@ export default function PlayerScreen(props) {
                                                 : lightProfile.profileText,
                                         ]}
                                     >
-                                        56
+                                        {detailPost.owner.followers}
                                     </Text>
                                     <Text
                                         style={[
@@ -736,7 +737,7 @@ export default function PlayerScreen(props) {
                                                 : lightProfile.profileText,
                                         ]}
                                     >
-                                        06
+                                        {detailPost.owner.posts}
                                     </Text>
                                     <Text
                                         style={[
@@ -933,8 +934,9 @@ export default function PlayerScreen(props) {
                                         ]}
                                     >
                                         {currentLanguage === "vi"
-                                            ? "Đăng tải: 6 giờ trước"
-                                            : "Posted: 6 hours ago"}
+                                            ? `Đăng tải: ${timeDiff2(detailPost.createdAt)}`
+                                            : `Posted: ${detailPost.createdAt}`}
+                                            
                                     </Text>
                                     <Text
                                         style={[
