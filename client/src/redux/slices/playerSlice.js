@@ -4,6 +4,7 @@ const playerSlice = createSlice({
     name: 'player',
     initialState: {
         sound: null,
+        sound_id: null,
         dataSound: [],
         currentSound: 0,
         playValue: false,  // dừng, phát
@@ -21,6 +22,9 @@ const playerSlice = createSlice({
             // const { uri, shouldPlay, isLooping, positionMillis } = action.payload;
             // state.sound = { uri, shouldPlay, isLooping, positionMillis };
             state.sound = action.payload;
+        },
+        setSoundId(state, action) {
+            state.sound_id = action.payload;
         },
         setDataSound(state, action) {
             state.dataSound = action.payload;
@@ -62,6 +66,7 @@ const playerSlice = createSlice({
 
 export const {
     setSound,
+    setSoundId,
     setDataSound,
     setCurrentSound,
     setPlayValue,
