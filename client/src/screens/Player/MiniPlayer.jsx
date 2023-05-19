@@ -203,6 +203,7 @@ export default function MiniPlayer(props) {
                     if (gestureState.dx > 30 || gestureState.dx < -30) {
                         // Kéo sang phải hoặc trái hơn 50px thì tắt nhạc
                         sound.unloadAsync();
+                        dispatch(setSound(null));
                         dispatch(setPosition(0));
                         dispatch(setIsMiniPlayer(false));
                     }
