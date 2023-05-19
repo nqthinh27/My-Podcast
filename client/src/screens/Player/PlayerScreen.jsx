@@ -43,6 +43,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getLikedListData, getSavedListData } from "../../redux/actions/libraryApi";
 import { patchDataAPI, postDataAPI } from "../../ultis/fetchData";
 import { timeDiff, timeDiff2 } from "../../ultis/helper";
+import { getOtherUser } from "../../redux/actions/profileApi";
 
 export default function PlayerScreen(props) {
     // navigation
@@ -775,7 +776,7 @@ export default function PlayerScreen(props) {
                                     <TouchableOpacity
                                         style={styles.informationInteract}
                                     >
-                                        <Text style={{ fontSize: 12 }}>
+                                        <Text style={{ fontSize: 12 }} onPress={()=> {getOtherUser(detailPost.owner._id,dispatch,navigation.navigate)}}>
                                             {currentLanguage === "vi"
                                                 ? "Xem hồ sơ"
                                                 : "View profile"}
