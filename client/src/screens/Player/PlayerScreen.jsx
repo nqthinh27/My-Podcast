@@ -1,4 +1,4 @@
-import { React, useState, useRef, useEffect, useCallback  } from "react";
+import { React, useState, useRef, useEffect, useCallback } from "react";
 import {
     Text,
     View,
@@ -40,6 +40,8 @@ import {
     lightProfile,
 } from "../../constants/darkLight/themeProfile";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { getLikedListData, getSavedListData } from "../../redux/actions/libraryApi";
+import { patchDataAPI, postDataAPI } from "../../ultis/fetchData";
 
 export default function PlayerScreen(props) {
     // navigation
@@ -289,8 +291,41 @@ export default function PlayerScreen(props) {
             animated: true,
         });
     };
-    
 
+    // handle save and like
+    const currentUser = useSelector((state) => state.auth.login.currentUser);
+    const userSavedList = useSelector((state) => state.library.savedList.data);
+    const isSaved = userSavedList.some(element => element._id == detailPost._id);
+    const [save, setSave] = useState(isSaved);
+    const userLikedList = useSelector((state) => state.library.likedList.data);
+    const isLiked = userLikedList.some(element => element._id == detailPost._id);
+    const [like, setLike] = useState(isLiked);
+    const fetchInFo = async () => {
+        if (currentUser) {
+            await getLikedListData(dispatch, access_token);
+            await getSavedListData(dispatch, access_token);
+        }
+    }
+
+    useEffect(() => {
+        fetchInFo();
+    }, []);
+    const handleSave = async () => {
+        if (!save) {
+            await postDataAPI(`save/${detailPost._id}/add`, null, access_token);
+        } else {
+            await patchDataAPI(`save/${detailPost._id}/remove`, null, access_token);
+        }
+        setSave(!save)
+    }
+    const handleLike = async () => {
+        if (!like) {
+            await postDataAPI(`like/${detailPost._id}/add`, null, access_token);
+        } else {
+            await patchDataAPI(`like/${detailPost._id}/remove`, null, access_token);
+        }
+        setLike(!like)
+    }
     return (
         <SafeAreaView
             style={[
@@ -532,13 +567,19 @@ export default function PlayerScreen(props) {
                         </View>
                         <View style={styles.playscreenInteractionBar}>
                             <View style={styles.playscreenSocial}>
-                                <TouchableOpacity>
-                                    <Icon
+                                <TouchableOpacity onPress={handleLike}>
+                                    {!like && <Icon
                                         name="cards-heart-outline"
                                         style={{}}
                                         size={30}
                                         color={isDarkTheme ? "white" : "black"}
-                                    />
+                                    />}
+                                    {like && <Icon
+                                        name="cards-heart"
+                                        style={{}}
+                                        size={30}
+                                        color="red"
+                                    />}
                                 </TouchableOpacity>
                                 <TouchableOpacity>
                                     <Icon
@@ -548,13 +589,19 @@ export default function PlayerScreen(props) {
                                         color={isDarkTheme ? "white" : "black"}
                                     />
                                 </TouchableOpacity>
-                                <TouchableOpacity>
-                                    <Icon
+                                <TouchableOpacity onPress={handleSave}>
+                                    {!save && <Icon
                                         name="bookmark-outline"
                                         style={{}}
                                         size={30}
                                         color={isDarkTheme ? "white" : "black"}
-                                    />
+                                    />}
+                                    {save && <Icon
+                                        name="bookmark"
+                                        style={{}}
+                                        size={30}
+                                        color={colors.primary}
+                                    />}
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -705,7 +752,7 @@ export default function PlayerScreen(props) {
                                     </Text>
                                 </View>
                                 <View style={styles.informationFile}>
-                                    <TouchableOpacity
+                                    {/* <TouchableOpacity
                                         style={styles.informationInteract}
                                     >
                                         <Text style={{ fontSize: 12 }}>
@@ -723,7 +770,7 @@ export default function PlayerScreen(props) {
                                                 height: 12,
                                             }}
                                         />
-                                    </TouchableOpacity>
+                                    </TouchableOpacity> */}
                                     <TouchableOpacity
                                         style={styles.informationInteract}
                                     >
@@ -827,23 +874,37 @@ export default function PlayerScreen(props) {
                         <View style={styles.informationSavedFavorites}>
                             <TouchableOpacity
                                 style={styles.informationSavedFavorites}
+                                onPress={handleLike}
                             >
-                                <Icon
-                                    name="heart-outline"
+                                {!like && <Icon
+                                    name="cards-heart-outline"
                                     style={styles.iconBack}
                                     size={30}
                                     color={isDarkTheme ? "white" : "black"}
-                                />
+                                />}
+                                {like && <Icon
+                                    name="cards-heart"
+                                    style={styles.iconBack}
+                                    size={30}
+                                    color="red"
+                                />}
                             </TouchableOpacity>
                             <TouchableOpacity
                                 style={styles.informationSavedFavorites}
+                                onPress={handleSave}
                             >
-                                <Icon
+                                {!save && <Icon
                                     name="bookmark-outline"
                                     style={styles.iconBack}
                                     size={30}
                                     color={isDarkTheme ? "white" : "black"}
-                                />
+                                />}
+                                {save && <Icon
+                                    name="bookmark"
+                                    style={styles.iconBack}
+                                    size={30}
+                                    color={colors.primary}
+                                />}
                             </TouchableOpacity>
                         </View>
 
