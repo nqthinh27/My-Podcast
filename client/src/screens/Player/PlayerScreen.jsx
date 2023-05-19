@@ -323,6 +323,13 @@ export default function PlayerScreen(props) {
     const handleLike = async () => {
         if (!like) {
             await postDataAPI(`like/${detailPost._id}/add`, null, access_token);
+            const newNotify = {
+                recipient: detailPost.owner._id,
+                content: `@${currentUser.userName} đã thích bài viết ${detailPost.title} của bạn`,
+                image: detailPost.image
+            }
+            await postDataAPI(`notify/create`, newNotify, access_token);
+            console.log('Đã gửi thông báo');
         } else {
             await patchDataAPI(`like/${detailPost._id}/remove`, null, access_token);
         }
@@ -776,7 +783,7 @@ export default function PlayerScreen(props) {
                                     <TouchableOpacity
                                         style={styles.informationInteract}
                                     >
-                                        <Text style={{ fontSize: 12 }} onPress={()=> {getOtherUser(detailPost.owner._id,dispatch,navigation.navigate)}}>
+                                        <Text style={{ fontSize: 12 }} onPress={() => { getOtherUser(detailPost.owner._id, dispatch, navigation.navigate) }}>
                                             {currentLanguage === "vi"
                                                 ? "Xem hồ sơ"
                                                 : "View profile"}
@@ -937,7 +944,7 @@ export default function PlayerScreen(props) {
                                         {currentLanguage === "vi"
                                             ? `Đăng tải: ${timeDiff2(detailPost.createdAt)}`
                                             : `Posted: ${detailPost.createdAt}`}
-                                            
+
                                     </Text>
                                     <Text
                                         style={[

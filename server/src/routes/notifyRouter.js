@@ -8,4 +8,6 @@ router.post('/create', authMiddleware, notifyController.createNotify);
 
 router.put('/read', authMiddleware, notifyController.readedNotifies);
 
+router.post('/createMany', authMiddleware, notifyController.createManyNotify);
+
 module.exports = router;

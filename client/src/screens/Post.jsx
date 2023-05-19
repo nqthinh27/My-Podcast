@@ -175,13 +175,21 @@ function Post(props) {
         const post = await postDataAPI('post', newPost, access_token);
         setIsLoading(false);
         alert('Đăng bài thành công');
+        const recipientsAPI = await getPublicDataAPI(`follow/${currentUser._id}/followers`);
+        const recipients = recipientsAPI.data.follower;
+        const notifies = {
+            recipients: recipients,
+            content: `@${currentUser.userName} đã đăng tải một bài viết mới: ${title}`,
+            image: imageUrl,
+        }
+        await postDataAPI(`/notify/createMany`, notifies, access_token);
     }
 
     if (!currentUser) return (<View></View>);
 
     return (
         <SafeAreaView style={[GlobalStyles.customSafeArea, isDarkTheme ? darkPost.background : lightPost.background]}>
-            
+
             <View style={styles.postHeader}>
                 <View style={styles.postAvatar}>
                     <Image
@@ -200,14 +208,14 @@ function Post(props) {
                                 fontSize: 17,
                                 marginLeft: 8,
                                 fontWeight: "600",
-                            }, isDarkTheme? darkPost.text : lightPost.text]}
+                            }, isDarkTheme ? darkPost.text : lightPost.text]}
                         >
                             {currentUser.fullName}
                         </Text>
                         <Text style={[{
                             fontSize: 15,
                             marginLeft: 8,
-                        }, isDarkTheme? darkPost.text : lightPost.text]}>@{currentUser.userName}</Text>
+                        }, isDarkTheme ? darkPost.text : lightPost.text]}>@{currentUser.userName}</Text>
                     </View>
                 </View>
 
@@ -247,9 +255,9 @@ function Post(props) {
                     <TextInput
                         value={title}
                         onChangeText={setTitle}
-                        style={[{ fontSize: 18, marginBottom: 10, fontWeight: '500', marginRight: 32 }, isDarkTheme? darkPost.text : lightPost.text ]}
+                        style={[{ fontSize: 18, marginBottom: 10, fontWeight: '500', marginRight: 32 }, isDarkTheme ? darkPost.text : lightPost.text]}
                         placeholder={currentLanguage === "vi" ? "Nhập tiêu đề của Podcast" : "Enter the title of the podcast"}
-                        placeholderTextColor={isDarkTheme? darkPost.placeholder.color : lightPost.placeholder.color}
+                        placeholderTextColor={isDarkTheme ? darkPost.placeholder.color : lightPost.placeholder.color}
                     ></TextInput>
 
                     <TouchableOpacity style={{ flex: 1 }} onPress={handlePressOutside} activeOpacity={1.0}>
@@ -261,9 +269,9 @@ function Post(props) {
                                     fontSize: 16,
                                     minHeight: 100,
                                     marginRight: 32
-                                }, isDarkTheme? darkPost.text : lightPost.text]}
+                                }, isDarkTheme ? darkPost.text : lightPost.text]}
                                 placeholder={currentLanguage === "vi" ? "Nhập dòng trạng thái đăng tải" : "Enter the post status line"}
-                                placeholderTextColor={isDarkTheme? darkPost.placeholder.color : lightPost.placeholder.color}
+                                placeholderTextColor={isDarkTheme ? darkPost.placeholder.color : lightPost.placeholder.color}
                                 // autoCapitalize="words"
                                 multiline={true}
                                 onFocus={handleKeyboardDidShow}
@@ -353,7 +361,7 @@ function Post(props) {
                                         }
                                     >
                                         <Text style={styles.textStyle}>
-                                        {currentLanguage === "vi" ? "Ẩn chủ đề" : "Hide topic"}
+                                            {currentLanguage === "vi" ? "Ẩn chủ đề" : "Hide topic"}
                                         </Text>
                                     </Pressable>
                                 </View>
@@ -371,7 +379,7 @@ function Post(props) {
                                     // fontWeight: "bold",
                                     // textAlign: "center",
                                     fontSize: 16,
-                                }, isDarkTheme? darkPost.text : lightPost.text]}
+                                }, isDarkTheme ? darkPost.text : lightPost.text]}
                             >
                                 {currentLanguage === "vi" ? "Thêm chủ đề Podcast" : "Add Podcast topic"}
                             </Text>
@@ -417,8 +425,8 @@ function Post(props) {
                                 marginRight: 16,
                             }}
                         >
-                            <Text style={[{ color: "black", fontSize: 16 }, isDarkTheme? darkPost.text : lightPost.text]}>
-                              {currentLanguage === "vi" ? "Thêm ảnh mô tả" : "Add description image"}
+                            <Text style={[{ color: "black", fontSize: 16 }, isDarkTheme ? darkPost.text : lightPost.text]}>
+                                {currentLanguage === "vi" ? "Thêm ảnh mô tả" : "Add description image"}
                             </Text>
                             {image == null ?
                                 <EntypoIcon
@@ -459,8 +467,8 @@ function Post(props) {
                             }}
                         >
                             {/* {song && <Text>{song.name}</Text>} */}
-                            <Text style={[{ color: "black", fontSize: 16 }, isDarkTheme? darkPost.text : lightPost.text]}>
-                              {currentLanguage === "vi" ? "Thêm tập tin âm thanh" : "Add audio file"}
+                            <Text style={[{ color: "black", fontSize: 16 }, isDarkTheme ? darkPost.text : lightPost.text]}>
+                                {currentLanguage === "vi" ? "Thêm tập tin âm thanh" : "Add audio file"}
                             </Text>
                             {audio == null ?
                                 <EntypoIcon
@@ -472,7 +480,7 @@ function Post(props) {
                     </TouchableOpacity>
                 </View>
             </View>
-            {isLoading && < Loading/>}
+            {isLoading && < Loading />}
         </SafeAreaView>
     );
 }
