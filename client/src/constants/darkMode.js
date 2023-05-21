@@ -45,7 +45,7 @@ export const lightSetting = StyleSheet.create({
         borderRadius: 35,
     },
     title: {
-        top: 10,
+        paddingTop: 10,
         height: 30,
         marginTop: 10
     },
@@ -90,7 +90,7 @@ export const lightSetting = StyleSheet.create({
 export const darkSetting = StyleSheet.create({
     loginButton: {
         color: colors.black,
-        marginLeft: 10,
+        marginRight: 10,
         // borderRadius: 0,
         backgroundColor: colors.dark_grey,
         borderRadius: 5

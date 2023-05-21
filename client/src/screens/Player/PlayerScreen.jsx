@@ -10,6 +10,7 @@ import {
     TextInput,
     SafeAreaView,
     BackHandler,
+    Platform
 } from "react-native";
 import Slider from "@react-native-community/slider";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -38,6 +39,11 @@ import {
     darkProfile,
     lightProfile,
 } from "../../constants/darkLight/themeProfile";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { getLikedListData, getSavedListData } from "../../redux/actions/libraryApi";
+import { patchDataAPI, postDataAPI } from "../../ultis/fetchData";
+import { timeDiff, timeDiff2 } from "../../ultis/helper";
+import { getOtherUser } from "../../redux/actions/profileApi";
 
 export default function PlayerScreen(props) {
     // navigation
@@ -48,6 +54,7 @@ export default function PlayerScreen(props) {
     const sound = useSelector((state) => state.player.sound);
     const isFocused = useIsFocused();
     const [showCommentScrollView, setShowCommentScrollView] = useState(true);
+    const insets = useSafeAreaInsets();
 
     const handleCommentPress = () => {
         setShowCommentScrollView(true);
@@ -173,7 +180,6 @@ export default function PlayerScreen(props) {
         await loadSound(detailPost.audio);
         console.log("phát đầu tiên");
         console.log("Views: " + detailPost.views);
-
     };
 
     async function pauseSound() {
@@ -288,8 +294,56 @@ export default function PlayerScreen(props) {
         });
     };
 
+    // handle save and like
+    const currentUser = useSelector((state) => state.auth.login.currentUser);
+    const userSavedList = useSelector((state) => state.library.savedList.data);
+    const isSaved = userSavedList.some(element => element._id == detailPost._id);
+    const [save, setSave] = useState(isSaved);
+    const userLikedList = useSelector((state) => state.library.likedList.data);
+    const isLiked = userLikedList.some(element => element._id == detailPost._id);
+    const [like, setLike] = useState(isLiked);
+    const fetchInFo = async () => {
+        if (currentUser) {
+            await getLikedListData(dispatch, access_token);
+            await getSavedListData(dispatch, access_token);
+        }
+    }
+
+    useEffect(() => {
+        fetchInFo();
+    }, []);
+    const handleSave = async () => {
+        if (!save) {
+            await postDataAPI(`save/${detailPost._id}/add`, null, access_token);
+        } else {
+            await patchDataAPI(`save/${detailPost._id}/remove`, null, access_token);
+        }
+        setSave(!save)
+    }
+    const handleLike = async () => {
+        if (!like) {
+            await postDataAPI(`like/${detailPost._id}/add`, null, access_token);
+            const newNotify = {
+                recipient: detailPost.owner._id,
+                content: `@${currentUser.userName} đã thích bài viết ${detailPost.title} của bạn`,
+                image: detailPost.image
+            }
+            await postDataAPI(`notify/create`, newNotify, access_token);
+            console.log('Đã gửi thông báo');
+        } else {
+            await patchDataAPI(`like/${detailPost._id}/remove`, null, access_token);
+        }
+        setLike(!like)
+    }
     return (
-        <SafeAreaView style={GlobalStyles.customSafeArea}>
+        <SafeAreaView
+            style={[
+                GlobalStyles.customSafeArea,
+                isDarkTheme
+                    ? darkProfile.profileContainer
+                    : lightProfile.profileContainer,
+            ]}
+        >
             {/* <View > */}
             {/* <View style={{ borderRadius: 80, overflow: "hidden" }}> */}
             <ScrollView
@@ -299,7 +353,8 @@ export default function PlayerScreen(props) {
             >
                 <View
                     style={{
-                        height: device.height,
+                        // height: device.height - insets.top - insets.bottom,
+                        height: Platform.OS === 'android' ? device.height : device.height - insets.top - insets.bottom,
                     }}
                 >
                     <View style={styles.playscreenHeader}>
@@ -521,41 +576,41 @@ export default function PlayerScreen(props) {
                         </View>
                         <View style={styles.playscreenInteractionBar}>
                             <View style={styles.playscreenSocial}>
-                                <TouchableOpacity>
-                                    <Icon
+                                <TouchableOpacity onPress={handleLike}>
+                                    {!like && <Icon
                                         name="cards-heart-outline"
                                         style={{}}
                                         size={30}
-                                        // color={"red"}
                                         color={isDarkTheme ? "white" : "black"}
-                                    />
+                                    />}
+                                    {like && <Icon
+                                        name="cards-heart"
+                                        style={{}}
+                                        size={30}
+                                        color="red"
+                                    />}
                                 </TouchableOpacity>
                                 <TouchableOpacity>
                                     <Icon
                                         name="comment-outline"
                                         style={{}}
                                         size={30}
-                                        // color={"#15d147"}
                                         color={isDarkTheme ? "white" : "black"}
                                     />
                                 </TouchableOpacity>
-                                <TouchableOpacity>
-                                    <Icon
-                                        name="share-variant"
-                                        style={{}}
-                                        size={30}
-                                        // color={"#0d72ff"}
-                                        color={isDarkTheme ? "white" : "black"}
-                                    />
-                                </TouchableOpacity>
-                                <TouchableOpacity>
-                                    <Icon
+                                <TouchableOpacity onPress={handleSave}>
+                                    {!save && <Icon
                                         name="bookmark-outline"
                                         style={{}}
                                         size={30}
-                                        // color={colors.primary}
                                         color={isDarkTheme ? "white" : "black"}
-                                    />
+                                    />}
+                                    {save && <Icon
+                                        name="bookmark"
+                                        style={{}}
+                                        size={30}
+                                        color={colors.primary}
+                                    />}
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -584,13 +639,13 @@ export default function PlayerScreen(props) {
                     </View>
                 </View>
 
-                <View style={{
-                    height: device.height,
-                }}>
+                <View
+                    style={{
+                        height: Platform.OS === 'android' ? device.height : device.height - insets.top - insets.bottom,
+                    }}
+                >
                     <View style={styles.playscreenHeader}>
-                        <TouchableOpacity
-                            onPress={handlePrevPress}
-                        >
+                        <TouchableOpacity onPress={handlePrevPress}>
                             <Icon
                                 name={"chevron-down"}
                                 style={{}}
@@ -660,7 +715,7 @@ export default function PlayerScreen(props) {
                                                 : lightProfile.profileText,
                                         ]}
                                     >
-                                        56
+                                        {detailPost.owner.followers}
                                     </Text>
                                     <Text
                                         style={[
@@ -690,7 +745,7 @@ export default function PlayerScreen(props) {
                                                 : lightProfile.profileText,
                                         ]}
                                     >
-                                        06
+                                        {detailPost.owner.posts}
                                     </Text>
                                     <Text
                                         style={[
@@ -706,7 +761,7 @@ export default function PlayerScreen(props) {
                                     </Text>
                                 </View>
                                 <View style={styles.informationFile}>
-                                    <TouchableOpacity
+                                    {/* <TouchableOpacity
                                         style={styles.informationInteract}
                                     >
                                         <Text style={{ fontSize: 12 }}>
@@ -724,11 +779,11 @@ export default function PlayerScreen(props) {
                                                 height: 12,
                                             }}
                                         />
-                                    </TouchableOpacity>
+                                    </TouchableOpacity> */}
                                     <TouchableOpacity
                                         style={styles.informationInteract}
                                     >
-                                        <Text style={{ fontSize: 12 }}>
+                                        <Text style={{ fontSize: 12 }} onPress={() => { getOtherUser(detailPost.owner._id, dispatch, navigation.navigate) }}>
                                             {currentLanguage === "vi"
                                                 ? "Xem hồ sơ"
                                                 : "View profile"}
@@ -828,23 +883,37 @@ export default function PlayerScreen(props) {
                         <View style={styles.informationSavedFavorites}>
                             <TouchableOpacity
                                 style={styles.informationSavedFavorites}
+                                onPress={handleLike}
                             >
-                                <Icon
-                                    name="heart-outline"
+                                {!like && <Icon
+                                    name="cards-heart-outline"
                                     style={styles.iconBack}
                                     size={30}
                                     color={isDarkTheme ? "white" : "black"}
-                                />
+                                />}
+                                {like && <Icon
+                                    name="cards-heart"
+                                    style={styles.iconBack}
+                                    size={30}
+                                    color="red"
+                                />}
                             </TouchableOpacity>
                             <TouchableOpacity
                                 style={styles.informationSavedFavorites}
+                                onPress={handleSave}
                             >
-                                <Icon
+                                {!save && <Icon
                                     name="bookmark-outline"
                                     style={styles.iconBack}
                                     size={30}
                                     color={isDarkTheme ? "white" : "black"}
-                                />
+                                />}
+                                {save && <Icon
+                                    name="bookmark"
+                                    style={styles.iconBack}
+                                    size={30}
+                                    color={colors.primary}
+                                />}
                             </TouchableOpacity>
                         </View>
 
@@ -873,8 +942,9 @@ export default function PlayerScreen(props) {
                                         ]}
                                     >
                                         {currentLanguage === "vi"
-                                            ? "Đăng tải: 6 giờ trước"
-                                            : "Posted: 6 hours ago"}
+                                            ? `Đăng tải: ${timeDiff2(detailPost.createdAt)}`
+                                            : `Posted: ${detailPost.createdAt}`}
+
                                     </Text>
                                     <Text
                                         style={[
@@ -968,6 +1038,7 @@ const styles = StyleSheet.create({
         // paddingBottom: 20,F
         marginHorizontal: 16,
         // flex: 2
+        backgroundColor: "grey",
     },
 
     playscreenInteractionBar: {
@@ -1011,7 +1082,7 @@ const styles = StyleSheet.create({
 
     progressBar: {
         width: 310,
-        height: 40,
+        // height: 40,
         marginTop: 20,
         flexDirection: "row",
         alignSelf: "center",

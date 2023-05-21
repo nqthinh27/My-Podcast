@@ -33,6 +33,12 @@ const authSlice = createSlice({
             isFetching: false,
             error: false,
         },
+        notifies: {
+            data: [],
+            isFetching: false,
+            error: false,
+            isRead: true,
+        }
     },
     reducers: {
         // LOGIN
@@ -142,6 +148,27 @@ const authSlice = createSlice({
             state.following.error = true;
             console.log('Get following Failed!');
         },
+        // get notifies 
+        // get following
+        getNotifiesStart: (state) => {
+            state.notifies.isFetching = true;
+            console.log('Start Get notifies!');
+        },
+        getNotifiesSuccess: (state, action) => {
+            state.notifies.isFetching = false;
+            state.notifies.data = action.payload;
+            state.notifies.error = false;
+            console.log('Get notifies Success!');
+            state.notifies.isRead = ((state.notifies.data.length > 0 && state.notifies.data[0]) ? state.notifies.data[0].isRead : true);
+        },
+        getNotifiesFailed: (state) => {
+            state.notifies.isFetching = false;
+            state.notifies.error = true;
+            console.log('Get notifies Failed!');
+        },
+        readNotify: (state) => {
+            state.notifies.isRead = true;
+        },
     }
 });
 
@@ -167,6 +194,10 @@ export const {
     getFollowingSuccess,
     getFollowingFailed,
     updateUser,
+    getNotifiesStart,
+    getNotifiesSuccess,
+    getNotifiesFailed,
+    readNotify,
 } = authSlice.actions;
 
 export default authSlice.reducer;

@@ -257,15 +257,15 @@ export default function Following(props) {
         <SafeAreaView style={[GlobalStyles.customSafeArea, { backgroundColor: isDarkTheme ? colors.dark_backgr : colors.white }]}>
             <ScrollView>
                 <HeaderUI />
-                <View style={isDarkTheme ? darkfollowStyles.contentWrapper : lightfollowStyles.contentWrapper}>
+                <View style={[isDarkTheme ? darkfollowStyles.contentWrapper : lightfollowStyles.contentWrapper, { backgroundColor: isDarkTheme ? colors.dark_backgr : colors.white } ]}>
                     <View style={followStyles.contentSection}>
                         <View>
                             {newFeed.map((item, index) => {
-
+                                console.log('123');
                                 // const isPlaying = soundCurrent === item._id && playStatus[item._id];
 
                                 return (
-                                    <View key={index}>
+                                    <View key={index} >
                                         <TouchableOpacity
                                             onPress={() => {
                                                 getOtherUser(item.owner._id, dispatch, navigation.navigate, currentUser)
@@ -298,7 +298,7 @@ export default function Following(props) {
                                                             style={{ width: device.width / 12, height: device.width / 12 }}
                                                             source={{
                                                                 uri:
-                                                                    "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fpause.png?alt=media&token=ae6b74e7-ac06-40a8-a1a7-09d3380e2863",
+                                                                    "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_pause_playersc.png?alt=media&token=4c757d52-ce70-456a-aa36-c8c581af7be6",
                                                             }}
                                                         />
                                                     </TouchableOpacity>
@@ -314,7 +314,7 @@ export default function Following(props) {
                                                             style={{ width: device.width / 12, height: device.width / 12 }}
                                                             source={{
                                                                 uri:
-                                                                    "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Tu%2FGroup%2066.png?alt=media&token=5fb2d1e2-48a0-43bb-9773-ce3424e388f4",
+                                                                    "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_play_playersc.png?alt=media&token=916c4f80-4489-41b1-b834-de6f2d5affd8",
                                                             }}
                                                         />
                                                     </TouchableOpacity>
