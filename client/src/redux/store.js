@@ -10,6 +10,7 @@ import profileReducer from './slices/profileSlice';
 import postReducer from './slices/postSlice';
 import searchReducer from './slices/searchSlice';
 import languageReducer from './slices/languageSlice';
+import commentReducer from './slices/commentSlice';
 
 const middleware = getDefaultMiddleware({
     serializableCheck: false,
@@ -29,6 +30,7 @@ export default configureStore({
         profile: profileReducer,
         search: searchReducer,
         language: languageReducer,
+        comment: commentReducer,
     },
     middleware,
     player: {
