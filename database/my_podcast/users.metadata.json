@@ -1,5 +1,1 @@
-<<<<<<< HEAD
 {"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"userName":{"$numberInt":"1"}},"name":"userName_1","background":true,"unique":true},{"v":{"$numberInt":"2"},"key":{"email":{"$numberInt":"1"}},"name":"email_1","background":true,"unique":true}],"uuid":"e5c38b251ef74e8fb5fa3ffdd354fcae","collectionName":"users","type":"collection"}
-=======
-{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"userName":{"$numberInt":"1"}},"name":"userName_1","background":true,"unique":true},{"v":{"$numberInt":"2"},"key":{"email":{"$numberInt":"1"}},"name":"email_1","background":true,"unique":true}],"uuid":"31c69867325b4dde9d4d6b12b52bd393","collectionName":"users","type":"collection"}
->>>>>>> 73c3dae4e64c4e16433cd01171eba47757e41761
