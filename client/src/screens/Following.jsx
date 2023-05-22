@@ -18,6 +18,7 @@ import { Audio } from "expo-av";
 import Slider from "@react-native-community/slider";
 import MiniPlayer from "./Player/MiniPlayer";
 import PlayerScreen from "./Player/PlayerScreen";
+import Loading from "../components/Loading";
 
 export default function Following(props) {
     const { navigation, route } = props;
@@ -330,6 +331,7 @@ export default function Following(props) {
                 </View>
             </ScrollView>
             {isMiniPlayer && <MiniPlayer />}
+            {isLoading && <Loading />}
         </SafeAreaView>
     )
 }
