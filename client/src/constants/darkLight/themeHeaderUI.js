@@ -36,6 +36,8 @@ export const lightHeader = StyleSheet.create({
         padding: 0,
         flex: 1,
         color: "#aaa",
+        // alignItems: 'center'
+        justifyContent: "center",
     },
 
     bell: {
@@ -49,6 +51,8 @@ export const lightHeader = StyleSheet.create({
     },
 
     placeholder: {
+        // alignSelf: 'center'
+        color: '#aaa'
     }
 });
 
@@ -102,6 +106,7 @@ export const darkHeader = StyleSheet.create({
     },
     
     placeholder: {
-        color: colors.dark_sub
+        color: colors.dark_sub,
+        alignSelf: 'center'
     }
 });

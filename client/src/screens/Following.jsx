@@ -154,23 +154,6 @@ export default function Following(props) {
 
     // Sử dụng useEffect để tự động phát hoặc dừng phát khi trạng thái playStatus thay đổi
     useEffect(() => {
-        // const isCurrentSoundPlaying = playStatus[soundCurrentRef.current];
-        // console.log("id bài trước: " + soundCurrent + " - id hiện tại: " + soundCurrentRef.current);
-        // // Nếu đã có âm thanh đang phát và bài hát được chọn khác với bài hát hiện tại
-        // if (soundCurrentRef.current !== soundCurrent && !isMiniPlayer) {
-        //     // Dừng bài hát hiện tại nếu đang phát
-        //     if (isCurrentSoundPlaying) {
-        //         pauseSound(soundCurrentRef.current);
-        //         console.log(soundCurrentRef.current + ": Dừng bài cũ khi chuyển bài mới");
-        //     }
-
-        //     // Cập nhật bài hát hiện tại và tiếp tục phát bài hát mới
-        //     dispatch(setSoundCurrent(soundCurrent));
-        //     soundCurrentRef.current = soundCurrent;
-        //     resumeSound(soundCurrent);
-        //     console.log("id bài hát mới: " + soundCurrent);
-        // }
-        // Nếu bài hát hiện tại đang phát, tiếp tục phát
         if (soundCurrentRef.current === soundCurrent) {
             if (soundRef.current != null) {
                 if (playStatus[soundCurrentRef.current]) {
@@ -261,7 +244,6 @@ export default function Following(props) {
                     <View style={followStyles.contentSection}>
                         <View>
                             {newFeed.map((item, index) => {
-                                console.log('123');
                                 // const isPlaying = soundCurrent === item._id && playStatus[item._id];
 
                                 return (

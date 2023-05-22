@@ -143,7 +143,7 @@ export default function HeaderUI(props) {
                         size={20}
                         color="#ccc"
                     />
-                    <TextInput
+                    {/* <TextInput
                         style={lightHeader.input}
                         // autoFocus={false}
                         // value={searchValue}
@@ -151,10 +151,19 @@ export default function HeaderUI(props) {
                         // onChange={(event) => setSearchResult(event.target.value)}
                         onFocus={handleSearch}
                         placeholderTextColor={isDarkTheme ? darkHeader.placeholder.color : lightHeader.placeholder.color}
-                    />
+                    /> */}
+                    <TouchableOpacity
+                        style={lightHeader.input}
+                        onPress={handleSearch}
+                        activeOpacity={1}
+                    >
+                        <Text style={isDarkTheme ? darkHeader.placeholder : lightHeader.placeholder}>
+                            {currentLanguage === "vi" ? "Tìm kiếm podcast, tác giả, album,..." : "Search for podcasts, authors, albums,..."}
+                        </Text>
+                    </TouchableOpacity>
                 </View>
                 <Modal visible={searchValue} >
-                    <SafeAreaView style={[GlobalStyles.customSafeArea, isDarkTheme ? darkHeader.background : lightHeader.background]}>
+                    <SafeAreaView style={[Platform.OS === 'ios' ? GlobalStyles.customSafeArea : { marginTop: 8 }, isDarkTheme ? darkHeader.background : lightHeader.background]}>
                         <View style={lightHeader.header}>
                             <Icon style={lightHeader.back}
                                 name={'chevron-left'}

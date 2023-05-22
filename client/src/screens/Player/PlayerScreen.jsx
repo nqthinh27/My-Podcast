@@ -410,7 +410,7 @@ export default function PlayerScreen(props) {
                                 }}
                                 // resizeMode="repeat"
                                 // style={{ width: '100%', height: '100%' }}
-                                opacity={isDarkTheme ? 0.4 : 0.08}
+                                opacity={isDarkTheme ? 0.4 : 0.4}
                             >
                                 <View>
                                     <Image
@@ -986,13 +986,13 @@ export default function PlayerScreen(props) {
                                         );
                                     })}
                                 </View>
-                                <TouchableOpacity onPress={handleBackPress}>
+                                {/* <TouchableOpacity onPress={handleBackPress}>
                                     <Text>
                                         {currentLanguage === "vi"
                                             ? "Quay lại"
                                             : "Back"}
                                     </Text>
-                                </TouchableOpacity>
+                                </TouchableOpacity> */}
                             </ScrollView>
                         )}
                         <View style={styles.informationFooter}>
@@ -1063,7 +1063,7 @@ const styles = StyleSheet.create({
         // paddingBottom: 20,F
         marginHorizontal: 16,
         // flex: 2
-        backgroundColor: "grey",
+        backgroundColor: "#fff",
     },
 
     playscreenInteractionBar: {

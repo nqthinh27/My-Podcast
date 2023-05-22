@@ -71,7 +71,7 @@ const postController = {
                     _id: post.owner._id,
                     fullName: post.owner.fullName,
                     userName: post.owner.userName,
-                    avatar: post.owner._id,
+                    avatar: post.owner.avatar,
                     followers: post.owner.followers.length,
                     posts: post.owner.posts.length,
                 }
