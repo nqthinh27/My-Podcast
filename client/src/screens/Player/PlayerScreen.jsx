@@ -44,6 +44,8 @@ import { getLikedListData, getSavedListData } from "../../redux/actions/libraryA
 import { patchDataAPI, postDataAPI } from "../../ultis/fetchData";
 import { timeDiff, timeDiff2 } from "../../ultis/helper";
 import { getOtherUser } from "../../redux/actions/profileApi";
+import { createComment, getCommentData } from "../../redux/actions/commentApi";
+import { getCommentSuccess, setCommentText } from "../../redux/slices/commentSlice";
 
 export default function PlayerScreen(props) {
     // navigation
@@ -83,6 +85,7 @@ export default function PlayerScreen(props) {
     const currentSound = useSelector((state) => state.player.currentSound);
     const isPlayScreen = useSelector((state) => state.player.isPlayScreen);
     const access_token = useSelector((state) => state.auth.login.access_token);
+    const commentText = useSelector((state) => state.comment.comment.commentText);
 
     const currentLanguage = useSelector(
         (state) => state.language.currentLanguage
@@ -335,6 +338,19 @@ export default function PlayerScreen(props) {
         }
         setLike(!like)
     }
+
+    const CommentData = useSelector((state) => state.comment.commentData.data);
+    const isCommentPosted = useSelector((state) => state.comment.isCommentPosted);
+
+    const fetchCommentData = async () => {
+        await getCommentData(detailPost._id, dispatch);
+    }
+
+    useEffect(() => {
+        fetchCommentData();
+        console.log("data comment");
+    }, [isCommentPosted]);
+
     return (
         <SafeAreaView
             style={[
@@ -959,10 +975,16 @@ export default function PlayerScreen(props) {
                                 </View>
 
                                 <View style={styles.informationComment}>
-                                    <Comment />
-                                    <Comment />
-                                    <Comment />
-                                    <Comment />
+                                    {CommentData.map((item, index) => {
+                                        return (
+                                            <TouchableOpacity
+                                                onPress={{}}
+                                                key={index}
+                                            >
+                                                <Comment item={item} />
+                                            </TouchableOpacity>
+                                        );
+                                    })}
                                 </View>
                                 <TouchableOpacity onPress={handleBackPress}>
                                     <Text>
@@ -992,6 +1014,8 @@ export default function PlayerScreen(props) {
 
                                         paddingLeft: 10,
                                     }}
+                                    value={commentText}
+                                    onChangeText={(text) => dispatch(setCommentText(text))}
                                     placeholder={
                                         currentLanguage === "vi"
                                             ? "Thêm bình luận"
@@ -1004,6 +1028,7 @@ export default function PlayerScreen(props) {
                                         marginRight: 20,
                                         alignSelf: "center",
                                     }}
+                                    onPress={() => createComment(detailPost._id, commentText, dispatch, access_token)}
                                 >
                                     <Image
                                         style={{
