@@ -3,22 +3,23 @@ import { HeaderUI, FollowingItem } from "../components";
 import { lightfollowStyles, darkfollowStyles, lightFollowingItem } from "../constants/darkLight/themeFollowing"
 import { useDispatch, useSelector } from "react-redux";
 import { useIsFocused } from "@react-navigation/native";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { warningLogin } from "../ultis/warning";
 import GlobalStyles from "../components/GlobalStyles";
 import colors from "../constants/colors";
 import { getNewFeed } from "../redux/actions/followingApi";
 import { getOtherUser } from "../redux/actions/profileApi";
 import FollowingHeader from "../components/FollowingHeader";
-import { setIsMiniPlayer, setIsPlayScreen, setIsPlaying } from "../redux/slices/playerSlice";
+import { setIsMiniPlayer, setIsPlayScreen, setIsPlaying, setSound } from "../redux/slices/playerSlice";
 import { getHistoryListData, getLikedListData, getSavedListData } from "../redux/actions/libraryApi";
 import { device } from "../constants/device";
-import { setDuration, setPlayStatus, setPosition, setSoundCurrent, setSoundFollower } from "../redux/slices/followingSlice";
+import { setDuration, setPlayStatus, setPlaybackState, setPosition, setSoundCurrent, setSoundFollower } from "../redux/slices/followingSlice";
 import { Audio } from "expo-av";
 import Slider from "@react-native-community/slider";
 import MiniPlayer from "./Player/MiniPlayer";
-import PlayerScreen from "./Player/PlayerScreen";
-import Loading from "../components/Loading";
+import { getCommentData } from "../redux/actions/commentApi";
+import Comment from "../components/Comment";
+import CommentFollowing from "../components/CommentFollowing";
 
 export default function Following(props) {
     const { navigation, route } = props;
@@ -28,14 +29,25 @@ export default function Following(props) {
     const isMiniPlayer = useSelector((state) => state.player.isMiniPlayer);
     const dispatch = useDispatch();
     const isFocused = useIsFocused();
-    const isPlayScreen = useSelector((state) => state.player.isPlayScreen);
-    const soundFollower = useSelector((state) => state.following.soundFollower);
     const soundCurrent = useSelector((state) => state.following.soundCurrent);
     const playStatus = useSelector((state) => state.following.playStatus);
-    const [duration, setDuration] = useState(null);
-    const [playbackState, setPlaybackState] = useState({});
-    const [isPlaying, setIsPlaying] = useState({});
+    const playbackState = useSelector((state) => state.following.playbackState);
+    // const [playbackState, setPlaybackState] = useState({});
+    const [isPlaying, setIsPlaying] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
+    const isComment = useSelector((state) => state.comment.isComment);
+    // const commentCurrent = useSelector((state) => state.comment.commentCurrent);
+    // const CommentData = useSelector((state) => state.comment.commentData.data);
+
+    // const fetchCommentData = async () => {
+    //     console.log("cmt: " + commentCurrent);
+    //     await getCommentData(commentCurrent, dispatch);
+    // }
+
+    // useEffect(() => {
+    //     fetchCommentData();
+    //     console.log("data comment");
+    // }, [isComment]);
 
     useEffect(() => {
         if (isFocused && !currentUser) {
@@ -54,16 +66,6 @@ export default function Following(props) {
     useEffect(() => {
         fetchNewFeedAfterLogin();
     }, [currentUser]);
-    // const fetchNewFeedIfLogged = async () => {
-    //     setIsLoading(true);
-    //     if (currentUser) await getLikedListData(dispatch, access_token);
-    //     setIsLoading(false);
-    // }
-    // useEffect(() => {
-    //     fetchNewFeedIfLogged();
-    // }, []);
-
-    // const [sound, setSound] = useState(null);
 
     const soundRef = useRef(null);
     const soundCurrentRef = useRef(null);
@@ -71,24 +73,24 @@ export default function Following(props) {
 
     // Hàm phát nhạc
     async function resumeSound(id) {
+        dispatch(setPlayStatus({ ...playStatus, [id]: true }));
         if (sound != null && isMiniPlayer) {
             await sound.unloadAsync();
             dispatch(setIsMiniPlayer(false));
             dispatch(setIsPlayScreen(false));
         }
-        console.log("id bài hát trước: " + soundCurrent);
+        console.log("soundCurrent: " + soundCurrent);
         if (soundCurrentRef.current !== soundCurrent) {
             // Nếu khác, thì dừng bài đang phát hiện tại
-            if (soundRef.current != null && soundRef.current._loaded && playStatus[soundCurrentRef.current]) {
-                await soundRef.current.pauseAsync();
-                dispatch(setPlayStatus({ ...playStatus, [soundCurrentRef.current]: false }));
-                console.log("dừng id bài cũ: " + soundCurrentRef.current);
-            }
-            // Set icon for the previously playing sound to "pause"
-            //dispatch(setPlayStatus({ ...playStatus, [soundCurrentRef.current]: false });
+            // if (soundRef.current !== null && soundRef.current._loaded && playStatus[soundCurrentRef.current]) {
+            //     await soundRef.current.pauseAsync();
+            //     dispatch(setPlayStatus({ ...playStatus, [soundCurrent]: true }));
+            //     console.log("dừng id bài cũ: " + soundCurrent);
+            // }
+            dispatch(setSoundCurrent(id));
         }
-        dispatch(setSoundCurrent(id));
         soundCurrentRef.current = id;
+        console.log("soundCurrentRef.current: " + soundCurrentRef.current);
         const index = newFeed.find((item) => item._id === id);
         try {
             await Audio.setAudioModeAsync({
@@ -98,21 +100,9 @@ export default function Following(props) {
                 interruptionModeIOS: 1,
                 playsInSilentModeIOS: true,
             });
-
             if (soundRef.current && soundRef.current._loaded) {
                 await soundRef.current.playAsync();
-                dispatch(setPlayStatus({ ...playStatus, [id]: true }));
-                const status = await soundRef.current.getStatusAsync();
-                // Update the position state after resuming the sound
-                setPosition(status.positionMillis);
-                setPlaybackState({
-                    ...playbackState,
-                    [soundCurrentRef.current]: {
-                        ...playbackState[soundCurrentRef.current],
-                        position: status.positionMillis,
-                        duration: status.durationMillis,
-                    },
-                });
+                onPlaybackStatusUpdate
                 console.log(id + ": phát lại từ vị trí hiện tại");
             } else {
                 const { sound } = await Audio.Sound.createAsync(
@@ -120,23 +110,12 @@ export default function Following(props) {
                     {
                         shouldPlay: true,
                         isLooping: true,
-                        positionMillis: playbackState[soundCurrentRef.current]?.position,
+                        position: playbackState[id]?.position
                     },
+                    onPlaybackStatusUpdate
                 );
                 soundRef.current = sound;
-                soundRef.current.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
-                const status = await soundRef.current.getStatusAsync();
-
-                dispatch(setPlayStatus({ ...playStatus, [id]: true }));
-                setPosition(status.positionMillis); // Set the position state when playing for the first time
-                setPlaybackState({
-                    ...playbackState,
-                    [soundCurrentRef.current]: {
-                        ...playbackState[soundCurrentRef.current],
-                        position: status.positionMillis,
-                        duration: status.durationMillis,
-                    },
-                });
+                dispatch(setSound(sound));
                 console.log(id + " :Phát lần đầu");
             }
         } catch (error) {
@@ -146,78 +125,48 @@ export default function Following(props) {
 
     // Hàm dừng phát nhạc
     async function pauseSound(id) {
-        if (soundRef.current != null && soundRef.current._loaded) {
+        if (soundRef.current !== null && soundRef.current._loaded) {
             await soundRef.current.pauseAsync();
             dispatch(setPlayStatus({ ...playStatus, [id]: false }));
-            console.log("Ấn bài khác thì dừng bài cũ, playStatus: " + playStatus[id]);
+            console.log("pauseSound, playStatus: " + id);
         }
     }
 
-    // Sử dụng useEffect để tự động phát hoặc dừng phát khi trạng thái playStatus thay đổi
     useEffect(() => {
-        if (soundCurrentRef.current === soundCurrent) {
-            if (soundRef.current != null) {
-                if (playStatus[soundCurrentRef.current]) {
-                    // Nếu đang phát, tiếp tục phát
-                    resumeSound(soundCurrentRef.current);
-                    console.log(soundCurrentRef.current + ": Nếu đang phát, tiếp tục phát");
-                } else {
-                    // Nếu đã dừng, tiếp tục dừng
-                    pauseSound(soundCurrentRef.current);
-                    console.log(soundCurrentRef.current + ": Nếu đã dừng, tiếp tục dừng");
-                }
-            }
-        }
-
-    }, [playStatus[soundCurrentRef.current]]);
-
-    useEffect(() => {
-        const isCurrentSoundPlaying = playStatus[soundCurrentRef.current];
-        // Nếu đã có âm thanh đang phát, giải phóng nó
         if (soundRef.current && soundRef.current._loaded) {
-            // setPosition(0);
-            // setDuration(0);
             soundRef.current.unloadAsync();
-
-            console.log(soundCurrent + " playStatus: " + playStatus[soundRef]);
+            dispatch(setPlayStatus({ ...playStatus, [soundCurrent]: false }));
+            dispatch(setPlaybackState({ id: soundCurrent, position: 0, duration: 0 }));
+            dispatch(setSoundCurrent(soundCurrentRef.current));
             console.log("chuyển bài khác");
-            // setPlayStatus({ ...playStatus, [prevSoundId]: false });
         }
-
-        setPlayStatus({ ...playStatus, [soundCurrentRef.current]: false });
-        // Đặt trạng thái playStatus về false khi bài hát mới được chọn
-
     }, [soundCurrentRef.current]);
 
 
+    let lastUpdateTime = null;
+    const updateInterval = 1000; // Giới hạn tần suất cập nhật là 1 giây
 
     function onPlaybackStatusUpdate(status) {
-        if (status.isPlaying) {
-            setPlaybackState({
-                ...playbackState,
-                [soundCurrentRef.current]: {
-                    ...playbackState[soundCurrentRef.current],
-                    position: status.positionMillis,
-                    duration: status.durationMillis,
-                },
-            })
+        const position = status.positionMillis;
+        if (position !== undefined) {
+            const duration = status.durationMillis;
+            const currentTime = Date.now();
+
+            if (!lastUpdateTime || currentTime - lastUpdateTime > updateInterval) {
+                dispatch(setPlaybackState({ id: soundCurrentRef.current, position: position, duration: duration }));
+                lastUpdateTime = currentTime;
+            }
         }
+        console.log("time: " + position);
     }
 
-    function onSliderValueChange(value) {
-        if (playbackState[soundCurrentRef.current]) {
-            if (soundRef.current != null) {
-                soundRef.current.setPositionAsync(value);
-                setPosition(value);
 
-                setPlaybackState({
-                    ...playbackState,
-                    [soundCurrentRef.current]: {
-                        ...playbackState[soundCurrentRef.current],
-                        position: value,
-                    },
-                })
-            }
+
+    async function onSliderValueChange(value) {
+        if (soundRef.current !== null) {
+            await soundRef.current.setPositionAsync(value);
+            dispatch(setPlaybackState({ id: soundCurrentRef.current, position: value }));
+            console.log("tua: " + value / 1000);
         }
     }
 
@@ -241,14 +190,15 @@ export default function Following(props) {
         <SafeAreaView style={[GlobalStyles.customSafeArea, { backgroundColor: isDarkTheme ? colors.dark_backgr : colors.white }]}>
             <ScrollView>
                 <HeaderUI />
-                <View style={[isDarkTheme ? darkfollowStyles.contentWrapper : lightfollowStyles.contentWrapper, { backgroundColor: isDarkTheme ? colors.dark_backgr : colors.white } ]}>
+                <View style={isDarkTheme ? darkfollowStyles.contentWrapper : lightfollowStyles.contentWrapper}>
                     <View style={followStyles.contentSection}>
                         <View>
                             {newFeed.map((item, index) => {
+
                                 // const isPlaying = soundCurrent === item._id && playStatus[item._id];
 
                                 return (
-                                    <View key={index} >
+                                    <View key={index}>
                                         <TouchableOpacity
                                             onPress={() => {
                                                 getOtherUser(item.owner._id, dispatch, navigation.navigate, currentUser)
@@ -274,44 +224,49 @@ export default function Following(props) {
                                                 audio={item.audio}
                                                 image={item.image}
                                             />
-                                            <View style={followStyles.interactPlayTime}>
-                                                {playStatus[item._id] ? (
-                                                    <TouchableOpacity onPress={() => pauseSound(item._id)}>
-                                                        <Image
-                                                            style={{ width: device.width / 12, height: device.width / 12 }}
-                                                            source={{
-                                                                uri:
-                                                                    "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_pause_playersc.png?alt=media&token=4c757d52-ce70-456a-aa36-c8c581af7be6",
-                                                            }}
-                                                        />
-                                                    </TouchableOpacity>
-                                                ) : (
-                                                    <TouchableOpacity onPress={() => {
-                                                        // sound.unloadAsync();
-                                                        resumeSound(item._id);
-                                                        // console.log("sound: " + item.audio);
-                                                        // console.log("id: " + item._id);
-
+                                            {/* {isComment && item._id === commentCurrent &&
+                                                <ScrollView>
+                                                    <View style={{
+                                                        backgroundColor: "#EFEFEF",
+                                                        // borderRadius: 10,
+                                                        marginTop: 10,
+                                                        marginHorizontal: 16,
+                                                        maxHeight: device.height / 6,
                                                     }}>
-                                                        <Image
-                                                            style={{ width: device.width / 12, height: device.width / 12 }}
-                                                            source={{
-                                                                uri:
-                                                                    "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_play_playersc.png?alt=media&token=916c4f80-4489-41b1-b834-de6f2d5affd8",
-                                                            }}
-                                                        />
-                                                    </TouchableOpacity>
-                                                )}
+                                                        {CommentData.map((item, index) => {
+                                                            return (
+                                                                <TouchableOpacity
+                                                                    onPress={{}}
+                                                                    key={index}
+                                                                >
+                                                                    <CommentFollowing item={item} />
+                                                                </TouchableOpacity>
+                                                            );
+                                                        })}
+                                                    </View>
+                                                </ScrollView>
+                                            } */}
+                                            <View style={followStyles.interactPlayTime}>
+                                                <TouchableOpacity onPress={() => playStatus[item._id] ? pauseSound(item._id) : resumeSound(item._id)}>
+                                                    <Image
+                                                        style={{ width: device.width / 12, height: device.width / 12 }}
+                                                        source={{
+                                                            uri: playStatus[item._id]
+                                                                ? 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_pause_playersc.png?alt=media&token=4c757d52-ce70-456a-aa36-c8c581af7be6'
+                                                                : 'https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_play_playersc.png?alt=media&token=916c4f80-4489-41b1-b834-de6f2d5affd8'
+                                                        }}
+                                                    />
+                                                </TouchableOpacity>
                                                 {/* ------------ Thời gian bài hát --------------- */}
                                                 <View style={followStyles.progressLevelDur}>
-                                                    <Text style={followStyles.progressLabelText}>{formatTime(playbackState[item._id]?.position)} / {formatTime(playbackState[item._id]?.duration)} </Text>
+                                                    <Text style={followStyles.progressLabelText}>{formatTime(playbackState[item._id]?.position || 0)} / {formatTime(playbackState[item._id]?.duration || 0)} </Text>
                                                 </View>
                                                 <View>
                                                     <Slider
                                                         style={followStyles.progressBar}
                                                         minimumValue={0}
-                                                        maximumValue={playbackState[item._id]?.duration || 0}
-                                                        value={playbackState[item._id]?.position || 0}
+                                                        maximumValue={playbackState[item._id]?.duration}
+                                                        value={playbackState[item._id]?.position}
                                                         thumbTintColor="black"
                                                         minimumTrackTintColor="black"
                                                         maximumTrackTintColor="black"
@@ -321,7 +276,7 @@ export default function Following(props) {
                                             </View>
                                         </View>
                                         <View
-                                            style={{ borderBottomWidth: 0.2, borderColor: colors.black, marginBottom: 25, marginTop: 9, marginHorizontal: 16 }}
+                                            style={{ borderBottomWidth: 0.2, borderColor: colors.black, marginBottom: 25, marginTop: 16, marginHorizontal: 16 }}
                                         />
                                     </View>
                                 )
@@ -331,7 +286,6 @@ export default function Following(props) {
                 </View>
             </ScrollView>
             {isMiniPlayer && <MiniPlayer />}
-            {isLoading && <Loading />}
         </SafeAreaView>
     )
 }
@@ -355,14 +309,15 @@ const followStyles = StyleSheet.create({
     },
 
     interactPlayTime: {
-        margin: 15,
+        marginTop: 16,
         marginHorizontal: 16,
         flexDirection: 'row',
         alignItems: 'center',
     },
 
     progressBar: {
-        width: device.width / 1.5,
+        width: device.width / 1.45,
+        // maxWidth: device.width / 1.5,
         height: device.height / 30,
         alignSelf: "center",
         opacity: 0.6,

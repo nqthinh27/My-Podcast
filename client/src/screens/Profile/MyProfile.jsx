@@ -21,11 +21,17 @@ import { darkProfile, lightProfile } from "../../constants/darkLight/themeProfil
 import { getMyFollowers, getMyFollowing, getMyUserAllPosts, getMyUserTopPosts } from "../../redux/actions/authApi";
 import { formatNum, timeDiff } from "../../ultis/helper";
 import Loading from "../../components/Loading";
+import { setDuration, setIsMiniPlayer, setPosition, setSound, setSoundId } from "../../redux/slices/playerSlice";
+import { getPost } from "../../redux/actions/postApi";
+import MiniPlayer from "../Player/MiniPlayer";
 
 function MyProfile(props) {
     const dispatch = useDispatch();
+    const navigation = useNavigation();
     const { navigate, goBack } = useNavigation();
     const currentUser = useSelector((state) => state.auth.login.currentUser);
+    const sound_id = useSelector((state) => state.player.sound_id);
+    const sound = useSelector((state) => state.player.sound);
     const { fullName, userName, avatar, moblie, address, story, website, posts, following, followers } = currentUser;
     const [isLoading, setIsLoading] = useState(false);
     const fetchData = async () => {
@@ -46,7 +52,9 @@ function MyProfile(props) {
     const currentLanguage = useSelector(
         (state) => state.language.currentLanguage
     );
+    const access_token = useSelector((state) => state.auth.login.access_token);
     const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
+    const isMiniPlayer = useSelector((state) => state.player.isMiniPlayer);
 
     return (
         <SafeAreaView
@@ -102,19 +110,19 @@ function MyProfile(props) {
                                 ? darkProfile.myprofileEditProfile
                                 : lightProfile.myprofileEditProfile
                         }
-                     onPress={()=>navigate('EditProfile')}>
+                        onPress={() => navigate('EditProfile')}>
                         <Text style={styles.myprofileButtonEditprofile}>
                             {currentLanguage === "vi" ? "Chỉnh sửa trang cá nhân" : "Edit my profile"}
                         </Text>
                     </TouchableOpacity>
-                    <View style={{ flexDirection: "row" }}>
+                    <View style={{ flexDirection: "row", alignItems: 'center', marginBottom: 10 }}>
                         <Text
                             style={[
                                 {
                                     marginLeft: 16,
                                     fontSize: 18,
                                     fontWeight: "bold",
-                                    marginBottom: 10,
+                                    // marginBottom: 10,
                                 },
                                 isDarkTheme
                                     ? darkProfile.profileText
@@ -145,7 +153,19 @@ function MyProfile(props) {
                         {topPosts.map((item, index) => {
                             return (
                                 <TouchableOpacity key={index}
-                                style={{ marginHorizontal: 8 }}>
+                                    onPress={async () => {
+                                        if (item._id != sound_id && sound != null) {
+                                            await sound.unloadAsync();
+                                            dispatch(setSound(null));
+                                            dispatch(setPosition(0));
+                                            dispatch(setDuration(0));
+                                            // dispatch(setIsPlaying(true));
+                                            dispatch(setIsMiniPlayer(false));
+                                            dispatch(setSoundId(item._id));
+                                        }
+                                        getPost(item._id, dispatch, access_token, navigate);
+                                    }}
+                                    style={{ marginHorizontal: 8 }}>
                                     <ProfilePodcast
                                         image={item.image}
                                         title={item.title}
@@ -155,14 +175,14 @@ function MyProfile(props) {
                         })}
                     </View>
 
-                    <View style={{ flexDirection: "row" }}>
+                    <View style={{ flexDirection: "row", alignItems: 'center', marginBottom: 10 }}>
                         <Text
                             style={[
                                 {
                                     marginLeft: 16,
                                     fontSize: 18,
                                     fontWeight: "bold",
-                                    marginBottom: 10,
+                                    // marginBottom: 10,
                                 },
                                 isDarkTheme
                                     ? darkProfile.profileText
@@ -194,7 +214,19 @@ function MyProfile(props) {
                         {allPosts.map((item, index) => {
                             return (
                                 <TouchableOpacity key={index}
-                                style={{ marginHorizontal: 8 }}>
+                                    onPress={async () => {
+                                        if (item._id != sound_id && sound != null) {
+                                            await sound.unloadAsync();
+                                            dispatch(setSound(null));
+                                            dispatch(setPosition(0));
+                                            dispatch(setDuration(0));
+                                            // dispatch(setIsPlaying(true));
+                                            dispatch(setIsMiniPlayer(false));
+                                            dispatch(setSoundId(item._id));
+                                        }
+                                        getPost(item._id, dispatch, access_token, navigate);
+                                    }}
+                                    style={{ marginHorizontal: 8 }}>
                                     <ProfilePodcast
                                         image={item.image}
                                         title={item.title}
@@ -205,7 +237,8 @@ function MyProfile(props) {
                     </View>
                 </View>
             </ScrollView>
-            {isLoading && <Loading/>}
+            {isMiniPlayer && <MiniPlayer />}
+            {isLoading && <Loading />}
         </SafeAreaView>
     );
 }

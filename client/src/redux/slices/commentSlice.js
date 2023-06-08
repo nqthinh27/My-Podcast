@@ -14,6 +14,8 @@ const commentSlice = createSlice({
             error: false,
         },
         isCommentPosted: false,
+        isComment: false,
+        commentCurrent: 0,
     },
     reducers: {
         getCommentStart: (state) => {
@@ -50,6 +52,12 @@ const commentSlice = createSlice({
         setIsCommentPosted: (state, action) => {
             state.isCommentPosted = action.payload;
         },
+        setIsComment: (state, action) => {
+            state.isComment = action.payload;
+        },
+        setCommentCurrent: (state, action) => {
+            state.commentCurrent = action.payload;
+        },
     },
 });
 
@@ -61,6 +69,8 @@ export const {
     getCommentDataStart,
     getCommentDataSuccess,
     getCommentDataFailed,
-    setIsCommentPosted
+    setIsCommentPosted,
+    setIsComment,
+    setCommentCurrent
 } = commentSlice.actions;
 export default commentSlice.reducer;

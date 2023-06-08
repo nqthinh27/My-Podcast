@@ -24,13 +24,8 @@ import {
     setCurrentSound,
     setDuration,
     setIsMiniPlayer,
-    setIsPlayScreen,
-    setIsPlayer,
-    setIsPlaying,
-    setNextPress,
     setPlayValue,
     setPosition,
-    setPrevPress,
     setSound,
 } from "../../redux/slices/playerSlice";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
@@ -42,10 +37,10 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getLikedListData, getSavedListData } from "../../redux/actions/libraryApi";
 import { patchDataAPI, postDataAPI } from "../../ultis/fetchData";
-import { timeDiff, timeDiff2 } from "../../ultis/helper";
+import { timeDiff2 } from "../../ultis/helper";
 import { getOtherUser } from "../../redux/actions/profileApi";
 import { createComment, getCommentData } from "../../redux/actions/commentApi";
-import { getCommentSuccess, setCommentText } from "../../redux/slices/commentSlice";
+import { setCommentText } from "../../redux/slices/commentSlice";
 
 export default function PlayerScreen(props) {
     // navigation
@@ -66,24 +61,14 @@ export default function PlayerScreen(props) {
         setShowCommentScrollView(false);
     };
 
-    // const [isPlaying, setIsPlaying] = useState(false);
-    // const [playValue, setPlayValue] = useState(false);
-    // const [sound, setSound] = useState(null);
-    // const [position, setPosition] = useState(0);
-    // const [duration, setDuration] = useState(null);
-
     const navigation = useNavigation();
     const dispatch = useDispatch();
-    // const [sound, setSound] = useState(null);
     const detailPost = useSelector((state) => state.post.detailPost);
-    // const soundUrl = useSelector((state) => state.player.soundUrl);
     const playValue = useSelector((state) => state.player.playValue);
     const position = useSelector((state) => state.player.position);
     const duration = useSelector((state) => state.player.duration);
     const isMiniPlayer = useSelector((state) => state.player.isMiniPlayer);
-    const isPlayer = useSelector((state) => state.player.isPlayer);
     const currentSound = useSelector((state) => state.player.currentSound);
-    const isPlayScreen = useSelector((state) => state.player.isPlayScreen);
     const access_token = useSelector((state) => state.auth.login.access_token);
     const commentText = useSelector((state) => state.comment.comment.commentText);
 
@@ -91,9 +76,6 @@ export default function PlayerScreen(props) {
         (state) => state.language.currentLanguage
     );
     const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
-
-    const nextPress = useSelector((state) => state.player.nextPress);
-    const prevPress = useSelector((state) => state.player.prevPress);
 
     const dataSound = useSelector((state) => state.player.dataSound);
     async function loadSound(uri) {
@@ -125,12 +107,23 @@ export default function PlayerScreen(props) {
         }
     }
 
+    let lastUpdateTime = null;
+    const updateInterval = 1000; // Update interval of 1 second
+
     function onPlaybackStatusUpdate(status) {
-        if (status.isPlaying) {
-            dispatch(setPosition(status.positionMillis));
-            dispatch(setDuration(status.durationMillis));
+        const currentTime = Date.now();
+
+        if (!lastUpdateTime || currentTime - lastUpdateTime > updateInterval) {
+            if (status.isPlaying) {
+                dispatch(setPosition(status.positionMillis));
+                dispatch(setDuration(status.durationMillis));
+                console.log("play");
+            }
+
+            lastUpdateTime = currentTime;
         }
     }
+
     // console.log("sound: ", detailPost.audio);
     const onBackPress = () => {
         // dispatch(setIsPlayScreen(false));
@@ -149,13 +142,9 @@ export default function PlayerScreen(props) {
 
     // ấn nút thu nhỏ màn hình
     function changeMiniPlayer() {
-        // sound.unloadAsync();
         console.log("back");
         dispatch(setIsMiniPlayer(true));
         navigation.goBack();
-        // dispatch(setIsPlaying(true));
-        // if (!playValue) dispatch(setIsPlayer(true));
-        // navigation.navigate('UIScreen');
     }
 
     useEffect(() => {
@@ -164,16 +153,6 @@ export default function PlayerScreen(props) {
             console.log("bài hát: " + detailPost.audio);
         }
     }, [detailPost.audio]);
-
-    useEffect(() => {
-        if (sound != null && isFocused) {
-            if (playValue) {
-                resumeSound(detailPost.audio);
-            } else {
-                pauseSound();
-            }
-        }
-    }, [playValue]);
 
     const playSound = async () => {
         if (sound) {
@@ -187,20 +166,17 @@ export default function PlayerScreen(props) {
 
     async function pauseSound() {
         if (sound != null) {
-            await sound.pauseAsync();
             dispatch(setPlayValue(false));
+            await sound.pauseAsync();
+            console.log("pauseSound");
         }
     }
 
     async function resumeSound(uri) {
         if (sound != null) {
-            const status = await sound.getStatusAsync();
-            if (!status.isLoaded) {
-                await sound.loadAsync({ uri }, { shouldPlay: true });
-            }
-            await sound.playAsync();
             dispatch(setPlayValue(true));
-            console.log("dừng: " + playValue);
+            await sound.playAsync();
+            console.log("resumeSound");
         }
     }
 
@@ -271,13 +247,6 @@ export default function PlayerScreen(props) {
             dispatch(setCurrentSound(prevTrack.index));
             dispatch(setPosition(0));
             dispatch(setIsMiniPlayer(false));
-        }
-    }
-
-    async function stopSound() {
-        if (sound) {
-            await sound.stopAsync();
-            setPlayValue(false);
         }
     }
 

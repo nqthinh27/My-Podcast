@@ -90,6 +90,7 @@ export const lightFollowingItem = StyleSheet.create({
     interact: {
         flexDirection: 'row',
         justifyContent: 'space-between',
+        // alignSelf: 'center',
     },
     interactComment: {
         top: 10,
