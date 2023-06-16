@@ -5,7 +5,7 @@ import { device } from '../device'
 export const lightfollowStyles = StyleSheet.create({
     contentWrapper: {
         marginTop: 10,
-        backgroundColor: "#EDEDED",
+        backgroundColor: "#fff",
     },
 });
 

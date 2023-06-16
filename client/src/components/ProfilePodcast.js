@@ -21,7 +21,7 @@ export default function ProfilePodcast(props) {
     )
 }
 
-const withItem = (device.width - 16 * 4) / 3
+const withItem = (device.width - 16 * 4 -1) / 3
 const styles = StyleSheet.create({
     wrapper: {
         // marginRight:16,

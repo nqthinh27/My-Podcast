@@ -4,7 +4,7 @@ import colors from '../colors';
 export const lightTopTrendingItem = StyleSheet.create({
     wrapper: {
         // backgroundColor: '#EDEDED',
-        width: 325,
+        // width: 325,
         // borderRadius: 10,
         // margin: 11,
         marginVertical: 6,
@@ -37,7 +37,7 @@ export const lightTopTrendingItem = StyleSheet.create({
     title: {
         fontSize: 17,
         fontWeight: "600",
-        width: 200
+        width: 270
     },
     author: {
         color: "#414141",

@@ -19,7 +19,7 @@ export default function Notify() {
     }, [])
     return (
         <SafeAreaView style={[GlobalStyles.customSafeArea, styles.notifyWrapper]}>
-            <ScrollView>
+            <ScrollView style={{marginHorizontal: 16}}>
                 <Text style={styles.notifyTitle}>Thông báo</Text>
                 {notifies.map((item, index) => {
                     return <NotifyItem
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     notifyWrapper: {
         // flex: 1,
         backgroundColor: '#fff',
-        marginHorizontal: 16,
+        // marginHorizontal: 16,
     },
     notifyTitle: {
         fontSize: 21,

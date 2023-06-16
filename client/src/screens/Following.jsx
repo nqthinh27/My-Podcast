@@ -198,7 +198,7 @@ export default function Following(props) {
                                 // const isPlaying = soundCurrent === item._id && playStatus[item._id];
 
                                 return (
-                                    <View key={index}>
+                                    <View key={index} >
                                         <TouchableOpacity
                                             onPress={() => {
                                                 getOtherUser(item.owner._id, dispatch, navigation.navigate, currentUser)

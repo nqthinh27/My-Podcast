@@ -52,7 +52,7 @@ function Comment({ item }) {
                                 color: "#9A9A9A",
                             }}
                         >
-                            27 thangs 12
+                            @{item.userId.userName}
                         </Text>
                     </View>
                 </View>
