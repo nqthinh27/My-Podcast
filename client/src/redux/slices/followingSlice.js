@@ -11,7 +11,8 @@ const followingSlice = createSlice({
         soundFollower: null,
         soundCurrent: 0,
         playStatus: {},
-        position: 0,
+        playbackState: {},
+        stopPlayback: false,
         duration: 0,
     },
     reducers: {
@@ -39,12 +40,16 @@ const followingSlice = createSlice({
         setPlayStatus(state, action) {
             state.playStatus = action.payload;
         },
-        setPosition(state, action) {
-            state.position = action.payload;
+        setStopPlayback(state, action) {
+            state.stopPlayback = action.payload;
         },
         setDuration(state, action) {
             state.duration = action.payload;
         },
+        setPlaybackState(state, action) {
+            const { id, position, duration } = action.payload;
+            state.playbackState[id] = { position, duration };
+        }
     },
 
 });
@@ -55,8 +60,9 @@ export const {
     setSoundFollower,
     setSoundCurrent,
     setPlayStatus,
-    setPosition,
-    setDuration
+    setStopPlayback,
+    setDuration,
+    setPlaybackState
 } = followingSlice.actions;
 
 export default followingSlice.reducer;

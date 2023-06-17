@@ -9,26 +9,29 @@ import {
     SafeAreaView,
     ScrollView,
     PanResponder,
+    Animated,
 } from "react-native";
-import Icon from "react-native-vector-icons/Ionicons";
 import colors from "../../constants/colors";
 import Slider from "@react-native-community/slider";
 import { device } from "../../constants/device";
 import { useDispatch, useSelector } from "react-redux";
-import { setCurrentSound, setDuration, setIsMiniPlayer, setIsPlayScreen, setIsPlayer, setIsPlaying, setNextPress, setPlayValue, setPosition, setSoundUrl } from "../../redux/slices/playerSlice";
+import { setCurrentSound, setDuration, setIsMiniPlayer, setIsPlayScreen, setIsPlayer, setIsPlaying, setNextPress, setPlayValue, setPosition, setPrevPress, setSound, setSoundUrl } from "../../redux/slices/playerSlice";
 
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 
 import { Audio } from 'expo-av';
 import EmptyImage from "../../constants/EmptyImage";
+import { getPost } from "../../redux/actions/postApi";
 
 export default function MiniPlayer(props) {
-    const { sound, loadSound, switchToNewSound } = props
+    // const { switchToNewSound } = props
+    const sound = useSelector((state) => state.player.sound);
 
     const navigation = useNavigation();
 
     // const [miniPlayerOpacity, setMiniPlayerOpacity] = useState(1);
     const dispatch = useDispatch();
+    const isFocused = useIsFocused();
     // const [sound, setSound] = useState(null);
     const detailPost = useSelector((state) => state.post.detailPost);
     // const soundUrl = useSelector((state) => state.player.soundUrl);
@@ -39,63 +42,69 @@ export default function MiniPlayer(props) {
     const isMiniPlayer = useSelector((state) => state.player.isMiniPlayer);
     const currentSound = useSelector((state) => state.player.currentSound);
     const isPlaying = useSelector((state) => state.player.isPlaying);
+    const isPlayScreen = useSelector((state) => state.player.isPlayScreen);
+    const dataSound = useSelector((state) => state.player.dataSound);
+    const access_token = useSelector((state) => state.auth.login.access_token);
 
     const SliderData = useSelector((state) => state.home.slider.data);
 
-    // async function playSound() {
-    //     try {
-    //         await Audio.setAudioModeAsync({
-    //             staysActiveInBackground: true,
-    //             interruptionModeAndroid: 1,
-    //             shouldDuckAndroid: true,
-    //             interruptionModeIOS: 1,
-    //             playsInSilentModeIOS: true,
-    //         });
-    //         const { sound } = await Audio.Sound.createAsync(
-    //             { uri:  soundUrl},
-    //             {
-    //                 shouldPlay: true,
-    //                 isLooping: true,
-    //             },
-    //         );
-    //         setSound(sound);
-    //         dispatch(setPlayValue(true));
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // }
-    // const unloadSound = async () => {
-    //     try {
-    //         await sound.unloadAsync();
-    //         // setSound(null);
-    //         setIsPlaying(false);
-    //     } catch (error) {
-    //         console.log('Error unloading audio: ', error);
-    //     }
-    // };
-
-    // const playSound = async () => {
-    //     if (detailPost !== null) {
-    //         await loadSound(detailPost.audio);
-    //         console.log("phát ở mini");
-    //     }
-    // };
-    // useEffect(() => {
-    //     if (detailPost && !isPlayer) {
-    //         // unloadSound();
-    //         playSound();
-    //         console.log("phát nhạc")
-    //     }
-    //     // return () => {
-    //     //     if (sound != null) {
-    //     //         // sound.stopAsync();
-    //     //         sound.unloadAsync();
-    //     //     }
-    //     // };
-    // }, [detailPost]);
+    async function loadSound(uri) {
+        try {
+            // if (sound) {
+            //     await sound.unloadAsync();
+            //     sound = null;
+            //   }
+            await Audio.setAudioModeAsync({
+                staysActiveInBackground: true,
+                interruptionModeAndroid: 1,
+                shouldDuckAndroid: true,
+                interruptionModeIOS: 1,
+                playsInSilentModeIOS: true,
+            });
+            if (sound) {
+                await sound.unloadAsync();
+                dispatch(setSound(null));
+            }
+            const { sound: song } = await Audio.Sound.createAsync(
+                { uri },
+                {
+                    shouldPlay: true,
+                    isLooping: true,
+                    positionMillis: position,
+                },
+                onPlaybackStatusUpdate
+            );
+            dispatch(setSound(song));
+            // dispatch(setPlayValue(true));
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     useEffect(() => {
-        if (sound != null) {
+        if (isPlaying && isFocused) {
+            playSound();
+            console.log("mini player");
+            dispatch(setIsPlaying(false));
+        }
+    }, [detailPost.audio]);
+
+    const playSound = async () => {
+        if (detailPost !== null) {
+            await loadSound(detailPost.audio);
+            console.log("phát đầu tiên mini player");
+        }
+    };
+
+    function onPlaybackStatusUpdate(status) {
+        if (status.isPlaying) {
+            dispatch(setPosition(status.positionMillis));
+            dispatch(setDuration(status.durationMillis));
+        }
+    }
+
+    useEffect(() => {
+        if (sound != null && isFocused) {
             if (playValue) {
                 resumeSound();
             } else {
@@ -104,9 +113,9 @@ export default function MiniPlayer(props) {
         }
     }, [playValue]);
 
-    function onSliderValueChange(value) {
+    async function onSliderValueChange(value) {
         if (sound != null) {
-            sound.setPositionAsync(value);
+            await sound.setPositionAsync(value);
             dispatch(setPosition(value));
         }
     }
@@ -130,68 +139,44 @@ export default function MiniPlayer(props) {
             await sound.playAsync();
             dispatch(setPlayValue(true));
         }
-        // if (isPlayer) {
-        //     playSound();
-        //     dispatch(setPlayValue(true));
-        //     dispatch(setIsPlayer(false));
-        // }
+
+    }
+
+    async function switchToNewSound(uri) {
+        try {
+            if (sound != null) {
+                await sound.unloadAsync();
+                dispatch(setSound(null));
+            }
+            if (uri) {
+                await getPost(uri, dispatch, access_token);
+            }
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     function onNextPress() {
-        // console.log("currentNext: " + currentTrack.id)
-        const currentIndex = SliderData.findIndex((item) => item.index === currentSound);
-        const nextTrack = SliderData[currentIndex + 1];
-        console.log("soundnext: " + nextTrack._id);
+        const currentIndex = dataSound.findIndex((item) => item.index === currentSound);
+        const nextTrack = dataSound[currentIndex + 1];
         if (nextTrack) {
             switchToNewSound(nextTrack._id);
             dispatch(setCurrentSound(nextTrack.index));
             dispatch(setPosition(0));
-            dispatch(setNextPress(true))
+            dispatch(setIsPlaying(true));
         }
     }
 
     function onPrevPress() {
-        // console.log("currentPrev: " + currentTrack.id)
-        const currentIndex = SliderData.findIndex((item) => item.index === currentSound);
-        const prevTrack = SliderData[currentIndex - 1];
+        const currentIndex = dataSound.findIndex((item) => item.index === currentSound);
+        const prevTrack = dataSound[currentIndex - 1];
         if (prevTrack) {
             switchToNewSound(prevTrack._id);
             dispatch(setCurrentSound(prevTrack.index));
             dispatch(setPosition(0));
-            dispatch(setNextPress(true))
+            dispatch(setIsPlaying(true));
         }
     }
-
-    // const nextPress = useSelector((state) => state.player.nextPress);
-
-    // useEffect(() => {
-    //     if (nextPress) {
-    //         sound.unloadAsync();
-    //         loadSound(detailPost.audio);
-    //         console.log("ductu1");
-    //         dispatch(setNextPress(false));
-    //     }
-    //     // return () => {
-    //     //     if (sound != null) {
-    //     //         sound.unloadAsync();
-    //     //         // setSound(null);
-    //     //     }
-    //     // };
-    // }, [nextPress]);
-
-    const handleScroll = (event) => {
-        const scrollX = event.nativeEvent.contentOffset.x;
-        const threshold = 100; //ngưỡng tối đa
-
-        if (scrollX > threshold) {
-            // setMiniPlayerOpacity(0);
-            // console.log("đã biến mất");
-        } else {
-            // setMiniPlayerOpacity(1);
-            // console.log("chưa biến mất");
-        }
-    };
-
     // useEffect(() => {
     //     return sound
     //         ? () => {
@@ -201,27 +186,40 @@ export default function MiniPlayer(props) {
     //         : undefined;
     // }, [sound]);
 
-    // const panResponder = useRef(
-    //     PanResponder.create({
-    //         onMoveShouldSetPanResponder: () => true,
-    //         onPanResponderMove: (evt, gestureState) => {
-    //             // Xử lý sự kiện chuyển động
-    //             if (gestureState.dx > 50 || gestureState.dx < -50) {
-    //                 dispatch(setIsMiniPlayer(false));
-    //                 if (sound != null) {
-    //                     sound.unloadAsync();
-    //                 }
-    //                 console.log(sound);
-    //             }
-    //         },
-    //         onPanResponderRelease: (evt, gestureState) => {
-    //             // Xử lý sự kiện khi thả tay
-    //         },
-    //     })
-    // ).current;
+    const [pan] = useState(new Animated.ValueXY());
+    const panResponder = PanResponder.create({
+        onMoveShouldSetPanResponderCapture: () => true,
+        onPanResponderGrant: () => {
+            pan.setOffset({
+                x: pan.x._value,
+                y: pan.y._value,
+            });
+        },
+        onPanResponderMove: Animated.event(
+            [null, { dx: pan.x }],
+            {
+                useNativeDriver: false,
+                listener: (event, gestureState) => {
+                    if (gestureState.dx > 30 || gestureState.dx < -30) {
+                        // Kéo sang phải hoặc trái hơn 50px thì tắt nhạc
+                        sound.unloadAsync();
+                        dispatch(setSound(null));
+                        dispatch(setPosition(0));
+                        dispatch(setIsMiniPlayer(false));
+                    }
+                },
+            }
+        ),
+        onPanResponderRelease: () => {
+            pan.flattenOffset();
+        },
+    });
 
     return (
-        <View>
+        <Animated.View
+            style={[{ transform: [{ translateX: pan.x }] }]}
+            {...panResponder.panHandlers}
+        >
             <ImageBackground
                 source={{
                     uri: detailPost.image,
@@ -242,15 +240,15 @@ export default function MiniPlayer(props) {
                             // if (playValue) {
                             //     dispatch(setIsPlayer(false));
                             // };
-                            dispatch(setIsPlayScreen(true));
+                            navigation.navigate('PlayerScreen');
+                            console.log("chuyển màn");
                         }}
-
                     >
                         <View style={stylesMiniPlayer.miniplayerAvatar}>
                             <Image
                                 style={{
-                                    width: device.width - 340,
-                                    height: device.width - 340,
+                                    width: device.width * 0.15,
+                                    height: device.width * 0.15,
                                     borderRadius: 7,
                                 }}
                                 source={{
@@ -259,50 +257,51 @@ export default function MiniPlayer(props) {
                             />
                         </View>
                         <View style={stylesMiniPlayer.miniplayerTrackDetails}>
-                            <Text style={{ fontWeight: "600", fontSize: 15, }}>{detailPost.title}</Text>
-                            <Text style={{ fontSize: 13 }}>{detailPost.owner.fullName}</Text>
+                            <Text style={{ fontWeight: "600", fontSize: 15, }} numberOfLines={1} ellipsizeMode='tail'>{detailPost.title}</Text>
+                            <Text style={{ fontSize: 13 }} numberOfLines={1} ellipsizeMode='tail'>{detailPost.owner.fullName}</Text>
+                        </View>
+                        <View style={stylesMiniPlayer.miniplayerControls}>
+                            <TouchableOpacity onPress={() => onPrevPress()}>
+                                <Image
+                                    style={{ width: device.width / 16, height: device.width / 16 }}
+                                    source={{
+                                        uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fprev.png?alt=media&token=2002d71f-989c-47de-a1da-93caf349d2e8",
+                                    }}
+                                />
+                            </TouchableOpacity>
+                            {playValue ? (
+                                <TouchableOpacity onPress={() => pauseSound()}>
+                                    <Image
+                                        style={{ width: device.width / 10, height: device.width / 10 }}
+                                        source={{
+                                            uri:
+                                                "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fico_pause_playersc.png?alt=media&token=4c757d52-ce70-456a-aa36-c8c581af7be6",
+                                        }}
+                                    />
+                                </TouchableOpacity>
+                            ) : (
+                                <TouchableOpacity onPress={() => resumeSound()}>
+                                    <Image
+                                        style={{ width: device.width / 10, height: device.width / 10 }}
+                                        source={{
+                                            uri:
+                                                "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fplay.png?alt=media&token=332dfb0f-748b-4867-b4b9-bc63c3d0e881",
+                                        }}
+                                    />
+                                </TouchableOpacity>
+                            )}
+
+                            <TouchableOpacity onPress={() => onNextPress()}>
+                                <Image
+                                    style={{ width: device.width / 16, height: device.width / 16 }}
+                                    source={{
+                                        uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fnext.png?alt=media&token=808063fd-1278-4e5d-ba5a-46d3e750f1f3",
+                                    }}
+                                />
+                            </TouchableOpacity>
                         </View>
                     </TouchableOpacity>
-                    <View style={stylesMiniPlayer.miniplayerControls}>
-                        <TouchableOpacity onPress={() => onPrevPress()}>
-                            <Image
-                                style={{ width: device.width - 370, height: device.width - 370 }}
-                                source={{
-                                    uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Tu%2Fbxs_skip-next-circle.png?alt=media&token=10b12ffd-b779-4fdf-8376-b1f8baa92256",
-                                }}
-                            />
-                        </TouchableOpacity>
-                        {playValue ? (
-                            <TouchableOpacity onPress={() => pauseSound()}>
-                                <Image
-                                    style={{ width: device.width - 350, height: device.width - 350 }}
-                                    source={{
-                                        uri:
-                                            "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/icon%2Fpause.png?alt=media&token=ae6b74e7-ac06-40a8-a1a7-09d3380e2863",
-                                    }}
-                                />
-                            </TouchableOpacity>
-                        ) : (
-                            <TouchableOpacity onPress={() => resumeSound()}>
-                                <Image
-                                    style={{ width: device.width - 350, height: device.width - 350 }}
-                                    source={{
-                                        uri:
-                                            "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Tu%2FGroup%2066.png?alt=media&token=5fb2d1e2-48a0-43bb-9773-ce3424e388f4",
-                                    }}
-                                />
-                            </TouchableOpacity>
-                        )}
 
-                        <TouchableOpacity onPress={() => onNextPress()}>
-                            <Image
-                                style={{ width: device.width - 370, height: device.width - 370 }}
-                                source={{
-                                    uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Tu%2Ffluent_next-32-regular.png?alt=media&token=db668d13-33de-4f5b-99bd-c5723dd21f13",
-                                }}
-                            />
-                        </TouchableOpacity>
-                    </View>
                 </View>
                 <Slider
                     style={stylesMiniPlayer.progressBar}
@@ -312,26 +311,28 @@ export default function MiniPlayer(props) {
                     // minimumTrackTintColor= 'red'
                     maximumTrackTintColor={colors.black}
                     thumbTintColor="black"
-
                     // disabled={true}
                     onValueChange={onSliderValueChange}
                 />
             </ImageBackground >
-        </View >
+        </Animated.View >
     );
 }
 
 const stylesMiniPlayer = StyleSheet.create({
     miniplayer: {
         // height: device.height / 10,
-        flexDirection: "row"
+        flexDirection: "row",
+        flex: 1
     },
     miniplayerBackground: {
         // flexDirection: "row",
         backgroundColor: "#fff",
         paddingVertical: 10,
         width: "100%",
-        display: 'flex',
+        // display: 'flex',
+        // display: 'flex',
+        // height: device.height / 10,
     },
 
     miniplayerAvatar: {
@@ -339,13 +340,17 @@ const stylesMiniPlayer = StyleSheet.create({
         justifyContent: "flex-start",
         marginHorizontal: 16,
         alignSelf: "center",
+
     },
 
     miniplayerTrackDetails: {
         // flex: 4,
-        justifyContent: "space-between",
+        justifyContent: "center",
         // marginLeft: 10,
+        maxWidth: device.width / 2.4,
         alignItems: "flex-start",
+        width: '45%',
+
     },
 
     miniplayerControls: {
@@ -354,10 +359,12 @@ const stylesMiniPlayer = StyleSheet.create({
         alignItems: "center",
         justifyContent: "space-evenly",
         // marginRight: 16,
+        // width: '35%',
     },
 
     progressBar: {
         width: device.width,
+        // height: device.height / 20,
         // flexDirection: "row",
         // alignSelf: "center",
         opacity: 0.6,

@@ -3,7 +3,9 @@ import { createSlice } from '@reduxjs/toolkit';
 const playerSlice = createSlice({
     name: 'player',
     initialState: {
-        dataSound: [], 
+        sound: null,
+        sound_id: null,
+        dataSound: [],
         currentSound: 0,
         playValue: false,  // dừng, phát
         position: 0,
@@ -16,6 +18,14 @@ const playerSlice = createSlice({
         prevPress: false,
     },
     reducers: {
+        setSound(state, action) {
+            // const { uri, shouldPlay, isLooping, positionMillis } = action.payload;
+            // state.sound = { uri, shouldPlay, isLooping, positionMillis };
+            state.sound = action.payload;
+        },
+        setSoundId(state, action) {
+            state.sound_id = action.payload;
+        },
         setDataSound(state, action) {
             state.dataSound = action.payload;
         },
@@ -43,16 +53,20 @@ const playerSlice = createSlice({
         setIsPlaying(state, action) {
             state.isPlaying = action.payload;
         },
-        setNextPress(state, action) {
-            state.nextPress = action.payload;
+        setNextPress: (state) => {
+            const nextIndex = (state.currentSound + 1) % state.dataSound.length;
+            state.currentSound = nextIndex;
         },
-        setPrevPress(state, action) {
-            state.prevPress = action.payload;
+        setPrevPress: (state) => {
+            const prevIndex = state.currentSound - 1;
+            state.currentSound = prevIndex < 0 ? state.dataSound.length - 1 : prevIndex;
         },
     },
 });
 
 export const {
+    setSound,
+    setSoundId,
     setDataSound,
     setCurrentSound,
     setPlayValue,

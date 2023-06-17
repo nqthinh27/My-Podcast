@@ -29,6 +29,7 @@ import firebase from '../../config';
 import { getPublicDataAPI, postDataAPI } from "../ultis/fetchData";
 import { device } from "../constants/device";
 import Loading from "../components/Loading";
+import { darkPost, lightPost } from "../constants/darkLight/themePost";
 
 function Post(props) {
     const navigation = useNavigation();
@@ -50,6 +51,12 @@ function Post(props) {
             setKeyboardOpen(false);
         }
     };
+
+    const currentLanguage = useSelector(
+        (state) => state.language.currentLanguage
+    );
+    const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
+
 
     const handleKeyboardDidShow = () => {
         setKeyboardOpen(true);
@@ -168,12 +175,21 @@ function Post(props) {
         const post = await postDataAPI('post', newPost, access_token);
         setIsLoading(false);
         alert('Đăng bài thành công');
+        const recipientsAPI = await getPublicDataAPI(`follow/${currentUser._id}/followers`);
+        const recipients = recipientsAPI.data.follower;
+        const notifies = {
+            recipients: recipients,
+            content: `@${currentUser.userName} đã đăng tải một bài viết mới: ${title}`,
+            image: imageUrl,
+        }
+        await postDataAPI(`/notify/createMany`, notifies, access_token);
     }
 
     if (!currentUser) return (<View></View>);
 
     return (
-        <SafeAreaView style={[GlobalStyles.customSafeArea, { backgroundColor: '#fff' }]}>
+        <SafeAreaView style={[GlobalStyles.customSafeArea, isDarkTheme ? darkPost.background : lightPost.background]}>
+
             <View style={styles.postHeader}>
                 <View style={styles.postAvatar}>
                     <Image
@@ -188,18 +204,18 @@ function Post(props) {
                     />
                     <View style={{ flexDirection: 'column' }}>
                         <Text
-                            style={{
+                            style={[{
                                 fontSize: 17,
                                 marginLeft: 8,
                                 fontWeight: "600",
-                            }}
+                            }, isDarkTheme ? darkPost.text : lightPost.text]}
                         >
                             {currentUser.fullName}
                         </Text>
-                        <Text style={{
+                        <Text style={[{
                             fontSize: 15,
                             marginLeft: 8,
-                        }}>@{currentUser.userName}</Text>
+                        }, isDarkTheme ? darkPost.text : lightPost.text]}>@{currentUser.userName}</Text>
                     </View>
                 </View>
 
@@ -214,7 +230,7 @@ function Post(props) {
                                 fontWeight: "500",
                             }}
                         >
-                            Chia sẻ
+                            {currentLanguage === "vi" ? "Chia sẻ" : "Share"}
                         </Text>
                     </View>
                     :
@@ -229,18 +245,19 @@ function Post(props) {
                                 fontWeight: "500",
                             }}
                         >
-                            Chia sẻ
+                            {currentLanguage === "vi" ? "Chia sẻ" : "Share"}
                         </Text>
                     </TouchableOpacity>}
             </View>
 
-            <View style={styles.postContainer}>
+            <View style={[styles.postContainer, isDarkTheme ? darkPost.background : lightPost.background]}>
                 <View style={styles.postTextQuestion}>
                     <TextInput
                         value={title}
                         onChangeText={setTitle}
-                        style={{ fontSize: 18, marginBottom: 10, fontWeight: '500', marginRight: 32 }}
-                        placeholder="Nhập tiêu đề của Podcast"
+                        style={[{ fontSize: 18, marginBottom: 10, fontWeight: '500', marginRight: 32 }, isDarkTheme ? darkPost.text : lightPost.text]}
+                        placeholder={currentLanguage === "vi" ? "Nhập tiêu đề của Podcast" : "Enter the title of the podcast"}
+                        placeholderTextColor={isDarkTheme ? darkPost.placeholder.color : lightPost.placeholder.color}
                     ></TextInput>
 
                     <TouchableOpacity style={{ flex: 1 }} onPress={handlePressOutside} activeOpacity={1.0}>
@@ -248,12 +265,13 @@ function Post(props) {
                             <TextInput
                                 value={content}
                                 onChangeText={setContent}
-                                style={{
+                                style={[{
                                     fontSize: 16,
                                     minHeight: 100,
                                     marginRight: 32
-                                }}
-                                placeholder="Nhập dòng trạng thái đăng tải"
+                                }, isDarkTheme ? darkPost.text : lightPost.text]}
+                                placeholder={currentLanguage === "vi" ? "Nhập dòng trạng thái đăng tải" : "Enter the post status line"}
+                                placeholderTextColor={isDarkTheme ? darkPost.placeholder.color : lightPost.placeholder.color}
                                 // autoCapitalize="words"
                                 multiline={true}
                                 onFocus={handleKeyboardDidShow}
@@ -301,7 +319,7 @@ function Post(props) {
                                     setModalVisible(!modalVisible);
                                 }}
                             >
-                                <View style={styles.modalView}>
+                                <View style={[styles.modalView, isDarkTheme ? darkPost.background : lightPost.background]}>
                                     <ScrollView>
                                         <CheckboxGroup
                                             callback={(selected) => {
@@ -320,11 +338,11 @@ function Post(props) {
                                                     }
                                                 })
                                             }
-                                            labelStyle={{
+                                            labelStyle={[{
                                                 color: "#333",
                                                 alignSelf: "center",
                                                 fontSize: 16,
-                                            }}
+                                            }, isDarkTheme ? darkPost.text : lightPost.text]}
                                             rowStyle={{
                                                 flexDirection: "row",
                                             }}
@@ -343,7 +361,7 @@ function Post(props) {
                                         }
                                     >
                                         <Text style={styles.textStyle}>
-                                            Ẩn chủ đề
+                                            {currentLanguage === "vi" ? "Ẩn chủ đề" : "Hide topic"}
                                         </Text>
                                     </Pressable>
                                 </View>
@@ -356,14 +374,14 @@ function Post(props) {
                                 }}
                             > */}
                             <Text
-                                style={{
+                                style={[{
                                     color: "black",
                                     // fontWeight: "bold",
                                     // textAlign: "center",
                                     fontSize: 16,
-                                }}
+                                }, isDarkTheme ? darkPost.text : lightPost.text]}
                             >
-                                Thêm chủ đề Podcast
+                                {currentLanguage === "vi" ? "Thêm chủ đề Podcast" : "Add Podcast topic"}
                             </Text>
                             {/* </Pressable> */}
 
@@ -407,8 +425,8 @@ function Post(props) {
                                 marginRight: 16,
                             }}
                         >
-                            <Text style={{ color: "black", fontSize: 16 }}>
-                                Thêm ảnh mô tả
+                            <Text style={[{ color: "black", fontSize: 16 }, isDarkTheme ? darkPost.text : lightPost.text]}>
+                                {currentLanguage === "vi" ? "Thêm ảnh mô tả" : "Add description image"}
                             </Text>
                             {image == null ?
                                 <EntypoIcon
@@ -449,8 +467,8 @@ function Post(props) {
                             }}
                         >
                             {/* {song && <Text>{song.name}</Text>} */}
-                            <Text style={{ color: "black", fontSize: 16 }}>
-                                Thêm tập tin âm thanh
+                            <Text style={[{ color: "black", fontSize: 16 }, isDarkTheme ? darkPost.text : lightPost.text]}>
+                                {currentLanguage === "vi" ? "Thêm tập tin âm thanh" : "Add audio file"}
                             </Text>
                             {audio == null ?
                                 <EntypoIcon
@@ -462,7 +480,7 @@ function Post(props) {
                     </TouchableOpacity>
                 </View>
             </View>
-            {isLoading && < Loading/>}
+            {isLoading && < Loading />}
         </SafeAreaView>
     );
 }

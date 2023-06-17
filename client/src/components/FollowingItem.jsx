@@ -1,6 +1,6 @@
 import Slider from '@react-native-community/slider';
 import React, { useEffect, useState } from 'react'
-import { View, StyleSheet, Text, Image, Dimensions, TouchableOpacity, SafeAreaView, TextInput } from 'react-native'
+import { View, StyleSheet, Text, Image, Dimensions, TouchableOpacity, SafeAreaView, TextInput, ScrollView } from 'react-native'
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useDispatch, useSelector } from 'react-redux';
 import colors from '../constants/colors'
@@ -12,14 +12,19 @@ import { device } from '../constants/device';
 import { setIsPlaying } from '../redux/slices/playerSlice';
 import { Audio } from "expo-av";
 import { setSoundCurrent } from '../redux/slices/followingSlice';
+import { setCommentCurrent, setCommentText, setIsComment } from '../redux/slices/commentSlice';
+import { createComment, getCommentData } from '../redux/actions/commentApi';
+import Comment from './Comment';
+import CommentFollowing from './CommentFollowing';
 export default function FollowingItem(props) {
     const userLikedList = useSelector((state) => state.library.likedList.data);
     const IsLiked = userLikedList.some(item => item._id == props._id);
 
-    const dispatch = useDispatch;
+    const dispatch = useDispatch();
     const navigation = useNavigation();
     const [like, setLike] = useState(IsLiked);
     const [currentLikes, setCurrentLikes] = useState(props.likes)
+    const [currentComments, setCurrentCommets] = useState(props.comments)
     const [value, setValue] = useState(0);
     const [play, setPlay] = useState(true);
     const [volume, setVolume] = useState(true);
@@ -27,6 +32,24 @@ export default function FollowingItem(props) {
     const otherUser = useSelector((state) => state.profile.otherUser.data);
     const currentUser = useSelector((state) => state.auth.login.currentUser);
     const access_token = useSelector((state) => state.auth.login.access_token);
+    const commentText = useSelector((state) => state.comment.comment.commentText);
+    const isComment = useSelector((state) => state.comment.isComment);
+    const commentCurrent = useSelector((state) => state.comment.commentCurrent);
+    const CommentData = useSelector((state) => state.comment.commentData.data);
+    const isCommentPosted = useSelector((state) => state.comment.isCommentPosted);
+
+    const fetchCommentData = async () => {
+        console.log("cmt: " + commentCurrent);
+        await getCommentData(commentCurrent, dispatch);
+    }
+
+    useEffect(() => {
+        if (isComment && commentCurrent === props._id) {
+            fetchCommentData();
+            console.log("data comment");
+        }
+    }, [isComment]);
+
     const handleLike = async () => {
         if (!like) {
             await postDataAPI(`like/${props._id}/add`, null, access_token);
@@ -87,7 +110,7 @@ export default function FollowingItem(props) {
                 </View>
                 <View style={lightFollowingItem.followingItemInteract}>
                     <View style={lightFollowingItem.interact}>
-                        <View style={[lightFollowingItem.interactIcon, { alignItems: "center" }]}>
+                        <View style={{ flexDirection: 'row' }}>
                             <TouchableOpacity onPress={handleLike}>
                                 {(!like) && <Icon
                                     name="cards-heart-outline"
@@ -105,45 +128,84 @@ export default function FollowingItem(props) {
                             <View style={{}}>
                                 <Text style={{ color: isDarkTheme ? colors.white : colors.black }}> {currentLikes} Yêu Thích</Text>
                             </View>
-                            {/* <TouchableOpacity>
+                        </View>
+                        <View style={[lightFollowingItem.interactIcon]}>
+                            <TouchableOpacity style={{ flexDirection: 'row' }}
+                                onPress={() => {
+                                    dispatch(setIsComment(!isComment));
+                                    dispatch(setCommentCurrent(props._id));
+                                }}>
                                 <Icon
                                     name="comment-processing-outline"
                                     style={{ opacity: 0.8, paddingLeft: 10 }}
-                                    size={23}
+                                    size={20}
                                     color={isDarkTheme ? colors.white : colors.black}
                                 />
+                                <View style={{}}>
+                                    <Text style={{ color: isDarkTheme ? colors.white : colors.black }}>{currentComments}  </Text>
+                                </View>
                             </TouchableOpacity>
-                            <View style={{}}>
-                                <Text style={{ color: isDarkTheme ? colors.white : colors.black }}>{props.comments} Bình luận</Text>
-                            </View> */}
-                        </View>
-                        <View style={[lightFollowingItem.interactIcon, { alignItems: "center" }]}>
-                            <TouchableOpacity>
+                            <View style={[lightFollowingItem.interactIcon]}>
                                 <Icon
                                     name="headphones"
                                     style={{ opacity: 0.7 }}
-                                    size={23}
+                                    size={20}
                                     color={isDarkTheme ? colors.white : colors.black}
                                 />
-                            </TouchableOpacity>
-                            <Text style={{ color: isDarkTheme ? colors.white : colors.black }}> {props.views} Lượt nghe</Text>
+                                <Text style={{ color: isDarkTheme ? colors.white : colors.black }}>{props.views}</Text>
+                            </View>
                         </View>
                     </View>
+                    {isComment && props._id === commentCurrent &&
+                        <ScrollView>
+                            <View style={{
+                                backgroundColor: "#EFEFEF",
+                                // borderRadius: 10,
+                                marginTop: 10,
+                                marginHorizontal: 5,
+                                maxHeight: device.height / 6,
+                            }}>
+                                {CommentData.map((item, index) => {
+                                    return (
+                                        <TouchableOpacity
+                                            onPress={{}}
+                                            key={index}
+                                        >
+                                            <CommentFollowing item={item} />
+                                        </TouchableOpacity>
+                                    );
+                                })}
+                            </View>
+                        </ScrollView>
+                    }
                     <View style={isDarkTheme ? darkFollowingItem.interactComment : lightFollowingItem.interactComment}>
                         <TextInput
                             style={isDarkTheme ? darkFollowingItem.comment : lightFollowingItem.comment}
                             // autoFocus={false}
                             // value={searchValue}
+                            value={commentText}
                             placeholder="Thêm bình luận..."
+                            onChangeText={(text) => dispatch(setCommentText(text))}
                         // onChange={(event) => setSearchResult(event.target.value)}
                         // onFocus={handleSearch}
                         />
-                        <Icon
-                            name="send"
-                            style={lightFollowingItem.sendComment}
-                            size={20}
-                            color={colors.primary}
-                        />
+                        <TouchableOpacity
+                            style={{
+                                marginRight: 20,
+                                alignSelf: "center",
+                            }}
+                            onPress={() => {
+                                createComment(props._id, commentText, dispatch, access_token);
+                                setCurrentCommets(prevLikes => prevLikes + 1);
+                            }}
+                        >
+                            <Icon
+                                name="send"
+                                style={lightFollowingItem.sendComment}
+                                size={20}
+                                color={colors.primary}
+                            />
+                        </TouchableOpacity>
                     </View>
                     {/* <View style={lightFollowingItem.interactPlayTime}>
                         {isPlaying ? (

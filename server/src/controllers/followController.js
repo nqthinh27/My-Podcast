@@ -101,7 +101,7 @@ const followController = {
 
             const user = await Users.findById(req.params.id).populate({
                 path: 'following',
-                select: 'fullName userName avatar',
+                select: 'fullName userName avatar following posts',
                 options: {
                     skip,
                     limit: parseInt(limit)
@@ -113,8 +113,9 @@ const followController = {
                     fullName: item.fullName,
                     userName: item.userName,
                     avatar: item.avatar,
-                    followersLength: item.followers.length,
-                    postsLength: item.posts.length}
+                    followingLength: item.following.length,
+                    postsLength: item.posts.length
+                }
             })
             const totalFollowing = user.following.length;
             const totalPages = Math.ceil(totalFollowing / limit);

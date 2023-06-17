@@ -21,7 +21,7 @@ import TopTrendingItem from "../components/TopTrendingItem";
 // import { PlaylistData, RecommendData,  } from "../../dummyData";
 import { lightHome, darkHome, lightTrendingHome, darkTrendingHome } from "../constants/darkLight/themeHome"
 import MiniPlayer from "./Player/MiniPlayer";
-import { setIsMiniPlayer, setCurrentSound, setPosition, setDuration, setIsPlayScreen, setDataSound } from "../redux/slices/playerSlice";
+import { setIsMiniPlayer, setCurrentSound, setPosition, setDuration, setIsPlayScreen, setDataSound, setSound } from "../redux/slices/playerSlice";
 import { useNavigation } from "@react-navigation/native";
 import { fetchNewRelease, fetchSlider, fetchTopAuthor, fetchTopTrending } from "../redux/actions/homeApi";
 import TopAuthorItem from "../components/TopAuThorItem";
@@ -46,67 +46,17 @@ export default function Home(props) {
     const currentSound = useSelector((state) => state.player.currentSound);
     const isPlayScreen = useSelector((state) => state.player.isPlayScreen);
     const currentUser = useSelector((state) => state.auth.login.currentUser);
+    const access_token = useSelector((state) => state.auth.login.access_token);
     const playValue = useSelector((state) => state.player.playValue);
     const [currentIndex, setCurrentIndex] = useState(0);
     const flatListRef = useRef(null);
     const scrollViewRef = useRef(null);
     const screenWidth = Math.min(325);
     const position = useSelector((state) => state.player.position);
-
-
-    const [sound, setSound] = useState(null);
-
-    async function loadSound(uri) {
-        try {
-            // if (sound) {
-            //     await sound.unloadAsync();
-            //     sound = null;
-            //   }
-            await Audio.setAudioModeAsync({
-                staysActiveInBackground: true,
-                interruptionModeAndroid: 1,
-                shouldDuckAndroid: true,
-                interruptionModeIOS: 1,
-                playsInSilentModeIOS: true,
-            });
-            const { sound } = await Audio.Sound.createAsync(
-                { uri },
-                {
-                    shouldPlay: true,
-                    isLooping: true,
-                    positionMillis: position,
-                },
-                onPlaybackStatusUpdate
-            );
-            setSound(sound);
-            // dispatch(setPlayValue(true));
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
-    function onPlaybackStatusUpdate(status) {
-        if (status.isPlaying) {
-            dispatch(setPosition(status.positionMillis));
-            dispatch(setDuration(status.durationMillis));
-        }
-    }
-
-
-    async function switchToNewSound(uri) {
-        try {
-            if (sound != null) {
-                await sound.unloadAsync();
-            }
-            if (uri) {
-                await getPost(uri, dispatch);
-
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
+    const sound = useSelector((state) => state.player.sound);
+    const currentLanguage = useSelector(
+        (state) => state.language.currentLanguage
+    );
     const [isLoading, setIsLoading] = useState(false);
     const fetchHomeData = async () => {
         setIsLoading(true);
@@ -118,14 +68,16 @@ export default function Home(props) {
     }
     useEffect(() => {
         fetchHomeData();
-    }, []);
+        console.log("gọi data");
+    }, [SliderData, TopTrendingData, NewReleaseData, TopAuThorData]);
 
     const nextPress = useSelector((state) => state.player.nextPress);
 
     useEffect(() => {
+        console.log("gọi sound");
         return sound
-            ? () => {
-                sound.unloadAsync();
+            ? async () => {
+                await sound.unloadAsync();
                 console.log("sound đang");
             }
             : undefined;
@@ -143,40 +95,63 @@ export default function Home(props) {
     //       dispatch(setIsMiniPlayer(isMiniPlayerVisible));
     //     }
     //   }, [dispatch, navigation]);
+    // console.log("home");
+    useEffect(() => {
+        if (SliderData && SliderData.length > 0) {
+            const intervalId = setInterval(() => {
+                const nextIndex = (currentIndex + 1) % SliderData.length;
+                flatListRef.current.scrollToIndex({ index: nextIndex });
+                setCurrentIndex(nextIndex);
+            }, 2000);
+
+            return () => clearInterval(intervalId);
+        }
+        console.log("tự nhảy bài SliderData");
+
+    });
 
     return (
         <SafeAreaView style={[GlobalStyles.customSafeArea, { backgroundColor: isDarkTheme ? darkHome.wrapper.backgroundColor : lightHome.wrapper.backgroundColor }]}>
             {/* <NavigationEvents onDidFocus={()=> this.setState({})} /> */}
-            {!isPlayScreen ? <ScrollView>
+            {/* {!isPlayScreen &&  */}
+            <ScrollView>
                 {/* ==========================================HEADER========================================== */}
                 <HeaderUI />
-
                 {/* ==========================================Slide bar========================================== */}
                 <FlatList
                     ref={flatListRef}
                     horizontal
                     style={isDarkTheme ? darkHome.wrapper : lightHome.wrapper}
                     data={SliderData}
+                    onScrollToIndexFailed={(info) => {
+                        const wait = new Promise(resolve => setTimeout(resolve, 500));
+                        wait.then(() => {
+                            flatListRef.current?.scrollToIndex({
+                                index: info.index,
+                                animated: true,
+                            });
+                        });
+                    }}
                     renderItem={({ item }) => {
                         return (
                             <TouchableOpacity
                                 onPress={async () => {
-                                    if (item.index != currentSound && sound != null) {
+                                    if (item.index != currentSound) {
                                         // await sound.unloadAsync();
-                                        setSound(null)
+                                        dispatch(setSound(null));
                                         dispatch(setPosition(0));
                                         dispatch(setDuration(0));
                                         // dispatch(setIsPlaying(true));
                                         dispatch(setIsMiniPlayer(false));
                                         console.log("home");
                                     }
-                                    await getPost(item._id, dispatch);
+                                    await getPost(item._id, dispatch, access_token, navigation.navigate);
                                     // if (isMiniPlayer) {
                                     //     setDetailPost(null);
                                     // }
                                     dispatch(setDataSound(SliderData));
                                     dispatch(setCurrentSound(item.index));
-                                    dispatch(setIsPlayScreen(true))
+                                    // dispatch(setIsPlayScreen(true))
                                     // dispatch(setCurrentSound(item._id));
                                 }}
                             >
@@ -190,7 +165,7 @@ export default function Home(props) {
                 />
 
                 <TouchableOpacity style={lightHome.coverAll}>
-                    <Text style={isDarkTheme ? darkHome.title : lightHome.title}>Bảng xếp hạng</Text>
+                    <Text style={isDarkTheme ? darkHome.title : lightHome.title}>{currentLanguage === "vi" ? "Bảng xếp hạng" : "Charts"}</Text>
                     {/* <Text style={isDarkTheme ? darkHome.title : lightHome.title}>Bảng xếp hạng</Text> */}
                     <Icon
                         name='chevron-right'
@@ -216,18 +191,18 @@ export default function Home(props) {
                                             onPress={async () => {
                                                 if (item.index != currentSound) {
                                                     // await sound.unloadAsync();
-                                                    setSound(null)
+                                                    dispatch(setSound(null));
                                                     dispatch(setPosition(0));
                                                     dispatch(setDuration(0));
                                                     dispatch(setIsMiniPlayer(false));
                                                 }
-                                                await getPost(item._id, dispatch);
+                                                await getPost(item._id, dispatch, access_token, navigation.navigate);
                                                 // if (isMiniPlayer) {
                                                 //     setDetailPost(null);
                                                 // }
                                                 dispatch(setDataSound(TopTrendingData));
                                                 dispatch(setCurrentSound(item.index));
-                                                dispatch(setIsPlayScreen(true))
+                                                // dispatch(setIsPlayScreen(true))
                                                 // dispatch(setCurrentSound(item._id));
                                             }}
                                             key={index}
@@ -251,18 +226,18 @@ export default function Home(props) {
                                             onPress={async () => {
                                                 if (item.index != currentSound) {
                                                     // await sound.unloadAsync();
-                                                    setSound(null)
+                                                    dispatch(setSound(null));
                                                     dispatch(setPosition(0));
                                                     dispatch(setDuration(0));
                                                     dispatch(setIsMiniPlayer(false));
                                                 }
-                                                await getPost(item._id, dispatch);
+                                                await getPost(item._id, dispatch, access_token, navigation.navigate);
                                                 // if (isMiniPlayer) {
                                                 //     setDetailPost(null);
                                                 // }
                                                 dispatch(setDataSound(TopTrendingData));
                                                 dispatch(setCurrentSound(item.index));
-                                                dispatch(setIsPlayScreen(true))
+                                                // dispatch(setIsPlayScreen(true))
                                                 // dispatch(setCurrentSound(item._id));
                                             }}
                                             key={index}
@@ -286,18 +261,18 @@ export default function Home(props) {
                                             onPress={async () => {
                                                 if (item.index != currentSound) {
                                                     // await sound.unloadAsync();
-                                                    setSound(null)
+                                                    dispatch(setSound(null));
                                                     dispatch(setPosition(0));
                                                     dispatch(setDuration(0));
                                                     dispatch(setIsMiniPlayer(false));
                                                 }
-                                                await getPost(item._id, dispatch);
+                                                await getPost(item._id, dispatch, access_token, navigation.navigate);
                                                 // if (isMiniPlayer) {
                                                 //     setDetailPost(null);
                                                 // }
                                                 dispatch(setDataSound(TopTrendingData));
                                                 dispatch(setCurrentSound(item.index));
-                                                dispatch(setIsPlayScreen(true))
+                                                // dispatch(setIsPlayScreen(true))
                                                 // dispatch(setCurrentSound(item._id));
                                             }}
                                             key={index}
@@ -318,7 +293,7 @@ export default function Home(props) {
 
                 {/* ==========================================Mới phát hành========================================== */}
                 <TouchableOpacity style={lightHome.coverAll}>
-                    <Text style={[isDarkTheme ? darkHome.title : lightHome.title, lightHome.blank]}>Mới phát hành</Text>
+                    <Text style={[isDarkTheme ? darkHome.title : lightHome.title, lightHome.blank]}>{currentLanguage === "vi" ? "Mới phát hành" : "New releases"}</Text>
                     <Icon
                         name='chevron-right'
                         style={{ opacity: 1, marginLeft: 8, marginTop: 13 }}
@@ -336,18 +311,18 @@ export default function Home(props) {
                                 onPress={async () => {
                                     if (item.index != currentSound) {
                                         // await sound.unloadAsync();
-                                        setSound(null)
+                                        dispatch(setSound(null));
                                         dispatch(setPosition(0));
                                         dispatch(setDuration(0));
                                         dispatch(setIsMiniPlayer(false));
                                     }
-                                    await getPost(item._id, dispatch);
+                                    await getPost(item._id, dispatch, access_token, navigation.navigate);
                                     // if (isMiniPlayer) {
                                     //     setDetailPost(null);
                                     // }
                                     dispatch(setDataSound(NewReleaseData));
                                     dispatch(setCurrentSound(item.index));
-                                    dispatch(setIsPlayScreen(true))
+                                    // dispatch(setIsPlayScreen(true))
                                     // dispatch(setCurrentSound(item._id));
                                 }}
                                 key={index}
@@ -362,7 +337,7 @@ export default function Home(props) {
                 </ScrollView>
                 {/* ==========================================Tác giả nổi bật==========================================*/}
                 <TouchableOpacity style={[lightHome.coverAll, { marginTop: 16 }]}>
-                    <Text style={isDarkTheme ? darkHome.title : lightHome.title}>Tác giả nổi bật</Text>
+                    <Text style={isDarkTheme ? darkHome.title : lightHome.title}>{currentLanguage === "vi" ? "Tác giả nổi bật" : "Featured author"}</Text>
                     <Icon
                         name='chevron-right'
                         style={{ opacity: 1, marginLeft: 8 }}
@@ -388,44 +363,10 @@ export default function Home(props) {
                     })}
                 </ScrollView>
             </ScrollView>
-                :
-                <PlayerScreen
-                    sound={sound}
-                    loadSound={loadSound}
-                    switchToNewSound={switchToNewSound}>
-                </PlayerScreen>
-            }
-            {isMiniPlayer && <MiniPlayer
-                // avtUrl={detailPost.image}
-                // tittle={detailPost.title}
-                // author={detailPost.owner.fullName}
-                sound={sound}
-                loadSound={loadSound}
-                switchToNewSound={switchToNewSound}
-            />}
-            {isLoading && <Loading/>}
+            {/* } */}
+            {/* {isPlayScreen && <PlayerScreen />} */}
+            {isMiniPlayer && <MiniPlayer />}
+            {isLoading && <Loading />}
         </SafeAreaView>
     );
 }
-
-const trendingStyles = StyleSheet.create({
-    wrapper: {
-        // margin: 11,
-        marginLeft: 16,
-        flex: 1,
-        // height: 225,
-        // alignItems: 'center'
-    },
-    contentWrapper: {
-        width: 'auto',
-        marginRight: 16,
-        borderRadius: 10,
-        backgroundColor: "#EDEDED",
-        // flexDirection: 'row',
-        // flexWrap: 'wrap',
-    },
-    contentSection: {
-        marginVertical: 6,
-        marginHorizontal: 12
-    },
-});

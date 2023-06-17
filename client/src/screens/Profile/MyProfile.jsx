@@ -17,14 +17,21 @@ import ProfilePodcast from "../../components/ProfilePodcast";
 import { useDispatch, useSelector } from "react-redux";
 // import { device } from "../constants/device";
 import { useNavigation } from "@react-navigation/native";
+import { darkProfile, lightProfile } from "../../constants/darkLight/themeProfile";
 import { getMyFollowers, getMyFollowing, getMyUserAllPosts, getMyUserTopPosts } from "../../redux/actions/authApi";
 import { formatNum, timeDiff } from "../../ultis/helper";
 import Loading from "../../components/Loading";
+import { setDuration, setIsMiniPlayer, setPosition, setSound, setSoundId } from "../../redux/slices/playerSlice";
+import { getPost } from "../../redux/actions/postApi";
+import MiniPlayer from "../Player/MiniPlayer";
 
 function MyProfile(props) {
     const dispatch = useDispatch();
+    const navigation = useNavigation();
     const { navigate, goBack } = useNavigation();
     const currentUser = useSelector((state) => state.auth.login.currentUser);
+    const sound_id = useSelector((state) => state.player.sound_id);
+    const sound = useSelector((state) => state.player.sound);
     const { fullName, userName, avatar, moblie, address, story, website, posts, following, followers } = currentUser;
     const [isLoading, setIsLoading] = useState(false);
     const fetchData = async () => {
@@ -40,9 +47,25 @@ function MyProfile(props) {
     }, [dispatch])
     const topPosts = useSelector((state) => state.auth.topPosts.data);
     const allPosts = useSelector((state) => state.auth.allPosts.data);
-    
+    const followingList = useSelector((state) => state.auth.following.data);
+    const followersList = useSelector((state) => state.auth.followers.data);
+    const currentLanguage = useSelector(
+        (state) => state.language.currentLanguage
+    );
+    const access_token = useSelector((state) => state.auth.login.access_token);
+    const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
+    const isMiniPlayer = useSelector((state) => state.player.isMiniPlayer);
+
     return (
-        <SafeAreaView style={[styles.myprofile, GlobalStyles.customSafeArea]}>
+        <SafeAreaView
+            style={[
+                styles.myprofile,
+                GlobalStyles.customSafeArea,
+                isDarkTheme
+                    ? darkProfile.profileContainer
+                    : lightProfile.profileContainer,
+            ]}
+        >
             <ScrollView>
                 <View style={styles.myprofileHeader}>
                     <Icon
@@ -51,9 +74,17 @@ function MyProfile(props) {
                         onPress={() => {
                             goBack();
                         }}
+                        color={isDarkTheme ? "white" : "black"}
                     />
-                    <Text style={styles.myprofileTextHeader}>
-                        Trang cá nhân
+                    <Text
+                        style={[
+                            styles.myprofileTextHeader,
+                            isDarkTheme
+                                ? darkProfile.profileText
+                                : lightProfile.profileText,
+                        ]}
+                    >
+                        {currentLanguage === "vi" ? "Trang cá nhân    " : "My profile    "}
                     </Text>
                     <Text> </Text>
                 </View>
@@ -73,22 +104,44 @@ function MyProfile(props) {
                         id={currentUser._id}
                     ></ProfileInfo>
 
-                    <TouchableOpacity style={styles.myprofileEditProfile} onPress={()=>navigate('EditProfile')}>
+                    <TouchableOpacity
+                        style={
+                            isDarkTheme
+                                ? darkProfile.myprofileEditProfile
+                                : lightProfile.myprofileEditProfile
+                        }
+                        onPress={() => navigate('EditProfile')}>
                         <Text style={styles.myprofileButtonEditprofile}>
-                            Chỉnh sửa trang cá nhân
+                            {currentLanguage === "vi" ? "Chỉnh sửa trang cá nhân" : "Edit my profile"}
                         </Text>
                     </TouchableOpacity>
+                    <View style={{ flexDirection: "row", alignItems: 'center', marginBottom: 10 }}>
+                        <Text
+                            style={[
+                                {
+                                    marginLeft: 16,
+                                    fontSize: 18,
+                                    fontWeight: "bold",
+                                    // marginBottom: 10,
+                                },
+                                isDarkTheme
+                                    ? darkProfile.profileText
+                                    : lightProfile.profileText,
+                            ]}
+                        >
+                            {currentLanguage === "vi" ? "Nổi bật" : "Popular"}
+                        </Text>
+                        <Icon
+                            name={"chevron-right"}
+                            size={18}
+                            style={{ paddingTop: 1 }}
+                            color={isDarkTheme ? "white" : "black"}
+                            onPress={() => {
+                                navigate("UIScreen");
+                            }}
+                        />
+                    </View>
 
-                    <Text
-                        style={{
-                            marginLeft: 16,
-                            fontSize: 18,
-                            fontWeight: "bold",
-                            marginBottom: 10,
-                        }}
-                    >
-                        Nổi bật
-                    </Text>
                     <View
                         style={{
                             marginHorizontal: 8,
@@ -100,26 +153,54 @@ function MyProfile(props) {
                         {topPosts.map((item, index) => {
                             return (
                                 <TouchableOpacity key={index}
-                                style={{ marginHorizontal: 8 }}>
+                                    onPress={async () => {
+                                        if (item._id != sound_id && sound != null) {
+                                            await sound.unloadAsync();
+                                            dispatch(setSound(null));
+                                            dispatch(setPosition(0));
+                                            dispatch(setDuration(0));
+                                            // dispatch(setIsPlaying(true));
+                                            dispatch(setIsMiniPlayer(false));
+                                            dispatch(setSoundId(item._id));
+                                        }
+                                        getPost(item._id, dispatch, access_token, navigate);
+                                    }}
+                                    style={{ marginHorizontal: 8 }}>
                                     <ProfilePodcast
                                         image={item.image}
                                         title={item.title}
-                                        des={formatNum(item.views) + " Lượt nghe"} />
+                                        des={formatNum(item.views) + " " + (currentLanguage === "vi" ? "Lượt nghe" : "Listened")} />
                                 </TouchableOpacity>
                             );
                         })}
                     </View>
 
-                    <Text
-                        style={{
-                            marginLeft: 16,
-                            fontSize: 18,
-                            fontWeight: "bold",
-                            marginBottom: 10,
-                        }}
-                    >
-                        Mới phát hành
-                    </Text>
+                    <View style={{ flexDirection: "row", alignItems: 'center', marginBottom: 10 }}>
+                        <Text
+                            style={[
+                                {
+                                    marginLeft: 16,
+                                    fontSize: 18,
+                                    fontWeight: "bold",
+                                    // marginBottom: 10,
+                                },
+                                isDarkTheme
+                                    ? darkProfile.profileText
+                                    : lightProfile.profileText,
+                            ]}
+                        >
+                            {currentLanguage === "vi" ? "Mới phát hành" : "New release"}
+                        </Text>
+                        <Icon
+                            name={"chevron-right"}
+                            size={18}
+                            style={{ paddingTop: 1 }}
+                            color={isDarkTheme ? "white" : "black"}
+                            onPress={() => {
+                                navigate("UIScreen");
+                            }}
+                        />
+                    </View>
 
                     <View
                         style={{
@@ -133,7 +214,19 @@ function MyProfile(props) {
                         {allPosts.map((item, index) => {
                             return (
                                 <TouchableOpacity key={index}
-                                style={{ marginHorizontal: 8 }}>
+                                    onPress={async () => {
+                                        if (item._id != sound_id && sound != null) {
+                                            await sound.unloadAsync();
+                                            dispatch(setSound(null));
+                                            dispatch(setPosition(0));
+                                            dispatch(setDuration(0));
+                                            // dispatch(setIsPlaying(true));
+                                            dispatch(setIsMiniPlayer(false));
+                                            dispatch(setSoundId(item._id));
+                                        }
+                                        getPost(item._id, dispatch, access_token, navigate);
+                                    }}
+                                    style={{ marginHorizontal: 8 }}>
                                     <ProfilePodcast
                                         image={item.image}
                                         title={item.title}
@@ -144,7 +237,8 @@ function MyProfile(props) {
                     </View>
                 </View>
             </ScrollView>
-            {isLoading && <Loading/>}
+            {isMiniPlayer && <MiniPlayer />}
+            {isLoading && <Loading />}
         </SafeAreaView>
     );
 }

@@ -13,7 +13,7 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import colors from "../constants/colors";
 import { TextInput } from "react-native-gesture-handler";
 
-function Comment(props) {
+function Comment({ item }) {
     return (
         <SafeAreaView
             style={{
@@ -35,7 +35,7 @@ function Comment(props) {
                             borderRadius: 100,
                         }}
                         source={{
-                            uri: "https://firebasestorage.googleapis.com/v0/b/mypodcast-88135.appspot.com/o/Tu%2FRectangle%2038.png?alt=media&token=780197d0-e51a-496c-8ff1-006b24341c50",
+                            uri: item.userId.avatar,
                         }}
                     />
                     <View>
@@ -44,7 +44,7 @@ function Comment(props) {
                                 fontWeight: "bold",
                             }}
                         >
-                            Mallicaa Basa
+                            {item.userId.fullName}
                         </Text>
                         <Text
                             style={{
@@ -52,16 +52,13 @@ function Comment(props) {
                                 color: "#9A9A9A",
                             }}
                         >
-                            27 thangs 12
+                            @{item.userId.userName}
                         </Text>
                     </View>
                 </View>
 
-                <Text style={{fontSize: 14}}>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Obcaecati nam amet quod, eveniet dolor repellat quibusdam
-                    excepturi quos, reiciendis pariatur fugiat at officia id
-                    molestiae delectus sapiente explicabo suscipit eos!
+                <Text style={{ fontSize: 14 }}>
+                    {item.content}
                 </Text>
             </View>
             <View

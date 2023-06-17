@@ -1,11 +1,12 @@
 import axios from 'axios';
-import { getAllPostsFailed, getAllPostsStart, getAllPostsSuccess, getFollowersFailed, getFollowersStart, getFollowersSuccess, getFollowingFailed, getFollowingStart, getFollowingSuccess, getTopPostsFailed, getTopPostsStart, getTopPostsSuccess, loginFailed, loginStart, loginSuccess, logoutStart, logoutSuccess, setUserAccessToken, updateStart, updateUser } from '../slices/authSlice';
+import { getAllPostsFailed, getAllPostsStart, getAllPostsSuccess, getFollowersFailed, getFollowersStart, getFollowersSuccess, getFollowingFailed, getFollowingStart, getFollowingSuccess, getNotifiesFailed, getNotifiesStart, getNotifiesSuccess, getTopPostsFailed, getTopPostsStart, getTopPostsSuccess, loginFailed, loginStart, loginSuccess, logoutStart, logoutSuccess, setUserAccessToken, updateStart, updateUser } from '../slices/authSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState } from "react";
 import { BASE_URL } from '../../ultis/config';
 import { setAccessToken, setRefreshToken } from '../../ultis/auth';
 import { loginAccount } from '../slices/loginSlice';
 import jwtDecode from 'jwt-decode';
+import { postDataAPI } from '../../ultis/fetchData';
 
 export const loginUser = async (user, dispatch, navigate) => {
     dispatch(loginStart());
@@ -119,4 +120,16 @@ export const getMyFollowing = async (userId, dispatch) => {
 
 export const updateMyProfile = (newUser, dispatch) => {
     dispatch(updateUser(newUser));
+}
+
+export const getNotifies = async (access_token, dispatch) => {
+    dispatch(getNotifiesStart());
+    try {
+        const res = await postDataAPI(`notify/get`,null, access_token);
+        dispatch(getNotifiesSuccess(res.data.notifies));
+        console.log('Lấy dữ liệu thông báo thành công!');
+    } catch (err) {
+        dispatch(getNotifiesFailed());
+        console.log('Lấy dữ liệu thông báo thất bại!');
+    }
 }

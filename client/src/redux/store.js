@@ -1,4 +1,4 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
 import authReducer from './slices/authSlice';
 import themeReducer from './slices/themeSlice';
 import loginReducer from './slices/loginSlice';
@@ -9,6 +9,12 @@ import libraryReducer from './slices/librarySlice';
 import profileReducer from './slices/profileSlice';
 import postReducer from './slices/postSlice';
 import searchReducer from './slices/searchSlice';
+import languageReducer from './slices/languageSlice';
+import commentReducer from './slices/commentSlice';
+
+const middleware = getDefaultMiddleware({
+    serializableCheck: false,
+});
 
 export default configureStore({
     reducer: {
@@ -22,6 +28,15 @@ export default configureStore({
         following: followingReducer,
         library: libraryReducer,
         profile: profileReducer,
-        search: searchReducer
-    }
+        search: searchReducer,
+        language: languageReducer,
+        comment: commentReducer,
+    },
+    middleware,
+    player: {
+        middleware: [
+            ...middleware,
+        ],
+        serializableCheck: false,
+    },
 });

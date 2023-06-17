@@ -19,9 +19,9 @@ export const lightHeader = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: colors.white,
+        backgroundColor: "#EDEDED",
         borderWidth: 0.7,
-        borderColor: colors.grey,
+        borderColor: "#EDEDED",
         borderRadius: 32,
         marginHorizontal: 8,
     },
@@ -35,13 +35,25 @@ export const lightHeader = StyleSheet.create({
         marginRight: 12,
         padding: 0,
         flex: 1,
-        color: colors.black,
+        color: "#000",
+        // alignItems: 'center'
+        justifyContent: "center",
     },
 
     bell: {
         height: 26,
         width: 26,
     },
+    background : {
+    },
+    text : {
+        color: colors.black
+    },
+
+    placeholder: {
+        // alignSelf: 'center'
+        color: '#aaa'
+    }
 });
 
 export const darkHeader = StyleSheet.create({
@@ -62,7 +74,7 @@ export const darkHeader = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: 'rgba(255, 255, 255, 0.7)',
+        backgroundColor: colors.dark_grey,
         borderColor: colors.black,
         borderRadius: 32,
         borderWidth: 1,
@@ -78,11 +90,23 @@ export const darkHeader = StyleSheet.create({
         marginRight: 12,
         padding: 0,
         flex: 1,
-        color: colors.black,
+        color: colors.dark_sub
+
     },
 
     bell: {
         height: 26,
         width: 26,
     },
+    background : {
+        backgroundColor: colors.dark_grey,
+    },
+    text : {
+        color: '#fff'
+    },
+    
+    placeholder: {
+        color: colors.dark_sub,
+        alignSelf: 'center'
+    }
 });

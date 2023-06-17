@@ -64,8 +64,18 @@ const postController = {
     getPostById: async (req, res) => {
         try {
             const post = await Posts.findById(req.params.id)
-                .populate("owner likes comments", "avatar userName fullName")
-            res.status(200).json(post);
+                .populate("owner likes comments", "avatar userName fullName posts followers")
+            res.status(200).json({
+                ...post._doc,
+                owner: {
+                    _id: post.owner._id,
+                    fullName: post.owner.fullName,
+                    userName: post.owner.userName,
+                    avatar: post.owner.avatar,
+                    followers: post.owner.followers.length,
+                    posts: post.owner.posts.length,
+                }
+            });
         } catch (err) {
             return res.status(500).json({ msg: err.message })
         }

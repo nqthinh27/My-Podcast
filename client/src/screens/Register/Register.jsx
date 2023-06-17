@@ -12,6 +12,8 @@ import colors from "../../constants/colors";
 import Icon from "react-native-vector-icons/Entypo";
 import { BASE_URL } from "../../ultis/config";
 import { useNavigation } from "@react-navigation/native";
+import { lightLogin, darkLogin } from "../../constants/darkLight/themeLogin";
+import { useSelector } from "react-redux";
 
 function Register(props) {
     const navigation = useNavigation();
@@ -23,6 +25,10 @@ function Register(props) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [repassword, setRepassword] = useState("");
+    const isDarkTheme = useSelector((state) => state.theme.isDarkTheme);
+    const currentLanguage = useSelector(
+        (state) => state.language.currentLanguage
+    );
 
     const handleRegister = async () => {
         try {
@@ -43,7 +49,7 @@ function Register(props) {
         }
     }
     return (
-        <SafeAreaView style={styles.register}>
+        <SafeAreaView style={[styles.register, isDarkTheme ? darkLogin.background : lightLogin.background]}>
             <View style={styles.registerHeader}>
                 <Icon
                     name={"chevron-left"}
@@ -52,61 +58,67 @@ function Register(props) {
                     onPress={() => {
                         navigation.goBack();
                     }}
+                    color={isDarkTheme ? darkLogin.text.color : lightLogin.text.color}
                 />
-                <Text style={styles.registerTextHeader}>Đăng kí</Text>
+                <Text style={[styles.registerTextHeader, isDarkTheme ? darkLogin.text: lightLogin.text]}>{currentLanguage === "vi" ? " Đăng kí    " : " Register     "}</Text>
                 <Text> </Text>
             </View>
 
-            <View style={styles.registerContainer}>
+            <View style={[styles.registerContainer, isDarkTheme ? darkLogin.background : lightLogin.background]}>
                 <View style={styles.registerViewInputForm}>
                     <TextInput
-                        style={styles.registerInputText}
-                        placeholder="Họ và tên"
+                        style={[styles.registerInputText, isDarkTheme ? darkLogin.text: lightLogin.text]}
+                        placeholder={currentLanguage === "vi" ? "Họ và tên" :  "Fullname"}
                         value={fullName}
                         onChangeText={setFullName}
-                    ></TextInput>
+                        placeholderTextColor={isDarkTheme ? darkLogin.textInput.color : lightLogin.textInput.color}
+                        ></TextInput>
                 </View>
                 <View style={styles.registerViewInputForm}>
                     <TextInput
-                        style={styles.registerInputText}
-                        placeholder="Tên người dùng"
+                        style={[styles.registerInputText, isDarkTheme ? darkLogin.text: lightLogin.text]}
+                        placeholder={currentLanguage === "vi" ? "Tên người dùng" :  "Username"}
                         value={userName}
                         onChangeText={setUserName}
-                    ></TextInput>
+                        placeholderTextColor={isDarkTheme ? darkLogin.textInput.color : lightLogin.textInput.color}
+                        ></TextInput>
                 </View>
                 <View style={styles.registerViewInputForm}>
                     <TextInput
-                        style={styles.registerInputText}
+                        style={[styles.registerInputText, isDarkTheme ? darkLogin.text: lightLogin.text]}
                         placeholder="Email"
                         value={email}
                         onChangeText={setEmail}
-                    ></TextInput>
+                        placeholderTextColor={isDarkTheme ? darkLogin.textInput.color : lightLogin.textInput.color}
+                        ></TextInput>
                 </View>
                 <View style={styles.registerViewInputForm}>
                     <TextInput
-                        style={styles.registerInputText}
-                        placeholder="Mật khẩu"
+                        style={[styles.registerInputText, isDarkTheme ? darkLogin.text: lightLogin.text]}
+                        placeholder={currentLanguage === "vi" ? "Mật khẩu" :  "Password"}
                         secureTextEntry={true}
                         value={password}
                         onChangeText={setPassword}
-                    ></TextInput>
+                        placeholderTextColor={isDarkTheme ? darkLogin.textInput.color : lightLogin.textInput.color}
+                        ></TextInput>
                 </View>
 
                 <View style={styles.registerViewInputForm}>
                     <TextInput
-                        style={styles.registerInputText}
-                        placeholder="Nhập lại Mật khẩu"
+                        style={[styles.registerInputText, isDarkTheme ? darkLogin.text: lightLogin.text]}
+                        placeholder={currentLanguage === "vi" ? "Nhập lại mật khẩu" :  "Confirm password"}
                         secureTextEntry={true}
                         value={repassword}
                         onChangeText={setRepassword}
-                    ></TextInput>
+                        placeholderTextColor={isDarkTheme ? darkLogin.textInput.color : lightLogin.textInput.color}
+                        ></TextInput>
                 </View>
 
                 <TouchableOpacity
                     style={styles.registerViewButtonRegister}
                     onPress={handleRegister}
                 >
-                    <Text style={styles.registerButtonRegister}>Đăng ký</Text>
+                    <Text style={styles.registerButtonRegister}>{currentLanguage === "vi" ? "Đăng ký" :  "Register"}</Text>
                 </TouchableOpacity>
 
                 <View style={styles.registerViewButtonHaveAcc}>
@@ -118,7 +130,7 @@ function Register(props) {
                             borderBottomColor: "#FF6363",
                         }}
                     >
-                        Đã có tài khoản?{" "}
+                        {currentLanguage === "vi" ? "Đã có tài khoản? " :  "Already have an account ?"}
                     </Text>
 
                     <Text
@@ -130,7 +142,7 @@ function Register(props) {
                             navigate("Login");
                         }}
                     >
-                        Đăng nhập
+                        {currentLanguage === "vi" ? " Đăng nhập" :  " Login"}
                     </Text>
                 </View>
             </View>
