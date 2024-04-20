@@ -29,4 +29,3 @@
 - Một số chức năng khác: Theo dõi người dùng khác, chỉnh sửa trang cá nhân, like, comment bài viết, tùy chỉnh giao diện,...
 ### 3. Video demo
 - [Link google drive](https://drive.google.com/file/d/1kfMKNvbqTIbWv9zqQsq3OWljV9afV1L-/view)
-
